@@ -58,7 +58,12 @@ internal object SharedServer {
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventSharedProcessor())
 
         val dispatcher = RequestDispatcher()
+        dispatcher.registerHandler(GetPlayerInfoHandler())
+        dispatcher.registerHandler(GetPlayerInfosHandler())
+        dispatcher.registerHandler(PlayerInfoUpdateHandler())
         builder.registerUserProcessor(dispatcher)
+
+        builder.registerUserProcessor(GetTimeSharedProcessor())
     }
 
     private fun initDataSource(config: Config) {
