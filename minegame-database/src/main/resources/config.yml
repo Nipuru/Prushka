@@ -1,0 +1,15 @@
+broker:
+  # broker 网关服务器地址
+  host: localhost
+  # broker 网关服务器端口
+  port: 11200
+
+dbId: 1
+
+datasource:
+  # 仅支持 postgresql
+  host: localhost
+  port: 5432
+  database: minegame
+  username: postgres
+  password: 123456
