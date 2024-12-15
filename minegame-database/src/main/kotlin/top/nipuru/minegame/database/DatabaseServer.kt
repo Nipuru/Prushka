@@ -50,7 +50,8 @@ internal object DatabaseServer {
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         val dispatcher = RequestDispatcher()
-
+        dispatcher.registerHandler(SaveFileHandler())
+        dispatcher.registerHandler(LoadFileHandler())
         dispatcher.registerHandler(QueryPlayerHandler())
         dispatcher.registerHandler(PlayerTransactionHandler())
 
