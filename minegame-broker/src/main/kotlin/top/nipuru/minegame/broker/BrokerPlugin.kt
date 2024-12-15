@@ -10,5 +10,9 @@ class BrokerPlugin : Plugin() {
         server.registerUserProcessor(RequestMessageRouter())
         server.registerUserProcessor(PlayerDataTransferBrokerProcessor())
         server.registerUserProcessor(PlayerOfflineDataBrokerProcessor())
+        server.registerUserProcessor(PlayerChatBrokerProcessor())
+        server.registerUserProcessor(PlayerPrivateChatBrokerProcessor())
+        server.registerUserProcessor(GetTimeBrokerProcessor())
+        server.registerUserProcessor(DebugTimeBrokerProcessor())
     }
 }

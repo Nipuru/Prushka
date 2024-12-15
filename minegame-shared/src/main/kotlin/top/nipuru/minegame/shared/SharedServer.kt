@@ -13,7 +13,6 @@ import top.nipuru.minegame.shared.config.loadConfig
 import top.nipuru.minegame.shared.SharedServer.dataSourceProvider
 import top.nipuru.minegame.shared.SharedServer.shutdown
 import top.nipuru.minegame.shared.SharedServer.startup
-import top.nipuru.minegame.shared.auction.ListingManager
 import top.nipuru.minegame.shared.datasource.DataSourceProvider
 import top.nipuru.minegame.shared.datasource.HikariPgSQLProvider
 import top.nipuru.minegame.shared.logger.logger
@@ -44,7 +43,6 @@ internal object SharedServer {
         initDataSource(config)
         initBrokerClient(config)
 
-        ListingManager.init()
         PlayerInfoManager.init()
     }
 

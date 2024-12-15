@@ -1,0 +1,8 @@
+name: MineGame
+version: '${version}'
+api-version: 1.20
+depend:
+  - AfyBroker
+main: top.nipuru.minegame.game.BukkitPlugin
+authors: [ Nipuru ]
+load: STARTUP
