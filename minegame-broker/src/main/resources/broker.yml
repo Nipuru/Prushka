@@ -1,0 +1,4 @@
+name: MineGame
+version: '${version}'
+main: top.nipuru.minegame.broker.BrokerPlugin
+author: Nipuru
