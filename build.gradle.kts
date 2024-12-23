@@ -10,7 +10,7 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
-    group = "top.nipuru.minegame"
+    group = "top.nipuru.prushka"
     version = "0.1"
 
     repositories {

@@ -1,12 +1,12 @@
-rootProject.name = "minegame"
+rootProject.name = "prushka"
 
 sequenceOf(
-    "minegame-common",
-    "minegame-database",
-    "minegame-auth",
-    "minegame-shared",
-    "minegame-broker",
-    "minegame-game"
+    "prushka-common",
+    "prushka-database",
+    "prushka-auth",
+    "prushka-shared",
+    "prushka-broker",
+    "prushka-game"
 ).forEach { include(it) }
 
 pluginManagement {

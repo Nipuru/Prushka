@@ -1,5 +1,5 @@
-# MineGame
-Minecraft 游戏业务框架实验，Broker 的最佳实现，仅供参考
+# Prushka
+Minecraft 游戏业务框架实验项目，Broker 的最佳实现，仅供参考
 
 - common: 公共模块
 - game: bukkit 插件，游戏的功能实现

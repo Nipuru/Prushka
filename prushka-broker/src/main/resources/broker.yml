@@ -1,0 +1,4 @@
+name: Prushka
+version: '${version}'
+main: top.nipuru.prushka.broker.BrokerPlugin
+author: Nipuru
