@@ -5,9 +5,9 @@ import com.alipay.remoting.LifeCycleException
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
+import org.jetbrains.exposed.sql.Database
 import top.nipuru.prushka.common.ClientType
 import top.nipuru.prushka.common.processor.RequestDispatcher
-import top.nipuru.prushka.database.DatabaseServer.dataSourceProvider
 import top.nipuru.prushka.database.DatabaseServer.shutdown
 import top.nipuru.prushka.database.DatabaseServer.startup
 import top.nipuru.prushka.database.config.Config
@@ -18,11 +18,6 @@ import top.nipuru.prushka.database.logger.logger
 import top.nipuru.prushka.database.offline.OfflineDataManager
 import top.nipuru.prushka.database.processor.*
 import top.nipuru.prushka.database.processor.connection.CloseEventDBProcessor
-import javax.sql.DataSource
-
-
-val dataSource: DataSource
-    get() = dataSourceProvider.dataSource
 
 
 fun main() {
@@ -32,7 +27,7 @@ fun main() {
 
 internal object DatabaseServer {
     private lateinit var brokerClient: BrokerClient
-    lateinit var dataSourceProvider: DataSourceProvider
+    private lateinit var dataSourceProvider: DataSourceProvider
 
     fun startup() {
         val config = loadConfig()
@@ -67,6 +62,7 @@ internal object DatabaseServer {
             datasource.host!!, datasource.port!!,
             datasource.database!!, datasource.username!!, datasource.password!!
         )
+        Database.connect(dataSourceProvider.dataSource)
     }
 
     private fun initBrokerClient(config: Config) {

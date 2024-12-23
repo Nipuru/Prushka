@@ -6,6 +6,7 @@ import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
+import org.jetbrains.exposed.sql.Database
 import top.nipuru.prushka.auth.AuthServer.dataSourceProvider
 import top.nipuru.prushka.auth.AuthServer.shutdown
 import top.nipuru.prushka.auth.AuthServer.startup
@@ -21,10 +22,6 @@ import top.nipuru.prushka.common.ClientType
 import top.nipuru.prushka.common.processor.RequestDispatcher
 import javax.sql.DataSource
 
-val dataSource: DataSource
-    get() = dataSourceProvider.dataSource
-
-
 fun main() {
     startup()
     Runtime.getRuntime().addShutdownHook(Thread { shutdown() })
@@ -32,7 +29,7 @@ fun main() {
 
 internal object AuthServer {
     private lateinit var brokerClient: BrokerClient
-    lateinit var dataSourceProvider: DataSourceProvider
+    private lateinit var dataSourceProvider: DataSourceProvider
 
     fun startup() {
         val config = loadConfig()
@@ -64,6 +61,7 @@ internal object AuthServer {
             datasource.host!!, datasource.port!!,
             datasource.database!!, datasource.username!!, datasource.password!!
         )
+        Database.connect(dataSourceProvider.dataSource)
     }
 
     private fun initBrokerClient(config: Config) {

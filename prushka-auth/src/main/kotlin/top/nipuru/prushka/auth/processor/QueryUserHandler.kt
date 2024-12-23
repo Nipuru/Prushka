@@ -9,8 +9,7 @@ import top.nipuru.prushka.common.processor.RequestDispatcher.ResponseContext
 class QueryUserHandler : RequestDispatcher.Handler<QueryUserRequest> {
     override fun handle(asyncCtx: ResponseContext, request: QueryUserRequest) {
         val user = UserManager.initUser(request.name, request.uniqueId, request.ip)
-        val userMessage = UserMessage(user.playerId, user.dbId)
-        asyncCtx.sendResponse(userMessage)
+        asyncCtx.sendResponse(user)
     }
 
     override fun interest(): Class<QueryUserRequest> {

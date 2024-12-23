@@ -6,11 +6,11 @@ import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
+import org.jetbrains.exposed.sql.Database
 import top.nipuru.prushka.common.ClientType
 import top.nipuru.prushka.common.processor.RequestDispatcher
 import top.nipuru.prushka.shared.config.Config
 import top.nipuru.prushka.shared.config.loadConfig
-import top.nipuru.prushka.shared.SharedServer.dataSourceProvider
 import top.nipuru.prushka.shared.SharedServer.shutdown
 import top.nipuru.prushka.shared.SharedServer.startup
 import top.nipuru.prushka.shared.datasource.DataSourceProvider
@@ -23,10 +23,6 @@ import top.nipuru.prushka.shared.processor.GetPlayerInfoHandler
 import top.nipuru.prushka.shared.processor.GetPlayerInfosHandler
 import top.nipuru.prushka.shared.processor.connection.CloseEventSharedProcessor
 import top.nipuru.prushka.shared.processor.connection.ConnectEventSharedProcessor
-import javax.sql.DataSource
-
-val dataSource: DataSource
-    get() = dataSourceProvider.dataSource
 
 fun main() {
     startup()
@@ -35,7 +31,7 @@ fun main() {
 
 internal object SharedServer {
     private lateinit var brokerClient: BrokerClient
-    lateinit var dataSourceProvider: DataSourceProvider
+    private lateinit var dataSourceProvider: DataSourceProvider
 
     fun startup() {
         val config = loadConfig()
@@ -71,6 +67,7 @@ internal object SharedServer {
             datasource.host!!, datasource.port!!,
             datasource.database!!, datasource.username!!, datasource.password!!
         )
+        Database.connect(dataSourceProvider.dataSource)
     }
 
     private fun initBrokerClient(config: Config) {
