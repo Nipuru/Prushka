@@ -1,18 +1,20 @@
 plugins {
     application
-    id("com.github.johnrengelman.shadow")
+    alias(libs.plugins.shadow)
 }
 
 dependencies {
     implementation(project(":prushka-common"))
-    implementation("net.afyer.afybroker:afybroker-client:2.3")
-    implementation("com.zaxxer:HikariCP:5.1.0")
-    implementation("org.yaml:snakeyaml:2.2")
+    implementation(libs.afybroker.client)
+    implementation(libs.hikari)
+    implementation(libs.snakeyaml)
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
 
     // pgsql驱动
-    runtimeOnly("org.postgresql:postgresql:42.7.4")
+    runtimeOnly(libs.postgresql)
     // logback
-    runtimeOnly("ch.qos.logback:logback-classic:1.2.11")
+    runtimeOnly(libs.logback.classic)
 }
 
 val mainClazz = "top.nipuru.prushka.database.DatabaseServerKt"

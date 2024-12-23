@@ -1,10 +1,10 @@
 plugins {
-    id("com.github.johnrengelman.shadow")
+    alias(libs.plugins.shadow)
 }
 
 dependencies {
-    compileOnly("net.afyer.afybroker:afybroker-server:2.3")
     implementation(project(":prushka-common"))
+    compileOnly(libs.afybroker.server)
 }
 
 tasks.build {

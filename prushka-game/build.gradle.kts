@@ -1,14 +1,14 @@
 plugins {
     `java-library`
-    id("com.github.johnrengelman.shadow")
-    id("io.papermc.paperweight.userdev")
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.paperweight)
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
-    compileOnly("net.afyer.afybroker:afybroker-client:2.3")
     implementation(project(":prushka-common"))
-
+    paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle(libs.versions.paper)
+    compileOnly(libs.afybroker.client)
 }
 
 tasks.assemble {

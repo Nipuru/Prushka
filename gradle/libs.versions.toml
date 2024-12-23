@@ -1,0 +1,21 @@
+[versions]
+exposed = "0.57.0"
+afybroker = "2.3"
+paper = "1.20.4-R0.1-SNAPSHOT"
+
+[libraries]
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+afybroker-core = { module = "net.afyer.afybroker:afybroker-core", version.ref = "afybroker" }
+afybroker-client = { module = "net.afyer.afybroker:afybroker-client", version.ref = "afybroker" }
+afybroker-server = { module = "net.afyer.afybroker:afybroker-server", version.ref = "afybroker" }
+hikari = "com.zaxxer:HikariCP:5.1.0"
+snakeyaml = "org.yaml:snakeyaml:2.2"
+postgresql = "org.postgresql:postgresql:42.7.4"
+logback-classic = "ch.qos.logback:logback-classic:1.2.11"
+gson = "com.google.code.gson:gson:2.8.9"
+
+[plugins]
+kotlin-jvm = "org.jetbrains.kotlin.jvm:1.8.22"
+shadow = "com.github.johnrengelman.shadow:7.1.2"
+paperweight = "io.papermc.paperweight.userdev:1.7.2"
