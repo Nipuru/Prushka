@@ -8,7 +8,7 @@ import org.bukkit.entity.Player
 
 /**
  * 将自己传送到当前服务器指定世界出生点
- * Cmd: /mg world <world_name>
+ * Cmd: /prushka world <world_name>
  *
  * @author Nipuru
  * @since 2024/11/13 15:29

@@ -2,6 +2,7 @@ package top.nipuru.prushka.game.listener
 
 import top.nipuru.prushka.game.gameplay.player.GamePlayers
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
 
@@ -12,10 +13,11 @@ import org.bukkit.event.player.PlayerMoveEvent
  */
 class PlayerMoveListener : Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     fun onEvent(event: PlayerMoveEvent) {
         //解除afk
         val player = GamePlayers.getPlayer(event.player.uniqueId)
         player.core.afk = false
+        player.teleport.setLastLocation(event.to)
     }
 }

@@ -15,6 +15,7 @@ import top.nipuru.prushka.game.logger.logger
 import top.nipuru.prushka.game.nms.hasDisconnected
 import top.nipuru.prushka.game.time.TimeManager
 import org.bukkit.Bukkit
+import top.nipuru.prushka.game.gameplay.teleport.TeleportManager
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.KProperty1
@@ -39,6 +40,7 @@ class GamePlayer(
     val chat = ChatManager(this)
     val item = ItemManager(this)
     val skin = SkinManager(this)
+    val teleport = TeleportManager(this)
 
     /**
      * 预加载数据 (告诉 dbserver 要加载哪些数据)
@@ -51,6 +53,7 @@ class GamePlayer(
         chat.preload(request)
         item.preload(request)
         skin.preload(request)
+        teleport.preload(request)
     }
 
     /**
@@ -64,6 +67,7 @@ class GamePlayer(
         chat.unpack(dataInfo)
         item.unpack(dataInfo)
         skin.unpack(dataInfo)
+        teleport.unpack(dataInfo)
     }
 
     /**
@@ -77,6 +81,7 @@ class GamePlayer(
         chat.pack(dataInfo)
         item.pack(dataInfo)
         skin.pack(dataInfo)
+        teleport.pack(dataInfo)
     }
 
     fun init() {
@@ -135,6 +140,7 @@ class GamePlayer(
             onLogin()
         }
 
+        teleport.onJoin()
         inventory.onJoin()
         offline.onJoin()
     }
@@ -145,6 +151,7 @@ class GamePlayer(
     fun onQuit() {
         logger.info("GamePlayer: {} has quit.", name)
 
+        teleport.onQuit()
         inventory.onQuit()
         core.onQuit()
 

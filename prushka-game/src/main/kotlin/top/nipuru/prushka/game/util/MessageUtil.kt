@@ -77,7 +77,7 @@ private fun initMiniMessage(): MiniMessage {
 private fun font(bitmaps: Map<String, Bitmap>): FontRepository {
     val repository = FontRepository()
     // 初始化默认字体
-    val fonts = sequenceOf("mine_font")
+    val fonts = sequenceOf("prushka_font")
     val bytes = plugin.getResource("glyph_sizes.bin")!!.readAllBytes()
     for (font in fonts) {
         // 起始 unicode

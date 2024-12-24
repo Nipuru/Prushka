@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender
 
 /**
  * 向自己打印一串 minimessage 消息
- * Cmd: /mg text <args>...
+ * Cmd: /prushka text <args>...
  *
  * @author Nipuru
  * @since 2024/11/19 15:27

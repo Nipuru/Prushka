@@ -8,7 +8,7 @@ import java.io.File
 
 /**
  * 重载插件配置
- * Cmd: /mg reload
+ * Cmd: /prushka reload
  *
  * @author Nipuru
  * @since 2024/11/29 09:35

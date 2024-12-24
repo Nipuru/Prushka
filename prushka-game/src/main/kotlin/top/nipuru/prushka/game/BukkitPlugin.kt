@@ -95,5 +95,9 @@ class BukkitPlugin : JavaPlugin() {
         AfkCommand().register(this)
         WhereAmICommand().register(this)
         FriendCommand().register(this)
+        TeleportAtCommand().register(this)
+        TeleportAtHereCommand().register(this)
+        TeleportAcceptCommand().register(this)
+        TeleportDenyCommand().register(this)
     }
 }
