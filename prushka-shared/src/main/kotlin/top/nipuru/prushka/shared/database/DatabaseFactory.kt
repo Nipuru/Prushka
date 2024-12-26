@@ -1,13 +1,19 @@
-package top.nipuru.prushka.shared.datasource
+package top.nipuru.prushka.shared.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import javax.sql.DataSource
+import org.jetbrains.exposed.sql.Database
 
-class HikariPgSQLProvider : DataSourceProvider {
+
+/**
+ * @author Nipuru
+ * @since 2024/12/25 17:04
+ */
+object DatabaseFactory {
+
     private lateinit var hikari: HikariDataSource
 
-    override fun init(host: String, port: Int, database: String, username: String, password: String) {
+    fun init(host: String, port: Int, database: String, username: String, password: String) {
         val config = HikariConfig()
         config.poolName = "PublicServer-hikari-postgres"
 
@@ -20,14 +26,12 @@ class HikariPgSQLProvider : DataSourceProvider {
         config.minimumIdle = 10
         config.maxLifetime = 1800000
         config.connectionTimeout = 5000
-
         this.hikari = HikariDataSource(config)
+
+        Database.connect(hikari)
     }
 
-    override fun shutdown() {
+    fun shutdown() {
         hikari.close()
     }
-
-    override val dataSource: DataSource
-        get() = hikari
 }

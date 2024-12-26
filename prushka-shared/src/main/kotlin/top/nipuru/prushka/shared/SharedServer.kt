@@ -6,21 +6,19 @@ import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
-import org.jetbrains.exposed.sql.Database
 import top.nipuru.prushka.common.ClientType
 import top.nipuru.prushka.common.processor.RequestDispatcher
-import top.nipuru.prushka.shared.config.Config
-import top.nipuru.prushka.shared.config.loadConfig
 import top.nipuru.prushka.shared.SharedServer.shutdown
 import top.nipuru.prushka.shared.SharedServer.startup
-import top.nipuru.prushka.shared.datasource.DataSourceProvider
-import top.nipuru.prushka.shared.datasource.HikariPgSQLProvider
+import top.nipuru.prushka.shared.config.Config
+import top.nipuru.prushka.shared.config.loadConfig
+import top.nipuru.prushka.shared.database.DatabaseFactory
 import top.nipuru.prushka.shared.logger.logger
 import top.nipuru.prushka.shared.player.PlayerInfoManager
-import top.nipuru.prushka.shared.processor.GetTimeSharedProcessor
-import top.nipuru.prushka.shared.processor.PlayerInfoUpdateHandler
 import top.nipuru.prushka.shared.processor.GetPlayerInfoHandler
 import top.nipuru.prushka.shared.processor.GetPlayerInfosHandler
+import top.nipuru.prushka.shared.processor.GetTimeSharedProcessor
+import top.nipuru.prushka.shared.processor.PlayerInfoUpdateHandler
 import top.nipuru.prushka.shared.processor.connection.CloseEventSharedProcessor
 import top.nipuru.prushka.shared.processor.connection.ConnectEventSharedProcessor
 
@@ -31,7 +29,6 @@ fun main() {
 
 internal object SharedServer {
     private lateinit var brokerClient: BrokerClient
-    private lateinit var dataSourceProvider: DataSourceProvider
 
     fun startup() {
         val config = loadConfig()
@@ -44,7 +41,7 @@ internal object SharedServer {
 
     fun shutdown() {
         brokerClient.shutdown()
-        dataSourceProvider.shutdown()
+        DatabaseFactory.shutdown()
     }
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
@@ -61,13 +58,11 @@ internal object SharedServer {
     }
 
     private fun initDataSource(config: Config) {
-        dataSourceProvider = HikariPgSQLProvider()
         val datasource = config.datasource!!
-        dataSourceProvider.init(
+        DatabaseFactory.init(
             datasource.host!!, datasource.port!!,
             datasource.database!!, datasource.username!!, datasource.password!!
         )
-        Database.connect(dataSourceProvider.dataSource)
     }
 
     private fun initBrokerClient(config: Config) {

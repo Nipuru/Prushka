@@ -2,6 +2,7 @@
 exposed = "0.57.0"
 afybroker = "2.3"
 paper = "1.20.4-R0.1-SNAPSHOT"
+ktor = "3.0.2"
 
 [libraries]
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
@@ -9,6 +10,8 @@ exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "e
 afybroker-core = { module = "net.afyer.afybroker:afybroker-core", version.ref = "afybroker" }
 afybroker-client = { module = "net.afyer.afybroker:afybroker-client", version.ref = "afybroker" }
 afybroker-server = { module = "net.afyer.afybroker:afybroker-server", version.ref = "afybroker" }
+ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 hikari = "com.zaxxer:HikariCP:5.1.0"
 snakeyaml = "org.yaml:snakeyaml:2.2"
 postgresql = "org.postgresql:postgresql:42.7.4"

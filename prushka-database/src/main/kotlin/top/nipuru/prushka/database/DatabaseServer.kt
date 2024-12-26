@@ -5,15 +5,13 @@ import com.alipay.remoting.LifeCycleException
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
-import org.jetbrains.exposed.sql.Database
 import top.nipuru.prushka.common.ClientType
 import top.nipuru.prushka.common.processor.RequestDispatcher
 import top.nipuru.prushka.database.DatabaseServer.shutdown
 import top.nipuru.prushka.database.DatabaseServer.startup
 import top.nipuru.prushka.database.config.Config
 import top.nipuru.prushka.database.config.loadConfig
-import top.nipuru.prushka.database.datasource.DataSourceProvider
-import top.nipuru.prushka.database.datasource.HikariPgSQLProvider
+import top.nipuru.prushka.database.database.DatabaseFactory
 import top.nipuru.prushka.database.logger.logger
 import top.nipuru.prushka.database.offline.OfflineDataManager
 import top.nipuru.prushka.database.processor.*
@@ -27,7 +25,6 @@ fun main() {
 
 internal object DatabaseServer {
     private lateinit var brokerClient: BrokerClient
-    private lateinit var dataSourceProvider: DataSourceProvider
 
     fun startup() {
         val config = loadConfig()
@@ -39,7 +36,7 @@ internal object DatabaseServer {
     }
 
     fun shutdown() {
-        dataSourceProvider.shutdown()
+        DatabaseFactory.shutdown()
         brokerClient.shutdown()
     }
 
@@ -56,13 +53,11 @@ internal object DatabaseServer {
     }
 
     private fun initDataSource(config: Config) {
-        dataSourceProvider = HikariPgSQLProvider()
         val datasource = config.datasource!!
-        dataSourceProvider.init(
+        DatabaseFactory.init(
             datasource.host!!, datasource.port!!,
             datasource.database!!, datasource.username!!, datasource.password!!
         )
-        Database.connect(dataSourceProvider.dataSource)
     }
 
     private fun initBrokerClient(config: Config) {

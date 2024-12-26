@@ -10,6 +10,8 @@ dependencies {
     implementation(libs.snakeyaml)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.netty)
 
     // pgsql驱动
     runtimeOnly(libs.postgresql)
