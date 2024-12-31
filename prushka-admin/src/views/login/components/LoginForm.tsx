@@ -2,8 +2,7 @@ import md5 from "js-md5";
 import { useState } from "react";
 import { Button, Form, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import { Login } from "@/api/interface";
-import { loginApi } from "@/api/modules/login";
+import { login } from "@/api/modules/login";
 import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
@@ -19,11 +18,11 @@ const LoginForm = (props: any) => {
 	const [loading, setLoading] = useState<boolean>(false);
 
 	// 登录
-	const onFinish = async (loginForm: Login.ReqLoginForm) => {
+	const onFinish = async (loginForm: { username: string, password: string }) => {
 		try {
 			setLoading(true);
 			loginForm.password = md5(loginForm.password);
-			const { data } = await loginApi(loginForm);
+			const { data } = await login(loginForm);
 			setToken(data?.access_token);
 			setTabsList([]);
 			message.success("登录成功！");

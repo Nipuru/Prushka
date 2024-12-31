@@ -2,44 +2,35 @@ package top.nipuru.prushka.auth
 
 import com.alipay.remoting.ConnectionEventType
 import com.alipay.remoting.LifeCycleException
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.calllogging.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.request.*
+import io.ktor.server.routing.*
+import kotlinx.serialization.json.Json
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
-import org.jetbrains.exposed.sql.Database
-import top.nipuru.prushka.auth.AuthServer.shutdown
-import top.nipuru.prushka.auth.AuthServer.startup
+import org.slf4j.event.Level
+import top.nipuru.prushka.auth.admin.adminRouting
 import top.nipuru.prushka.auth.config.Config
 import top.nipuru.prushka.auth.config.loadConfig
 import top.nipuru.prushka.auth.database.DatabaseFactory
+import top.nipuru.prushka.auth.logger.logger
+import top.nipuru.prushka.auth.pay.payRouting
 import top.nipuru.prushka.auth.processor.QueryUserHandler
 import top.nipuru.prushka.auth.processor.connection.CloseEventAuthProcessor
 import top.nipuru.prushka.auth.user.UserManager
-import top.nipuru.prushka.auth.logger.logger
 import top.nipuru.prushka.common.ClientType
 import top.nipuru.prushka.common.processor.RequestDispatcher
 
-fun main() {
-    startup()
-    Runtime.getRuntime().addShutdownHook(Thread { shutdown() })
-}
-
-internal object AuthServer {
+object AuthServer {
     private lateinit var brokerClient: BrokerClient
-
-    fun startup() {
-        val config = loadConfig()
-
-        initDataSource(config)
-        initBrokerClient(config)
-
-        UserManager.init()
-    }
-
-    fun shutdown() {
-        DatabaseFactory.shutdown()
-        brokerClient.shutdown()
-    }
+    private lateinit var webServer: EmbeddedServer<*, *>
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         val dispatcher = RequestDispatcher()
@@ -48,6 +39,27 @@ internal object AuthServer {
 
         builder.registerUserProcessor(dispatcher)
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventAuthProcessor())
+    }
+
+    private fun initWebServer() {
+        webServer = embeddedServer(Netty, 11300) {
+            install(ContentNegotiation) {
+                json(Json { prettyPrint = true })
+            }
+            install(CallLogging) {
+                level = Level.INFO
+                format { call ->
+                    "receive request: ${call.request.httpMethod.value} ${call.request.uri} " +
+                            "parameters: ${call.parameters}"
+                }
+                logger = top.nipuru.prushka.auth.logger.logger
+            }
+            routing {
+                adminRouting()
+                payRouting()
+            }
+        }
+        webServer.start(wait = false)
     }
 
     private fun initDataSource(config: Config) {
@@ -80,7 +92,30 @@ internal object AuthServer {
             throw e
         }
     }
+
+    fun startup() {
+        val config = loadConfig()
+
+        initDataSource(config)
+        initBrokerClient(config)
+        initWebServer()
+
+        UserManager.init()
+    }
+
+    fun shutdown() {
+        DatabaseFactory.shutdown()
+        brokerClient.shutdown()
+        webServer.stop()
+    }
 }
+
+fun main() {
+    AuthServer.startup()
+    Runtime.getRuntime().addShutdownHook(Thread { AuthServer.shutdown() })
+    Thread.currentThread().join()
+}
+
 
 
 

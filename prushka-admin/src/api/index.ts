@@ -88,16 +88,16 @@ class RequestHttp {
 	}
 
 	// * 常用请求方法封装
-	get<T>(url: string, params?: object, _object = {}): Promise<ResultData<T>> {
+	get(url: string, params?: object, _object = {}): Promise<ResultData> {
 		return this.service.get(url, { params, ..._object });
 	}
-	post<T>(url: string, params?: object, _object = {}): Promise<ResultData<T>> {
+	post(url: string, params?: object, _object = {}): Promise<ResultData> {
 		return this.service.post(url, params, _object);
 	}
-	put<T>(url: string, params?: object, _object = {}): Promise<ResultData<T>> {
+	put(url: string, params?: object, _object = {}): Promise<ResultData> {
 		return this.service.put(url, params, _object);
 	}
-	delete<T>(url: string, params?: any, _object = {}): Promise<ResultData<T>> {
+	delete(url: string, params?: any, _object = {}): Promise<ResultData> {
 		return this.service.delete(url, { params, ..._object });
 	}
 }

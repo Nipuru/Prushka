@@ -12,6 +12,10 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.logging)
+    implementation(libs.ktor.server.headers)
+    implementation(libs.ktor.server.content)
+    implementation(libs.ktor.serialization.json)
 
     // pgsql驱动
     runtimeOnly(libs.postgresql)
