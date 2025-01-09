@@ -80,7 +80,10 @@ object PlayerDataManager {
         var table = tables[tableInfo.tableName]
         if (table == null) {
             table = PlayerDataTable(tableInfo)
-            if (tableInfo.autoCreate) SchemaUtils.create(table)
+            if (tableInfo.autoCreate) {
+                SchemaUtils.create(table)
+                SchemaUtils.createMissingTablesAndColumns(table)
+            }
         }
         return tables.putIfAbsent(tableInfo.tableName, table)!!
     }

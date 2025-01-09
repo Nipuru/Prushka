@@ -19,12 +19,13 @@ class PlayerDataTable(tableInfo: TableInfo) : Table() {
 
     init {
         for ((name, clazz) in tableInfo.fields) {
-
             val column = registerColumn(name, clazz)
             columnMap[column.name] = clazz.kotlin to column
         }
         val uniqueColumns = tableInfo.uniqueKeys.map { columnMap[it]!!.second }.toTypedArray()
-        uniqueIndex(columns = uniqueColumns)
+        if (uniqueColumns.isNotEmpty()) {
+            uniqueIndex(columns = uniqueColumns)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -68,25 +69,25 @@ class PlayerDataTable(tableInfo: TableInfo) : Table() {
 
     private fun registerColumn(name: String, clazz: Class<*>): Column<*> {
         return when (clazz.kotlin) {
-            Boolean::class -> bool(name)
-            Byte::class -> byte(name)
-            Short::class -> short(name)
-            Int::class -> integer(name)
-            Long::class -> long(name)
-            Float::class -> float(name)
-            Double::class -> double(name)
-            Char::class -> char(name)
-            ByteArray::class -> binary(name)
-            String::class -> text(name)
-            UUID::class -> uuid(name)
-            BooleanArray::class -> array<Boolean>(name)
-            ShortArray::class -> array<Short>(name)
-            IntArray::class -> array<Int>(name)
-            LongArray::class -> array<Long>(name)
-            FloatArray::class -> array<Float>(name)
-            DoubleArray::class -> array<Double>(name)
-            CharArray::class -> array<Char>(name)
-            Array<String>::class -> array<String>(name)
+            Boolean::class -> bool(name).default(false)
+            Byte::class -> byte(name).default(0)
+            Short::class -> short(name).default(0)
+            Int::class -> integer(name).default(0)
+            Long::class -> long(name).default(0)
+            Float::class -> float(name).default(0.0F)
+            Double::class -> double(name).default(0.0)
+            Char::class -> char(name).default('\u0000')
+            ByteArray::class -> binary(name).default(ByteArray(0))
+            String::class -> text(name).default("")
+            UUID::class -> uuid(name).default(UUID(0, 0))
+            BooleanArray::class -> array<Boolean>(name).default(emptyList())
+            ShortArray::class -> array<Short>(name).default(emptyList())
+            IntArray::class -> array<Int>(name).default(emptyList())
+            LongArray::class -> array<Long>(name).default(emptyList())
+            FloatArray::class -> array<Float>(name).default(emptyList())
+            DoubleArray::class -> array<Double>(name).default(emptyList())
+            CharArray::class -> array<Char>(name).default(emptyList())
+            Array<String>::class -> array<String>(name).default(emptyList())
             else -> error("Unsupported class ${clazz.simpleName}")
         }
     }
