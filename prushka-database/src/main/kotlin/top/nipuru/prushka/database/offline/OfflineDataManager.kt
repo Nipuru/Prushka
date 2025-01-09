@@ -11,12 +11,12 @@ object OfflineDataManager {
         transaction { SchemaUtils.create(OfflineDatas) }
     }
 
-    fun insert(data: PlayerOfflineDataMessage) {
+    fun insert(offline: PlayerOfflineDataMessage) {
         transaction {
             OfflineDatas.insert {
-                it[playerId] = data.playerId
-                it[module] = data.module
-                it[this.data] = data.data
+                it[playerId] = offline.playerId
+                it[module] = offline.module
+                it[this.data] = offline.data
             }
         }
     }
