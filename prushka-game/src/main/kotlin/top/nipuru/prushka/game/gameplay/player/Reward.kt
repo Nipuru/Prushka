@@ -2,7 +2,7 @@ package top.nipuru.prushka.game.gameplay.player
 
 import top.nipuru.prushka.common.sheet.stRewardAMap
 import top.nipuru.prushka.common.sheet.stRewardPoolAMap
-import top.nipuru.prushka.game.constants.Items
+import top.nipuru.prushka.game.constant.Items
 
 
 /**

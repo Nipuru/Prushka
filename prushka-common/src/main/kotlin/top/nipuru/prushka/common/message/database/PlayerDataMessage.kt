@@ -4,7 +4,7 @@ import java.io.Serializable
 
 class FieldMessage(val name: String, val value: Any) : Serializable
 
-class PlayerTransactionRequest(val playerId: Int) : Serializable {
+class PlayerDataTransactionMessage(val playerId: Int) : Serializable {
     val deletes = mutableListOf<Delete>()
     val updates = mutableListOf<Update>()
     val inserts = mutableListOf<Insert>()
@@ -16,7 +16,7 @@ class Insert(val tableName: String, val fields: List<FieldMessage>) : Serializab
 
 class Update(val tableName: String, val uniqueFields: List<FieldMessage>, val updateFields: List<FieldMessage>) : Serializable
 
-class QueryPlayerRequest(val playerId: Int) : Serializable {
+class PlayerDataRequestMessage(val playerId: Int) : Serializable {
     val tables = mutableListOf<TableInfo>()
 }
 

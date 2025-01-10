@@ -2,7 +2,7 @@ package top.nipuru.prushka.game.gameplay.offline
 
 import net.afyer.afybroker.client.Broker
 import top.nipuru.prushka.common.message.PlayerOfflineDataMessage
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.game.gameplay.player.BaseManager
 import top.nipuru.prushka.game.gameplay.player.DataInfo
 import top.nipuru.prushka.game.gameplay.player.GamePlayer
@@ -15,7 +15,7 @@ class OfflineManager(player: GamePlayer) : BaseManager(player) {
     private val offlineDataList = mutableListOf<OfflineData>()
     private val offlineDataMessageQueue = LinkedList<PlayerOfflineDataMessage>()
 
-    fun preload(request: QueryPlayerRequest) {
+    fun preload(request: PlayerDataRequestMessage) {
         request.preload(OfflineData::class.java)
     }
 

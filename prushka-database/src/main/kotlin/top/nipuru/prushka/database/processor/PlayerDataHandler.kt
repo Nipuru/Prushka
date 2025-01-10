@@ -1,32 +1,32 @@
 package top.nipuru.prushka.database.processor
 
 import top.nipuru.prushka.common.message.database.FieldMessage
-import top.nipuru.prushka.common.message.database.PlayerTransactionRequest
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataTransactionMessage
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.common.processor.RequestDispatcher
 import top.nipuru.prushka.database.player.PlayerDataManager
 
-class QueryPlayerHandler : RequestDispatcher.Handler<QueryPlayerRequest> {
+class PlayerDataRequestHandler : RequestDispatcher.Handler<PlayerDataRequestMessage> {
 
-    override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: QueryPlayerRequest) {
+    override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: PlayerDataRequestMessage) {
         val data: Map<String, List<List<FieldMessage>>> = PlayerDataManager.queryPlayer(request)
         asyncCtx.sendResponse(data)
     }
 
-    override fun interest(): Class<QueryPlayerRequest> {
-        return QueryPlayerRequest::class.java
+    override fun interest(): Class<PlayerDataRequestMessage> {
+        return PlayerDataRequestMessage::class.java
     }
 }
 
-class PlayerTransactionHandler : RequestDispatcher.Handler<PlayerTransactionRequest> {
+class PlayerDataTransactionHandler : RequestDispatcher.Handler<PlayerDataTransactionMessage> {
 
-    override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: PlayerTransactionRequest) {
+    override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: PlayerDataTransactionMessage) {
         PlayerDataManager.transaction(request)
         asyncCtx.sendResponse(true) // response
     }
 
-    override fun interest(): Class<PlayerTransactionRequest> {
-        return PlayerTransactionRequest::class.java
+    override fun interest(): Class<PlayerDataTransactionMessage> {
+        return PlayerDataTransactionMessage::class.java
     }
 }
 

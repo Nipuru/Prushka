@@ -1,9 +1,9 @@
 package top.nipuru.prushka.game.gameplay.player
 
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.game.MessageType
-import top.nipuru.prushka.game.constants.DAY
-import top.nipuru.prushka.game.constants.Items
+import top.nipuru.prushka.game.constant.DAY
+import top.nipuru.prushka.game.constant.Items
 import top.nipuru.prushka.game.gameplay.chat.ChatManager
 import top.nipuru.prushka.game.gameplay.core.CoreManager
 import top.nipuru.prushka.game.gameplay.friend.FriendManager
@@ -45,7 +45,7 @@ class GamePlayer(
     /**
      * 预加载数据 (告诉 dbserver 要加载哪些数据)
      */
-    fun preload(request: QueryPlayerRequest) {
+    fun preload(request: PlayerDataRequestMessage) {
         offline.preload(request)
         core.preload(request)
         inventory.preload(request)

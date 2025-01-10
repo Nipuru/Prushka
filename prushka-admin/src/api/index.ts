@@ -1,8 +1,8 @@
 import NProgress from "@/config/nprogress";
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { showFullScreenLoading, tryHideFullScreenLoading } from "@/config/serviceLoading";
-import { ResultData } from "@/api/interface";
-import { ResultEnum } from "@/enums/httpEnum";
+import { Result } from "@/api/interface";
+import { HttpStatus } from "@/enums/httpEnum";
 import { checkStatus } from "./helper/checkStatus";
 import { AxiosCanceler } from "./helper/axiosCancel";
 import { setToken } from "@/redux/modules/global/action";
@@ -58,14 +58,14 @@ class RequestHttp {
 				axiosCanceler.removePending(config);
 				tryHideFullScreenLoading();
 				// * 登录失效（code == 599）
-				if (data.code == ResultEnum.OVERDUE) {
+				if (data.code == HttpStatus.OVERDUE) {
 					store.dispatch(setToken(""));
 					message.error(data.msg);
 					window.location.hash = "/login";
 					return Promise.reject(data);
 				}
 				// * 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）
-				if (data.code && data.code !== ResultEnum.SUCCESS) {
+				if (data.code && data.code !== HttpStatus.SUCCESS) {
 					message.error(data.msg);
 					return Promise.reject(data);
 				}
@@ -88,16 +88,16 @@ class RequestHttp {
 	}
 
 	// * 常用请求方法封装
-	get(url: string, params?: object, _object = {}): Promise<ResultData> {
+	get(url: string, params?: object, _object = {}): Promise<Result> {
 		return this.service.get(url, { params, ..._object });
 	}
-	post(url: string, params?: object, _object = {}): Promise<ResultData> {
+	post(url: string, params?: object, _object = {}): Promise<Result> {
 		return this.service.post(url, params, _object);
 	}
-	put(url: string, params?: object, _object = {}): Promise<ResultData> {
+	put(url: string, params?: object, _object = {}): Promise<Result> {
 		return this.service.put(url, params, _object);
 	}
-	delete(url: string, params?: any, _object = {}): Promise<ResultData> {
+	delete(url: string, params?: any, _object = {}): Promise<Result> {
 		return this.service.delete(url, { params, ..._object });
 	}
 }

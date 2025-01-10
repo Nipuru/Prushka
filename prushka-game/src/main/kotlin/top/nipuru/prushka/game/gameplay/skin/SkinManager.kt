@@ -3,7 +3,7 @@ package top.nipuru.prushka.game.gameplay.skin
 import com.destroystokyo.paper.profile.ProfileProperty
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.core.message.PlayerProfilePropertyMessage
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.game.gameplay.player.BaseManager
 import top.nipuru.prushka.game.gameplay.player.DataInfo
 import top.nipuru.prushka.game.gameplay.player.GamePlayer
@@ -27,7 +27,7 @@ class SkinManager(player: GamePlayer) : BaseManager(player) {
             player.core.updateShared = true
         }
 
-    fun preload(request: QueryPlayerRequest) {
+    fun preload(request: PlayerDataRequestMessage) {
         request.preload(SkinData::class.java)
     }
 

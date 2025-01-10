@@ -7,11 +7,11 @@ import net.afyer.afybroker.core.util.AbstractInvokeCallback
 import net.afyer.afybroker.server.Broker
 import top.nipuru.prushka.broker.logger.logger
 import top.nipuru.prushka.common.ClientTag
-import top.nipuru.prushka.common.message.PlayerDataTransferRequest
+import top.nipuru.prushka.common.message.PlayerDataTransferMessage
 
-class PlayerDataTransferBrokerProcessor : AsyncUserProcessor<PlayerDataTransferRequest>() {
+class PlayerDataTransferBrokerProcessor : AsyncUserProcessor<PlayerDataTransferMessage>() {
 
-    override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: PlayerDataTransferRequest) {
+    override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: PlayerDataTransferMessage) {
         val player = Broker.getPlayer(request.uniqueId)
         if (player == null) {
             asyncCtx.sendResponse(null)
@@ -43,6 +43,6 @@ class PlayerDataTransferBrokerProcessor : AsyncUserProcessor<PlayerDataTransferR
     }
 
     override fun interest(): String {
-        return PlayerDataTransferRequest::class.java.name
+        return PlayerDataTransferMessage::class.java.name
     }
 }

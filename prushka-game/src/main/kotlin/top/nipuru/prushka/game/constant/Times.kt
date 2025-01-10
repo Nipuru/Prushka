@@ -1,4 +1,4 @@
-package top.nipuru.prushka.game.constants
+package top.nipuru.prushka.game.constant
 
 
 /**

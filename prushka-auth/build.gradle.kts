@@ -15,7 +15,10 @@ dependencies {
     implementation(libs.ktor.server.logging)
     implementation(libs.ktor.server.headers)
     implementation(libs.ktor.server.content)
+    implementation(libs.ktor.server.auth)
+    implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.serialization.json)
+
 
     // pgsql驱动
     runtimeOnly(libs.postgresql)

@@ -1,4 +1,4 @@
-package top.nipuru.prushka.game.constants
+package top.nipuru.prushka.game.constant
 
 object Items {
     /** 奖池类  */

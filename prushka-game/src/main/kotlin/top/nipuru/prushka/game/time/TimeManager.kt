@@ -1,6 +1,6 @@
 package top.nipuru.prushka.game.time
 
-import top.nipuru.prushka.game.constants.DAY
+import top.nipuru.prushka.game.constant.DAY
 import top.nipuru.prushka.game.logger.logger
 import java.time.DayOfWeek
 import java.time.Instant

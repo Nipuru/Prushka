@@ -1,4 +1,4 @@
-package top.nipuru.prushka.auth.admin
+package top.nipuru.prushka.auth.admin.player
 
 import io.ktor.server.routing.*
 
@@ -9,7 +9,7 @@ import io.ktor.server.routing.*
  * @author Nipuru
  * @since 2024/12/31 14:55
  */
-fun Route.playerManageRouting() = route("/player_manage") {
+fun Route.playerRouting() = route("/player") {
     get("/kick") {
 
     }

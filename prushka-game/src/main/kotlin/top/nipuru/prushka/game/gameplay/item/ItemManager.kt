@@ -1,6 +1,6 @@
 package top.nipuru.prushka.game.gameplay.item
 
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.game.gameplay.player.BaseManager
 import top.nipuru.prushka.game.gameplay.player.DataInfo
 import top.nipuru.prushka.game.gameplay.player.GamePlayer
@@ -13,7 +13,7 @@ class ItemManager(player: GamePlayer) : BaseManager(player) {
     
     private val items = mutableMapOf<Int, MutableMap<Int, ItemData>>()
 
-    fun preload(request: QueryPlayerRequest) {
+    fun preload(request: PlayerDataRequestMessage) {
         request.preload(ItemData::class.java)
     }
     

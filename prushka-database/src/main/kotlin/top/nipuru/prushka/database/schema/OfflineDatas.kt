@@ -1,4 +1,4 @@
-package top.nipuru.prushka.database.offline
+package top.nipuru.prushka.database.schema
 
 import org.jetbrains.exposed.sql.Table
 

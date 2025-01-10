@@ -14,7 +14,6 @@ import org.bukkit.Bukkit
  * @since 2024/12/03 16:52
  */
 class KickPlayerHandler : RequestDispatcher.Handler<KickPlayerMessage> {
-
     override fun handle(asyncCtx: ResponseContext, request: KickPlayerMessage) {
         submit(async = false) {
             asyncCtx.sendResponse(handle(request))

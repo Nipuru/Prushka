@@ -1,9 +1,9 @@
 package top.nipuru.prushka.game.gameplay.core
 
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.common.message.shared.PlayerInfoMessage
 import top.nipuru.prushka.common.message.shared.PlayerInfoUpdateNotify
-import top.nipuru.prushka.game.constants.Items
+import top.nipuru.prushka.game.constant.Items
 import top.nipuru.prushka.game.gameplay.player.BaseManager
 import top.nipuru.prushka.game.gameplay.player.DataInfo
 import top.nipuru.prushka.game.gameplay.player.GamePlayer
@@ -20,7 +20,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     private var idleTime = 0               // 挂机时间（tick）
     var updateShared = false        // 更新个人信息至公共服务器标记
 
-    fun preload(request: QueryPlayerRequest) {
+    fun preload(request: PlayerDataRequestMessage) {
         request.preload(PlayerData::class.java)
     }
 

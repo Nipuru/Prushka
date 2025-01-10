@@ -4,26 +4,23 @@ import com.alipay.remoting.AsyncContext
 import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
 import top.nipuru.prushka.common.message.PlayerDataMessage
-import top.nipuru.prushka.common.message.PlayerDataTransferRequest
+import top.nipuru.prushka.common.message.PlayerDataTransferMessage
 import top.nipuru.prushka.game.gameplay.player.DataInfo
-import top.nipuru.prushka.game.gameplay.player.GamePlayer
-import top.nipuru.prushka.game.logger.logger
 import top.nipuru.prushka.game.nms.freeze
 import top.nipuru.prushka.game.nms.quit
 import top.nipuru.prushka.game.gameplay.player.GamePlayers
-import top.nipuru.prushka.game.plugin
 import top.nipuru.prushka.game.util.submit
 import org.bukkit.Bukkit
 
-class PlayerDataTransferGameProcessor : AsyncUserProcessor<PlayerDataTransferRequest>() {
+class PlayerDataTransferGameProcessor : AsyncUserProcessor<PlayerDataTransferMessage>() {
 
-    override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: PlayerDataTransferRequest) {
+    override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: PlayerDataTransferMessage) {
         submit(async = false) {
             asyncCtx.sendResponse(handle(request))
         }
     }
 
-    private fun handle(request: PlayerDataTransferRequest): Any? {
+    private fun handle(request: PlayerDataTransferMessage): Any? {
         val bukkitPlayer = Bukkit.getPlayer(request.uniqueId) ?: return null
         val player = GamePlayers.getPlayer(bukkitPlayer.uniqueId)
 
@@ -37,6 +34,6 @@ class PlayerDataTransferGameProcessor : AsyncUserProcessor<PlayerDataTransferReq
     }
 
     override fun interest(): String {
-        return PlayerDataTransferRequest::class.java.name
+        return PlayerDataTransferMessage::class.java.name
     }
 }

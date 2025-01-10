@@ -14,7 +14,6 @@ enum class TeleportType {
 }
 
 class LocationMessage(
-    val serverType: String,
     val worldName: String,
     val x: Double,
     val y: Double,
@@ -23,13 +22,13 @@ class LocationMessage(
     val yaw: Float,
 ) : Serializable {
     constructor(
-        serverType: String, worldName: String, x: Double, y: Double, z: Double
+        worldName: String, x: Double, y: Double, z: Double
     ) : this(
-        serverType, worldName, x, y, z, 0.0F, 0.0F
+        worldName, x, y, z, 0.0F, 0.0F
     )
 
     fun clone(): LocationMessage {
-        return LocationMessage(serverType, worldName, x, y, z, pitch, yaw)
+        return LocationMessage(worldName, x, y, z, pitch, yaw)
     }
 }
 

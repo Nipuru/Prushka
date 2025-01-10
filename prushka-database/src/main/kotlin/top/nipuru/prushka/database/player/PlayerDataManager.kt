@@ -4,15 +4,16 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import top.nipuru.prushka.common.message.database.FieldMessage
-import top.nipuru.prushka.common.message.database.PlayerTransactionRequest
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataTransactionMessage
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.common.message.database.TableInfo
+import top.nipuru.prushka.database.schema.PlayerDatas
 import java.util.concurrent.ConcurrentHashMap
 
 object PlayerDataManager {
-    private val tableInitialized = ConcurrentHashMap<String, PlayerDataTable>()
+    private val tableInitialized = ConcurrentHashMap<String, PlayerDatas>()
 
-    fun queryPlayer(request: QueryPlayerRequest): Map<String, List<List<FieldMessage>>> {
+    fun queryPlayer(request: PlayerDataRequestMessage): Map<String, List<List<FieldMessage>>> {
         return transaction {
             val result = mutableMapOf<String, List<List<FieldMessage>>>()
             for (tableInfo in request.tables) {
@@ -33,7 +34,7 @@ object PlayerDataManager {
     }
 
 
-    fun transaction(request: PlayerTransactionRequest) {
+    fun transaction(request: PlayerDataTransactionMessage) {
         transaction {
             addLogger(Slf4jSqlDebugLogger)
             for (delete in request.deletes) {
@@ -75,11 +76,11 @@ object PlayerDataManager {
         }
     }
 
-    private fun getTable(tableInfo: TableInfo) : PlayerDataTable {
+    private fun getTable(tableInfo: TableInfo) : PlayerDatas {
         val tables = tableInitialized
         var table = tables[tableInfo.tableName]
         if (table == null) {
-            table = PlayerDataTable(tableInfo)
+            table = PlayerDatas(tableInfo)
             if (tableInfo.autoCreate) {
                 SchemaUtils.create(table)
                 SchemaUtils.createMissingTablesAndColumns(table)

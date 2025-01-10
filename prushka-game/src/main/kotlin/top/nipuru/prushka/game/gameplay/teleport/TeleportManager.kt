@@ -9,7 +9,7 @@ import top.nipuru.prushka.common.message.TeleportInvokeRequest
 import top.nipuru.prushka.common.message.TeleportRequestMessage
 import top.nipuru.prushka.common.message.TeleportResponseMessage
 import top.nipuru.prushka.common.message.TeleportType
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.game.MessageType
 import top.nipuru.prushka.game.gameplay.player.BaseManager
 import top.nipuru.prushka.game.gameplay.player.DataInfo
@@ -37,7 +37,7 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
     lateinit var lastLocation: LocationData
         private set
 
-    fun preload(request: QueryPlayerRequest) {
+    fun preload(request: PlayerDataRequestMessage) {
         request.preload(TeleportHistory::class.java)
         request.preload(LocationData::class.java)
     }

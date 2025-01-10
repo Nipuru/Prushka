@@ -44,8 +44,8 @@ internal object DatabaseServer {
         val dispatcher = RequestDispatcher()
         dispatcher.registerHandler(SaveFileHandler())
         dispatcher.registerHandler(LoadFileHandler())
-        dispatcher.registerHandler(QueryPlayerHandler())
-        dispatcher.registerHandler(PlayerTransactionHandler())
+        dispatcher.registerHandler(PlayerDataRequestHandler())
+        dispatcher.registerHandler(PlayerDataTransactionHandler())
 
         builder.registerUserProcessor(dispatcher)
         builder.registerUserProcessor(PlayerOfflineDataDBProcessor())

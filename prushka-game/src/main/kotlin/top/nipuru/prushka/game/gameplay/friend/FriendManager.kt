@@ -2,7 +2,7 @@ package top.nipuru.prushka.game.gameplay.friend
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.game.gameplay.player.BaseManager
 import top.nipuru.prushka.game.gameplay.player.DataInfo
 import top.nipuru.prushka.game.gameplay.player.GamePlayer
@@ -20,7 +20,7 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
     /** 收到的好友请求列表  */
     private val friendRequests = Int2ObjectOpenHashMap<FriendRequest>()
 
-    fun preload(request: QueryPlayerRequest) {
+    fun preload(request: PlayerDataRequestMessage) {
         request.preload(FriendshipData::class.java)
         request.preload(FriendRequest::class.java)
     }

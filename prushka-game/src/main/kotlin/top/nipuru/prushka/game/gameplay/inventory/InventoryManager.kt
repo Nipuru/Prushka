@@ -1,6 +1,6 @@
 package top.nipuru.prushka.game.gameplay.inventory
 
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.game.gameplay.player.BaseManager
 import top.nipuru.prushka.game.gameplay.player.DataInfo
 import top.nipuru.prushka.game.gameplay.player.GamePlayer
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 class InventoryManager(player: GamePlayer) : BaseManager(player) {
     private var data: InventoryData? = null
 
-    fun preload(request: QueryPlayerRequest) {
+    fun preload(request: PlayerDataRequestMessage) {
         request.preload(InventoryData::class.java)
     }
 

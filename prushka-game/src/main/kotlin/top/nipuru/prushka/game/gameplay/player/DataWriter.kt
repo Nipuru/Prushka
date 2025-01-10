@@ -77,7 +77,7 @@ class DataWriter(private val player: GamePlayer) {
         }
         submit {
             try {
-                val request = PlayerTransactionRequest(player.playerId)
+                val request = PlayerDataTransactionMessage(player.playerId)
                 for (dataAction in map.values) {
                     val dataClassCache = getOrCache(dataAction.data.javaClass)
                     val tableName = dataClassCache.tableName

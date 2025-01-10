@@ -4,6 +4,8 @@ import com.alipay.remoting.ConnectionEventType
 import com.alipay.remoting.LifeCycleException
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.calllogging.*
@@ -22,9 +24,11 @@ import top.nipuru.prushka.auth.config.loadConfig
 import top.nipuru.prushka.auth.database.DatabaseFactory
 import top.nipuru.prushka.auth.logger.logger
 import top.nipuru.prushka.auth.pay.payRouting
-import top.nipuru.prushka.auth.processor.QueryUserHandler
+import top.nipuru.prushka.auth.processor.PlayerRequestHandler
 import top.nipuru.prushka.auth.processor.connection.CloseEventAuthProcessor
-import top.nipuru.prushka.auth.user.UserManager
+import top.nipuru.prushka.auth.player.UserManager
+import top.nipuru.prushka.auth.util.JWTUtil
+import top.nipuru.prushka.auth.util.overdue
 import top.nipuru.prushka.common.ClientType
 import top.nipuru.prushka.common.processor.RequestDispatcher
 
@@ -35,7 +39,7 @@ object AuthServer {
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         val dispatcher = RequestDispatcher()
 
-        dispatcher.registerHandler(QueryUserHandler())
+        dispatcher.registerHandler(PlayerRequestHandler())
 
         builder.registerUserProcessor(dispatcher)
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventAuthProcessor())
@@ -53,6 +57,17 @@ object AuthServer {
                             "parameters: ${call.parameters}"
                 }
                 logger = top.nipuru.prushka.auth.logger.logger
+            }
+            install(Authentication) {
+                jwt {
+                    verifier(JWTUtil.makeVerifier())
+                    validate { credentials ->
+                        JWTPrincipal(credentials.payload)
+                    }
+                    challenge { _, _ ->
+                        call.overdue()
+                    }
+                }
             }
             routing {
                 adminRouting()

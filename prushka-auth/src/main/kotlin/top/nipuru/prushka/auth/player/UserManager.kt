@@ -1,10 +1,11 @@
-package top.nipuru.prushka.auth.user
+package top.nipuru.prushka.auth.player
 
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import top.nipuru.prushka.common.message.auth.UserMessage
+import top.nipuru.prushka.auth.schema.Players
+import top.nipuru.prushka.common.message.auth.PlayerMessage
 import java.util.*
 
 
@@ -15,26 +16,26 @@ import java.util.*
 object UserManager {
 
     fun init() {
-        transaction { SchemaUtils.create(Users) }
+        transaction { SchemaUtils.create(Players) }
     }
 
-    fun initUser(name: String, uniqueId: UUID, lastIp: String): UserMessage {
+    fun initPlayer(name: String, uniqueId: UUID, lastIp: String): PlayerMessage {
         return transaction {
-            val rs = Users.select(Users.uniqueId eq uniqueId.toString())
+            val rs = Players.select(Players.uniqueId eq uniqueId.toString())
                 .singleOrNull()
             if (rs != null) {
-                return@transaction UserMessage(rs[Users.playerId], rs[Users.dbId])
+                return@transaction PlayerMessage(rs[Players.playerId], rs[Players.dbId])
             }
 
             val dbId = 1
-            val playerId = Users.insert {
+            val playerId = Players.insert {
                 it[this.name] = name
                 it[this.uniqueId] = uniqueId.toString()
                 it[this.lastIp] = lastIp
                 it[this.dbId] = dbId
                 it[this.createTime] = System.currentTimeMillis()
-            } get Users.playerId
-            return@transaction UserMessage(playerId, dbId)
+            } get Players.playerId
+            return@transaction PlayerMessage(playerId, dbId)
         }
     }
 }

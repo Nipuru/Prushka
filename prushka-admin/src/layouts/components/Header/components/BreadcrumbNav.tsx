@@ -2,12 +2,12 @@ import { Breadcrumb } from "antd";
 import { useLocation } from "react-router-dom";
 import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
+import {useTranslation} from "react-i18next";
 
 const BreadcrumbNav = (props: any) => {
 	const { pathname } = useLocation();
 	const { themeConfig } = props.global;
 	const breadcrumbList = props.breadcrumb.breadcrumbList[pathname] || [];
-
 	return (
 		<>
 			{!themeConfig.breadcrumb && (

@@ -1,7 +1,7 @@
 package top.nipuru.prushka.game.gameplay.player
 
 import top.nipuru.prushka.common.message.database.FieldMessage
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.common.message.database.TableInfo
 import java.io.IOException
 import java.lang.reflect.Constructor
@@ -12,7 +12,7 @@ internal object DataConvertor {
 
     private val cache = mutableMapOf<Class<*>, DataClassCache>()
 
-    fun preload(request: QueryPlayerRequest,dataClass: Class<*>) {
+    fun preload(request: PlayerDataRequestMessage, dataClass: Class<*>) {
         val dataClassCache = getOrCache(dataClass)
         if (dataClassCache.isCache) return
         val fields = mutableMapOf<String, Class<*>>()

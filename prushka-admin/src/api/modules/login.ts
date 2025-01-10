@@ -5,7 +5,7 @@ import http from "@/api";
  */
 // * 用户登录接口
 export const login = (params: { username: string, password: string }) => {
-	return http.post(`/admin/auth/login`, params);
+	return http.post(`/admin/auth/login`, {}, params);
 };
 
 // * 获取按钮权限

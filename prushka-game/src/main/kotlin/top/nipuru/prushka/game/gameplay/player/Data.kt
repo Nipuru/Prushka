@@ -1,11 +1,11 @@
 package top.nipuru.prushka.game.gameplay.player
 
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 
 
 interface Data
 
-fun QueryPlayerRequest.preload(dataClass: Class<out Data>) {
+fun PlayerDataRequestMessage.preload(dataClass: Class<out Data>) {
     DataConvertor.preload(this, dataClass)
 }
 

@@ -10,7 +10,7 @@ import net.kyori.adventure.text.format.TextColor.color
 import top.nipuru.prushka.common.message.FragmentMessage
 import top.nipuru.prushka.common.message.PlayerChatMessage
 import top.nipuru.prushka.common.message.PlayerPrivateChatMessage
-import top.nipuru.prushka.common.message.database.QueryPlayerRequest
+import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.common.message.shared.PlayerInfoMessage
 import top.nipuru.prushka.common.sheet.stRankMap
 import top.nipuru.prushka.game.MessageType
@@ -28,7 +28,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
 
     private lateinit var data: ChatData
 
-    fun preload(request: QueryPlayerRequest) {
+    fun preload(request: PlayerDataRequestMessage) {
         request.preload(ChatData::class.java)
     }
 

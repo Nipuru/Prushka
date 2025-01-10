@@ -1,4 +1,4 @@
-package top.nipuru.prushka.database.player
+package top.nipuru.prushka.database.schema
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
  * @since 2024/12/18 15:23
  */
 
-class PlayerDataTable(tableInfo: TableInfo) : Table() {
+class PlayerDatas(tableInfo: TableInfo) : Table() {
     override val tableName = tableInfo.tableName
     val playerId = integer("player_id")
     val columnMap = mutableMapOf<String, Pair<KClass<*>, Column<*>>>()
