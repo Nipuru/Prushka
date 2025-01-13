@@ -16,6 +16,7 @@ import top.nipuru.prushka.game.nms.hasDisconnected
 import top.nipuru.prushka.game.time.TimeManager
 import org.bukkit.Bukkit
 import top.nipuru.prushka.game.gameplay.teleport.TeleportManager
+import top.nipuru.prushka.game.logger.LogServer
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.KProperty1
@@ -94,6 +95,8 @@ class GamePlayer(
      */
     fun initNew() {
         logger.info("Init new GamePlayer: {}", name)
+
+        LogServer.logRegister(playerId)
     }
 
     /**
@@ -120,6 +123,7 @@ class GamePlayer(
             }
         }
         skin.applySkin()
+        LogServer.logLogin(playerId, bukkitPlayer.address.address.hostAddress)
     }
 
     /**
@@ -127,6 +131,8 @@ class GamePlayer(
      */
     fun onLogout() {
         logger.info("GamePlayer: {} has logged out.", name)
+
+        LogServer.logLogout(playerId, bukkitPlayer.address.address.hostAddress)
     }
 
     /**

@@ -8,6 +8,6 @@ datasource:
   # 仅支持 postgresql
   host: localhost
   port: 5432
-  database: prushka
+  database: prushka_log
   username: postgres
   password: 123456
