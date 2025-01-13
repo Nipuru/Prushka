@@ -33,3 +33,4 @@ class AuthServerRequest(override val request: RequestMessage) : RequestMessageCo
 class DatabaseServerRequest(val dbId: Int, override val request: RequestMessage) : RequestMessageContainer, Serializable
 class SharedServerRequest(override val request: RequestMessage) : RequestMessageContainer, Serializable
 class GameServerRequest(val uniqueId: UUID, override val request: RequestMessage) : RequestMessageContainer, Serializable
+class LogServerRequest(override val request: RequestMessage) : RequestMessageContainer, Serializable

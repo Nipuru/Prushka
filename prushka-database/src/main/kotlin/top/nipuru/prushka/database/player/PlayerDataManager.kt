@@ -68,6 +68,7 @@ object PlayerDataManager {
             for (insert in request.inserts) {
                 val table = tableInitialized[insert.tableName]!!
                 table.insert {
+                    it[playerId] = request.playerId
                     for (field in insert.fields) {
                         table.setColumn(it, field.name, field.value)
                     }

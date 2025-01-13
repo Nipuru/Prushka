@@ -78,19 +78,8 @@ object PlayerInfoManager {
     }
 
     fun insertOrUpdate(playerInfo: PlayerInfoMessage) {
-        val result = PlayerInfos.update({ PlayerInfos.playerId eq playerInfo.playerId }) {
-            it[name] = playerInfo.name
-            it[dbId] = playerInfo.dbId
-            it[coin] = playerInfo.coin
-            it[rankId] = playerInfo.rankId
-            it[createTime] = playerInfo.createTime
-            it[logoutTime] = playerInfo.logoutTime
-            it[playedTime] = playerInfo.playedTime
-            it[texture] = playerInfo.texture.toList()
-        }
-        if (result == 0) {
-            PlayerInfos.insert {
-                it[playerId] = playerInfo.playerId
+        transaction {
+            val result = PlayerInfos.update({ PlayerInfos.playerId eq playerInfo.playerId }) {
                 it[name] = playerInfo.name
                 it[dbId] = playerInfo.dbId
                 it[coin] = playerInfo.coin
@@ -100,8 +89,21 @@ object PlayerInfoManager {
                 it[playedTime] = playerInfo.playedTime
                 it[texture] = playerInfo.texture.toList()
             }
+            if (result == 0) {
+                PlayerInfos.insert {
+                    it[playerId] = playerInfo.playerId
+                    it[name] = playerInfo.name
+                    it[dbId] = playerInfo.dbId
+                    it[coin] = playerInfo.coin
+                    it[rankId] = playerInfo.rankId
+                    it[createTime] = playerInfo.createTime
+                    it[logoutTime] = playerInfo.logoutTime
+                    it[playedTime] = playerInfo.playedTime
+                    it[texture] = playerInfo.texture.toList()
+                }
+            }
+            byId[playerInfo.playerId] = playerInfo
+            byName[playerInfo.name] = playerInfo
         }
-        byId[playerInfo.playerId] = playerInfo
-        byName[playerInfo.name] = playerInfo
     }
 }

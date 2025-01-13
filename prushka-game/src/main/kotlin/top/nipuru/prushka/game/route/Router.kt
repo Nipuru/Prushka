@@ -42,3 +42,8 @@ fun databaseNotify(dbId: Int, request: Any) {
     val requestMessage = DatabaseServerRequest(dbId, createRequest(request))
     Broker.oneway(requestMessage)
 }
+
+fun logNotify(request: Any) {
+    val requestMessage = LogServerRequest(createRequest(request))
+    Broker.oneway(requestMessage)
+}

@@ -37,6 +37,7 @@ class RequestMessageRouter : AsyncMultiInterestUserProcessor<RequestMessageConta
             DatabaseServerRequest::class.java.name,
             SharedServerRequest::class.java.name,
             GameServerRequest::class.java.name,
+            LogServerRequest::class.java.name,
         )
     }
 
@@ -60,6 +61,11 @@ class RequestMessageRouter : AsyncMultiInterestUserProcessor<RequestMessageConta
             is GameServerRequest -> {
                 val player = Broker.getPlayer(message.uniqueId)
                 return player?.server
+            }
+
+            is LogServerRequest -> {
+                val name = ClientType.LOG
+                Broker.getClient(name)
             }
 
             else -> null
