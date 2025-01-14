@@ -4,12 +4,12 @@ import top.nipuru.prushka.common.message.database.FieldMessage
 import top.nipuru.prushka.common.message.database.PlayerDataTransactionMessage
 import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.common.processor.RequestDispatcher
-import top.nipuru.prushka.database.player.PlayerDataManager
+import top.nipuru.prushka.database.service.PlayerDataService
 
 class PlayerDataRequestHandler : RequestDispatcher.Handler<PlayerDataRequestMessage> {
 
     override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: PlayerDataRequestMessage) {
-        val data: Map<String, List<List<FieldMessage>>> = PlayerDataManager.queryPlayer(request)
+        val data: Map<String, List<List<FieldMessage>>> = PlayerDataService.queryPlayer(request)
         asyncCtx.sendResponse(data)
     }
 
@@ -21,7 +21,7 @@ class PlayerDataRequestHandler : RequestDispatcher.Handler<PlayerDataRequestMess
 class PlayerDataTransactionHandler : RequestDispatcher.Handler<PlayerDataTransactionMessage> {
 
     override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: PlayerDataTransactionMessage) {
-        PlayerDataManager.transaction(request)
+        PlayerDataService.transaction(request)
         asyncCtx.sendResponse(true) // response
     }
 

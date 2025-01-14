@@ -1,4 +1,4 @@
-package top.nipuru.prushka.shared.player
+package top.nipuru.prushka.shared.schema
 
 import org.jetbrains.exposed.sql.Table
 
@@ -7,7 +7,8 @@ import org.jetbrains.exposed.sql.Table
  * @author Nipuru
  * @since 2024/12/18 14:23
  */
-object PlayerInfos : Table() {
+object PlayerInfoTable : Table() {
+    override val tableName = "tb_player_info"
     val playerId = integer("player_id")
     val name = varchar("name", 16).uniqueIndex()
     val dbId = integer("db_id")

@@ -13,7 +13,7 @@ import top.nipuru.prushka.database.config.Config
 import top.nipuru.prushka.database.config.loadConfig
 import top.nipuru.prushka.database.database.DatabaseFactory
 import top.nipuru.prushka.database.logger.logger
-import top.nipuru.prushka.database.offline.OfflineDataManager
+import top.nipuru.prushka.database.service.OfflineDataService
 import top.nipuru.prushka.database.processor.*
 import top.nipuru.prushka.database.processor.connection.CloseEventDBProcessor
 
@@ -32,7 +32,7 @@ internal object DatabaseServer {
         initDataSource(config)
         initBrokerClient(config)
 
-        OfflineDataManager.init()
+        OfflineDataService.init()
     }
 
     fun shutdown() {

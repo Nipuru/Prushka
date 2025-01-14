@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
  * @since 2024/12/18 15:23
  */
 
-class PlayerDatas(tableInfo: TableInfo) : Table() {
+class PlayerDataTable(tableInfo: TableInfo) : Table() {
     override val tableName = tableInfo.tableName
     val playerId = integer("player_id")
     val columnMap = mutableMapOf<String, Pair<KClass<*>, Column<*>>>()

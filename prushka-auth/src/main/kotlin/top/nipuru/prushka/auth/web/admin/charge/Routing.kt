@@ -1,4 +1,4 @@
-package top.nipuru.prushka.auth.admin.charge
+package top.nipuru.prushka.auth.web.admin.charge
 
 import io.ktor.server.routing.*
 

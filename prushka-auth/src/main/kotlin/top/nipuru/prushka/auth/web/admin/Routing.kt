@@ -1,12 +1,12 @@
-package top.nipuru.prushka.auth.admin
+package top.nipuru.prushka.auth.web.admin
 
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
-import top.nipuru.prushka.auth.admin.auth.authRouting
-import top.nipuru.prushka.auth.admin.auth.loginRouting
-import top.nipuru.prushka.auth.admin.charge.chargeRouting
-import top.nipuru.prushka.auth.admin.player.playerRouting
-import top.nipuru.prushka.auth.admin.whitelist.whitelistRouting
+import top.nipuru.prushka.auth.web.admin.auth.authRouting
+import top.nipuru.prushka.auth.web.admin.auth.loginRouting
+import top.nipuru.prushka.auth.web.admin.charge.chargeRouting
+import top.nipuru.prushka.auth.web.admin.player.playerRouting
+import top.nipuru.prushka.auth.web.admin.whitelist.whitelistRouting
 
 
 /**

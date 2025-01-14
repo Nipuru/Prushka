@@ -18,15 +18,15 @@ import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
 import org.slf4j.event.Level
-import top.nipuru.prushka.auth.admin.adminRouting
+import top.nipuru.prushka.auth.web.admin.adminRouting
 import top.nipuru.prushka.auth.config.Config
 import top.nipuru.prushka.auth.config.loadConfig
 import top.nipuru.prushka.auth.database.DatabaseFactory
 import top.nipuru.prushka.auth.logger.logger
-import top.nipuru.prushka.auth.pay.payRouting
+import top.nipuru.prushka.auth.web.pay.payRouting
 import top.nipuru.prushka.auth.processor.PlayerRequestHandler
 import top.nipuru.prushka.auth.processor.connection.CloseEventAuthProcessor
-import top.nipuru.prushka.auth.player.UserManager
+import top.nipuru.prushka.auth.service.PlayerService
 import top.nipuru.prushka.auth.util.JWTUtil
 import top.nipuru.prushka.auth.util.overdue
 import top.nipuru.prushka.common.ClientType
@@ -115,7 +115,7 @@ object AuthServer {
         initBrokerClient(config)
         initWebServer()
 
-        UserManager.init()
+        PlayerService.init()
     }
 
     fun shutdown() {

@@ -1,4 +1,4 @@
-package top.nipuru.prushka.auth.admin.auth
+package top.nipuru.prushka.auth.web.admin.auth
 
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
@@ -7,7 +7,7 @@ import io.ktor.server.routing.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
-import top.nipuru.prushka.auth.schema.AdminUsers
+import top.nipuru.prushka.auth.schema.AdminUserTable
 import top.nipuru.prushka.auth.util.JWTUtil
 
 
@@ -19,9 +19,9 @@ fun Route.loginRouting() = post("/login") {
     val credentials = call.receive<UserPasswordCredential>()
 
     val user = transaction { 
-        AdminUsers.select(
-            (AdminUsers.username eq credentials.name) and
-                (AdminUsers.password eq credentials.password)
+        AdminUserTable.select(
+            (AdminUserTable.username eq credentials.name) and
+                (AdminUserTable.password eq credentials.password)
         ).firstOrNull()
     } ?: error("用户名或密码错误")
     

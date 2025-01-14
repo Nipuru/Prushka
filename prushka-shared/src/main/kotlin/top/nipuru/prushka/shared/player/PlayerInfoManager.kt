@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import top.nipuru.prushka.common.message.shared.PlayerInfoMessage
+import top.nipuru.prushka.shared.schema.PlayerInfoTable
 import java.util.concurrent.ConcurrentHashMap
 
 object PlayerInfoManager {
@@ -14,7 +15,7 @@ object PlayerInfoManager {
     private val byName = ConcurrentHashMap<String, PlayerInfoMessage>()
 
     fun init() {
-        transaction { SchemaUtils.create(PlayerInfos) }
+        transaction { SchemaUtils.create(PlayerInfoTable) }
     }
 
     fun getByIds(playerIds: List<Int>): Map<Int, PlayerInfoMessage> {
@@ -31,17 +32,17 @@ object PlayerInfoManager {
             return result
         }
         transaction {
-            PlayerInfos.select(PlayerInfos.playerId inList query).forEach {
+            PlayerInfoTable.select(PlayerInfoTable.playerId inList query).forEach {
                 val info = PlayerInfoMessage()
-                info.playerId = it[PlayerInfos.playerId]
-                info.name = it[PlayerInfos.name]
-                info.dbId = it[PlayerInfos.dbId]
-                info.coin = it[PlayerInfos.coin]
-                info.rankId = it[PlayerInfos.rankId]
-                info.createTime = it[PlayerInfos.createTime]
-                info.logoutTime = it[PlayerInfos.logoutTime]
-                info.playedTime = it[PlayerInfos.playedTime]
-                info.texture = it[PlayerInfos.texture].toTypedArray()
+                info.playerId = it[PlayerInfoTable.playerId]
+                info.name = it[PlayerInfoTable.name]
+                info.dbId = it[PlayerInfoTable.dbId]
+                info.coin = it[PlayerInfoTable.coin]
+                info.rankId = it[PlayerInfoTable.rankId]
+                info.createTime = it[PlayerInfoTable.createTime]
+                info.logoutTime = it[PlayerInfoTable.logoutTime]
+                info.playedTime = it[PlayerInfoTable.playedTime]
+                info.texture = it[PlayerInfoTable.texture].toTypedArray()
 
                 byId[info.playerId] = info
                 byName[info.name] = info
@@ -57,17 +58,17 @@ object PlayerInfoManager {
         }
 
         return transaction {
-            PlayerInfos.select(PlayerInfos.name eq name).forEach {
+            PlayerInfoTable.select(PlayerInfoTable.name eq name).forEach {
                 val info = PlayerInfoMessage()
-                info.playerId = it[PlayerInfos.playerId]
-                info.name = it[PlayerInfos.name]
-                info.dbId = it[PlayerInfos.dbId]
-                info.coin = it[PlayerInfos.coin]
-                info.rankId = it[PlayerInfos.rankId]
-                info.createTime = it[PlayerInfos.createTime]
-                info.logoutTime = it[PlayerInfos.logoutTime]
-                info.playedTime = it[PlayerInfos.playedTime]
-                info.texture = it[PlayerInfos.texture].toTypedArray()
+                info.playerId = it[PlayerInfoTable.playerId]
+                info.name = it[PlayerInfoTable.name]
+                info.dbId = it[PlayerInfoTable.dbId]
+                info.coin = it[PlayerInfoTable.coin]
+                info.rankId = it[PlayerInfoTable.rankId]
+                info.createTime = it[PlayerInfoTable.createTime]
+                info.logoutTime = it[PlayerInfoTable.logoutTime]
+                info.playedTime = it[PlayerInfoTable.playedTime]
+                info.texture = it[PlayerInfoTable.texture].toTypedArray()
 
                 byId[info.playerId] = info
                 byName[info.name] = info
@@ -79,7 +80,7 @@ object PlayerInfoManager {
 
     fun insertOrUpdate(playerInfo: PlayerInfoMessage) {
         transaction {
-            val result = PlayerInfos.update({ PlayerInfos.playerId eq playerInfo.playerId }) {
+            val result = PlayerInfoTable.update({ PlayerInfoTable.playerId eq playerInfo.playerId }) {
                 it[name] = playerInfo.name
                 it[dbId] = playerInfo.dbId
                 it[coin] = playerInfo.coin
@@ -90,7 +91,7 @@ object PlayerInfoManager {
                 it[texture] = playerInfo.texture.toList()
             }
             if (result == 0) {
-                PlayerInfos.insert {
+                PlayerInfoTable.insert {
                     it[playerId] = playerInfo.playerId
                     it[name] = playerInfo.name
                     it[dbId] = playerInfo.dbId

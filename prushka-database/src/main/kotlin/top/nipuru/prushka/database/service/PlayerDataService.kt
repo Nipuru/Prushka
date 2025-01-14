@@ -1,4 +1,4 @@
-package top.nipuru.prushka.database.player
+package top.nipuru.prushka.database.service
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -7,11 +7,12 @@ import top.nipuru.prushka.common.message.database.FieldMessage
 import top.nipuru.prushka.common.message.database.PlayerDataTransactionMessage
 import top.nipuru.prushka.common.message.database.PlayerDataRequestMessage
 import top.nipuru.prushka.common.message.database.TableInfo
-import top.nipuru.prushka.database.schema.PlayerDatas
+import top.nipuru.prushka.database.logger.sqlLogger
+import top.nipuru.prushka.database.schema.PlayerDataTable
 import java.util.concurrent.ConcurrentHashMap
 
-object PlayerDataManager {
-    private val tableInitialized = ConcurrentHashMap<String, PlayerDatas>()
+object PlayerDataService {
+    private val tableInitialized = ConcurrentHashMap<String, PlayerDataTable>()
 
     fun queryPlayer(request: PlayerDataRequestMessage): Map<String, List<List<FieldMessage>>> {
         return transaction {
@@ -36,7 +37,7 @@ object PlayerDataManager {
 
     fun transaction(request: PlayerDataTransactionMessage) {
         transaction {
-            addLogger(Slf4jSqlDebugLogger)
+            addLogger(sqlLogger)
             for (delete in request.deletes) {
                 val table = tableInitialized[delete.tableName]!!
                 table.deleteWhere {
@@ -77,11 +78,11 @@ object PlayerDataManager {
         }
     }
 
-    private fun getTable(tableInfo: TableInfo) : PlayerDatas {
+    private fun getTable(tableInfo: TableInfo) : PlayerDataTable {
         val tables = tableInitialized
         var table = tables[tableInfo.tableName]
         if (table == null) {
-            table = PlayerDatas(tableInfo)
+            table = PlayerDataTable(tableInfo)
             if (tableInfo.autoCreate) {
                 SchemaUtils.create(table)
                 SchemaUtils.createMissingTablesAndColumns(table)

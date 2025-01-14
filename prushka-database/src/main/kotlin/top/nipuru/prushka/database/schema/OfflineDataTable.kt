@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.Table
  * @author Nipuru
  * @since 2024/12/18 15:12
  */
-object OfflineDatas : Table() {
+object OfflineDataTable : Table() {
     override val tableName = "tb_offline_data"
     val id = long("id").autoIncrement()
     val playerId = integer("player_id").index()

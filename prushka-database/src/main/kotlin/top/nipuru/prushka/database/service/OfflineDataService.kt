@@ -1,20 +1,20 @@
-package top.nipuru.prushka.database.offline
+package top.nipuru.prushka.database.service
 
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import top.nipuru.prushka.common.message.PlayerOfflineDataMessage
-import top.nipuru.prushka.database.schema.OfflineDatas
+import top.nipuru.prushka.database.schema.OfflineDataTable
 
-object OfflineDataManager {
+object OfflineDataService {
 
     fun init() {
-        transaction { SchemaUtils.create(OfflineDatas) }
+        transaction { SchemaUtils.create(OfflineDataTable) }
     }
 
     fun insert(offline: PlayerOfflineDataMessage) {
         transaction {
-            OfflineDatas.insert {
+            OfflineDataTable.insert {
                 it[playerId] = offline.playerId
                 it[module] = offline.module
                 it[this.data] = offline.data

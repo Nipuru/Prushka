@@ -1,4 +1,4 @@
-package top.nipuru.prushka.auth.admin.whitelist
+package top.nipuru.prushka.auth.web.admin.whitelist
 
 import io.ktor.server.routing.*
 

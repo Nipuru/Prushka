@@ -1,6 +1,6 @@
-package top.nipuru.prushka.database.file
+package top.nipuru.prushka.database.service
 
-object FileManager {
+object FileService {
     fun getFile(fileName: String): ByteArray {
         TODO()
     }
