@@ -13,10 +13,6 @@ import top.nipuru.prushka.auth.web.admin.whitelist.whitelistRouting
  * @author Nipuru
  * @since 2025/01/10 15:57
  */
-/**
- * @author Nipuru
- * @since 2024/12/31 14:46
- */
 fun Route.adminRouting() = route("/admin") {
     loginRouting()
     authenticate {

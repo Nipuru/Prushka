@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.Table
  * @since 2024/12/18 15:12
  */
 object OfflineDataTable : Table() {
-    override val tableName = "tb_offline_data"
+    override val tableName = "tb_offline"
     val id = long("id").autoIncrement()
     val playerId = integer("player_id").index()
     val module = text("module")

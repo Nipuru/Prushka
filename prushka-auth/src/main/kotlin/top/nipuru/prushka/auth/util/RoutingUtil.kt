@@ -2,7 +2,6 @@ package top.nipuru.prushka.auth.util
 
 import io.ktor.server.application.*
 import io.ktor.server.response.*
-import io.ktor.server.routing.*
 import top.nipuru.prushka.auth.constant.HttpStatus
 
 
