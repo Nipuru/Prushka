@@ -20,6 +20,8 @@ import top.nipuru.prushka.game.processor.connection.ConnectEventGameProcessor
 import org.bukkit.Location
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
+import top.nipuru.prushka.common.sheet.Sheet
+import java.io.File
 import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -61,8 +63,8 @@ class BukkitPlugin : JavaPlugin() {
     }
 
     override fun onEnable() {
+        Sheet.load(File(dataFolder, "jsons").absolutePath)
         GamePlayers.loadAll()
-
         registerTasks()
         registerListeners()
         registerCommands()

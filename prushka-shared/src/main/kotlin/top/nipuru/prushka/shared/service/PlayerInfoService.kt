@@ -1,4 +1,4 @@
-package top.nipuru.prushka.shared.player
+package top.nipuru.prushka.shared.service
 
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -10,7 +10,7 @@ import top.nipuru.prushka.common.message.shared.PlayerInfoMessage
 import top.nipuru.prushka.shared.schema.PlayerInfoTable
 import java.util.concurrent.ConcurrentHashMap
 
-object PlayerInfoManager {
+object PlayerInfoService {
     private val byId = ConcurrentHashMap<Int, PlayerInfoMessage>()
     private val byName = ConcurrentHashMap<String, PlayerInfoMessage>()
 

@@ -14,7 +14,7 @@ import top.nipuru.prushka.shared.config.Config
 import top.nipuru.prushka.shared.config.loadConfig
 import top.nipuru.prushka.shared.database.DatabaseFactory
 import top.nipuru.prushka.shared.logger.logger
-import top.nipuru.prushka.shared.player.PlayerInfoManager
+import top.nipuru.prushka.shared.service.PlayerInfoService
 import top.nipuru.prushka.shared.processor.GetPlayerInfoHandler
 import top.nipuru.prushka.shared.processor.GetPlayerInfosHandler
 import top.nipuru.prushka.shared.processor.GetTimeSharedProcessor
@@ -36,7 +36,7 @@ internal object SharedServer {
         initDataSource(config)
         initBrokerClient(config)
 
-        PlayerInfoManager.init()
+        PlayerInfoService.init()
     }
 
     fun shutdown() {

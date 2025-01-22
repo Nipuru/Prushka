@@ -3,6 +3,7 @@ package top.nipuru.prushka.auth.service
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import top.nipuru.prushka.auth.schema.PlayerTable
 import top.nipuru.prushka.common.message.auth.PlayerMessage
@@ -21,7 +22,7 @@ object PlayerService {
 
     fun initPlayer(name: String, uniqueId: UUID, lastIp: String): PlayerMessage {
         return transaction {
-            val rs = PlayerTable.select(PlayerTable.uniqueId eq uniqueId.toString())
+            val rs = PlayerTable.selectAll().where(PlayerTable.uniqueId eq uniqueId.toString())
                 .singleOrNull()
             if (rs != null) {
                 return@transaction PlayerMessage(rs[PlayerTable.playerId], rs[PlayerTable.dbId])

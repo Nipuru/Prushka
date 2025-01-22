@@ -5,11 +5,11 @@ import top.nipuru.prushka.common.message.shared.PlayerInfoUpdateNotify
 import top.nipuru.prushka.common.message.shared.GetPlayerInfoRequest
 import top.nipuru.prushka.common.message.shared.GetPlayerInfosRequest
 import top.nipuru.prushka.common.processor.RequestDispatcher
-import top.nipuru.prushka.shared.player.PlayerInfoManager
+import top.nipuru.prushka.shared.service.PlayerInfoService
 
 class GetPlayerInfoHandler : RequestDispatcher.Handler<GetPlayerInfoRequest> {
     override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: GetPlayerInfoRequest) {
-        val playerInfo: PlayerInfoMessage? = PlayerInfoManager.getByName(request.name)
+        val playerInfo: PlayerInfoMessage? = PlayerInfoService.getByName(request.name)
         asyncCtx.sendResponse(playerInfo)
     }
 
@@ -20,7 +20,7 @@ class GetPlayerInfoHandler : RequestDispatcher.Handler<GetPlayerInfoRequest> {
 
 class GetPlayerInfosHandler : RequestDispatcher.Handler<GetPlayerInfosRequest> {
     override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: GetPlayerInfosRequest) {
-        val playerInfos: Map<Int, PlayerInfoMessage> = PlayerInfoManager.getByIds(request.playerIds)
+        val playerInfos: Map<Int, PlayerInfoMessage> = PlayerInfoService.getByIds(request.playerIds)
         asyncCtx.sendResponse(playerInfos)
     }
 
@@ -31,7 +31,7 @@ class GetPlayerInfosHandler : RequestDispatcher.Handler<GetPlayerInfosRequest> {
 
 class PlayerInfoUpdateHandler : RequestDispatcher.Handler<PlayerInfoUpdateNotify> {
     override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: PlayerInfoUpdateNotify) {
-        PlayerInfoManager.insertOrUpdate(request.playerInfo)
+        PlayerInfoService.insertOrUpdate(request.playerInfo)
     }
 
     override fun interest(): Class<PlayerInfoUpdateNotify> {

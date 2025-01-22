@@ -19,8 +19,9 @@ class PlayerDataTable(tableInfo: TableInfo) : Table() {
 
     init {
         for ((name, clazz) in tableInfo.fields) {
-            val column = registerColumn(name, clazz)
-            columnMap[column.name] = clazz.kotlin to column
+            val kClass = clazz.kotlin
+            val column = registerColumn(name, kClass)
+            columnMap[column.name] = kClass to column
         }
         val uniqueColumns = tableInfo.uniqueKeys.map { columnMap[it]!!.second }.toTypedArray()
         if (uniqueColumns.isNotEmpty()) {
@@ -67,8 +68,8 @@ class PlayerDataTable(tableInfo: TableInfo) : Table() {
         }
     }
 
-    private fun registerColumn(name: String, clazz: Class<*>): Column<*> {
-        return when (clazz.kotlin) {
+    private fun registerColumn(name: String, clazz: KClass<*>): Column<*> {
+        return when (clazz) {
             Boolean::class -> bool(name).default(false)
             Byte::class -> byte(name).default(0)
             Short::class -> short(name).default(0)

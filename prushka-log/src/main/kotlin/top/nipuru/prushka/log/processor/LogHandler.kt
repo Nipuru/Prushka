@@ -1,7 +1,6 @@
 package top.nipuru.prushka.log.processor
 
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import top.nipuru.prushka.common.message.log.LogMessage
 import top.nipuru.prushka.common.processor.RequestDispatcher

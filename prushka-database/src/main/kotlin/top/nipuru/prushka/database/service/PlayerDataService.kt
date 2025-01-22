@@ -88,6 +88,6 @@ object PlayerDataService {
                 SchemaUtils.createMissingTablesAndColumns(table)
             }
         }
-        return tables.putIfAbsent(tableInfo.tableName, table)!!
+        return tables.putIfAbsent(tableInfo.tableName, table) ?: table
     }
 }
