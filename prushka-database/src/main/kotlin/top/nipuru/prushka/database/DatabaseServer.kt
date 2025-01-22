@@ -31,8 +31,6 @@ internal object DatabaseServer {
 
         initDataSource(config)
         initBrokerClient(config)
-
-        OfflineDataService.init()
     }
 
     fun shutdown() {

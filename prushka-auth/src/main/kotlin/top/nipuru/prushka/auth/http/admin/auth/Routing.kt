@@ -1,4 +1,4 @@
-package top.nipuru.prushka.auth.web.admin.auth
+package top.nipuru.prushka.auth.http.admin.auth
 
 import io.ktor.server.auth.*
 import io.ktor.server.request.*

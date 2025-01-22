@@ -1,7 +1,7 @@
 package top.nipuru.prushka.game.gameplay.player
 
-import top.nipuru.prushka.game.logger.logger
 import org.bukkit.Bukkit
+import top.nipuru.prushka.game.logger.logger
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 

@@ -8,7 +8,7 @@ import top.nipuru.prushka.database.schema.OfflineDataTable
 
 object OfflineDataService {
 
-    fun init() {
+    init {
         transaction { SchemaUtils.create(OfflineDataTable) }
     }
 

@@ -16,7 +16,7 @@ import java.util.*
  */
 object PlayerService {
 
-    fun init() {
+    init {
         transaction { SchemaUtils.create(PlayerTable) }
     }
 

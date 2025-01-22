@@ -14,7 +14,7 @@ object PlayerInfoService {
     private val byId = ConcurrentHashMap<Int, PlayerInfoMessage>()
     private val byName = ConcurrentHashMap<String, PlayerInfoMessage>()
 
-    fun init() {
+    init {
         transaction { SchemaUtils.create(PlayerInfoTable) }
     }
 

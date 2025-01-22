@@ -35,8 +35,6 @@ internal object SharedServer {
 
         initDataSource(config)
         initBrokerClient(config)
-
-        PlayerInfoService.init()
     }
 
     fun shutdown() {

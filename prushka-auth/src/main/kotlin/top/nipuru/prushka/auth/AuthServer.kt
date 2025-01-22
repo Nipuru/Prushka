@@ -18,12 +18,11 @@ import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
 import org.slf4j.event.Level
-import top.nipuru.prushka.auth.web.admin.adminRouting
 import top.nipuru.prushka.auth.config.Config
 import top.nipuru.prushka.auth.config.loadConfig
 import top.nipuru.prushka.auth.database.DatabaseFactory
+import top.nipuru.prushka.auth.http.rootRouting
 import top.nipuru.prushka.auth.logger.logger
-import top.nipuru.prushka.auth.web.pay.payRouting
 import top.nipuru.prushka.auth.processor.PlayerRequestHandler
 import top.nipuru.prushka.auth.processor.connection.CloseEventAuthProcessor
 import top.nipuru.prushka.auth.service.PlayerService
@@ -34,7 +33,7 @@ import top.nipuru.prushka.common.processor.RequestDispatcher
 
 object AuthServer {
     private lateinit var brokerClient: BrokerClient
-    private lateinit var webServer: EmbeddedServer<*, *>
+    private lateinit var httpServer: EmbeddedServer<*, *>
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         val dispatcher = RequestDispatcher()
@@ -45,8 +44,8 @@ object AuthServer {
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventAuthProcessor())
     }
 
-    private fun initWebServer() {
-        webServer = embeddedServer(Netty, 11300) {
+    private fun initHttpServer() {
+        httpServer = embeddedServer(Netty, 11300) {
             install(ContentNegotiation) {
                 json(Json { prettyPrint = true })
             }
@@ -70,11 +69,10 @@ object AuthServer {
                 }
             }
             routing {
-                adminRouting()
-                payRouting()
+                rootRouting()
             }
         }
-        webServer.start(wait = false)
+        httpServer.start(wait = false)
     }
 
     private fun initDataSource(config: Config) {
@@ -113,15 +111,13 @@ object AuthServer {
 
         initDataSource(config)
         initBrokerClient(config)
-        initWebServer()
-
-        PlayerService.init()
+        initHttpServer()
     }
 
     fun shutdown() {
         DatabaseFactory.shutdown()
         brokerClient.shutdown()
-        webServer.stop()
+        httpServer.stop()
     }
 }
 
