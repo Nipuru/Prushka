@@ -33,26 +33,21 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
             field.values.removeIf { it.expireAt <= now }
             return field
         }
-    private val histories = mutableMapOf<String, TeleportHistory>()
     lateinit var lastLocation: LocationData
         private set
 
     fun preload(request: PlayerDataRequestMessage) {
-        request.preload(TeleportHistory::class.java)
         request.preload(LocationData::class.java)
     }
 
     fun unpack(dataInfo: DataInfo) {
         dataInfo.unpackList(TeleportRequestCache::class.java)
             .forEach { requests[it.sender] = it }
-        dataInfo.unpackList(TeleportHistory::class.java)
-            .forEach { histories[it.player] = it }
         lastLocation = dataInfo.unpack(LocationData::class.java) ?: LocationData().also { player.insert(it) }
     }
 
     fun pack(dataInfo: DataInfo) {
         requests.values.forEach(dataInfo::pack)
-        histories.values.forEach(dataInfo::pack)
         dataInfo.pack(lastLocation)
     }
 
