@@ -8,9 +8,7 @@ object GamePlayers {
     private val byName = ConcurrentHashMap<String, GamePlayer>()
 
     fun registerPlayer(player: GamePlayer) {
-        if (logger.isDebugEnabled) {
-            logger.debug("Register GamePlayer: {}", player.name)
-        }
+        logger.info("Register GamePlayer: {}", player.name)
         byName[player.name] = player
     }
 
@@ -21,9 +19,7 @@ object GamePlayers {
         get() = Collections.unmodifiableCollection(byName.values)
 
     fun removePlayer(player: GamePlayer) {
+        logger.info("Remove GamePlayer: {}", player.name)
         byName.remove(player.name)
-        if (logger.isDebugEnabled) {
-            logger.debug("Remove GamePlayer: {}", player.name)
-        }
     }
 }

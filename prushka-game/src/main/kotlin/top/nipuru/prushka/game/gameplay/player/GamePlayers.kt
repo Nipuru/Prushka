@@ -44,9 +44,7 @@ object GamePlayers {
     }
 
     fun register(player: GamePlayer) {
-        if (logger.isDebugEnabled) {
-            logger.debug("Register GamePlayer: {}", player.name)
-        }
+        logger.info("Register GamePlayer: {}", player.name)
         byUniqueId[player.uniqueId] = player
         byPlayerId[player.playerId] = player
     }
@@ -75,10 +73,8 @@ object GamePlayers {
         get() = Collections.unmodifiableCollection(byUniqueId.values)
 
     fun removePlayer(player: GamePlayer) {
+        logger.info("Remove GamePlayer: {}", player.name)
         byUniqueId.remove(player.uniqueId)
         byPlayerId.remove(player.playerId)
-        if (logger.isDebugEnabled) {
-            logger.debug("Remove GamePlayer: {}", player.name)
-        }
     }
 }

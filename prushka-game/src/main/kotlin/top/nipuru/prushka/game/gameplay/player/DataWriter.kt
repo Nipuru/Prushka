@@ -57,24 +57,6 @@ class DataWriter(private val player: GamePlayer) {
             }
             map[dataAction.data] = dataAction
         }
-        if (logger.isDebugEnabled) {
-            logger.info("Write database for player: {}, list: \n{}", player.name, map.values.stream()
-                .map { info: DataAction ->
-                    String.format(
-                        "Type: %s, DataClass: %s, Fields: %s",
-                        info.type,
-                        info.data.javaClass.name,
-                        if (info.fields != null) info.fields.contentToString() else "null"
-                    )
-                }
-                .reduce("") { s1, s2 ->
-                    """
-                    $s1
-                    $s2
-                    """.trimIndent()
-                }
-            )
-        }
         submit {
             try {
                 val request = PlayerDataTransactionMessage(player.playerId)

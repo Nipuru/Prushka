@@ -205,14 +205,6 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         }
         val delay = (60 * 1000).toLong() // 满一分钟执行一次
         if (!force && (systemTimeMills - updateTime + playedTime) / delay == playedTime / delay) return
-        if (logger.isDebugEnabled) {
-            logger.debug(
-                "Update playedTime from {} to {} for GamePlayer {}",
-                playedTime,
-                playedTime + (systemTimeMills - updateTime),
-                player.name
-            )
-        }
         playedTimeUpdateTime = systemTimeMills
         playedTime += systemTimeMills - updateTime
         this.playedTime = playedTime
@@ -223,9 +215,6 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         if (!updateShared) return
         updateShared = false
         val info: PlayerInfoMessage = playerInfo
-        if (logger.isDebugEnabled) {
-            logger.debug("Update PlayerInfo to SharedServer for GamePlayer: {}", info.name)
-        }
         val notify = PlayerInfoUpdateNotify(info)
         submit {
             sharedNotify(notify)
