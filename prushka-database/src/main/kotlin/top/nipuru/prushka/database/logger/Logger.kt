@@ -18,6 +18,6 @@ val logger: Logger = LoggerFactory.getLogger("Prushka")
 
 val sqlLogger = object : SqlLogger {
     override fun log(context: StatementContext, transaction: Transaction) {
-        logger.debug(context.expandArgs(TransactionManager.current()))
+        logger.info("SQL: ${context.expandArgs(transaction)}")
     }
 }

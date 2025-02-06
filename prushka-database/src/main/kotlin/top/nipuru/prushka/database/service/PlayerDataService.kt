@@ -20,13 +20,15 @@ object PlayerDataService {
             for (tableInfo in request.tables) {
                 val table = getTable(tableInfo)
                 val lists = mutableListOf<List<FieldMessage>>()
-                table.selectAll().where(table.playerId eq request.playerId).forEach {
-                    val fields = mutableListOf<FieldMessage>()
-                    for (fieldName in tableInfo.fields.keys) {
-                        val field = FieldMessage(fieldName, table.getColumn(it, fieldName))
-                        fields.add(field)
+                if (table.exists()) {
+                    table.selectAll().where(table.playerId eq request.playerId).forEach {
+                        val fields = mutableListOf<FieldMessage>()
+                        for (fieldName in tableInfo.fields.keys) {
+                            val field = FieldMessage(fieldName, table.getColumn(it, fieldName))
+                            fields.add(field)
+                        }
+                        lists.add(fields)
                     }
-                    lists.add(fields)
                 }
                 result[tableInfo.tableName] = lists
             }
