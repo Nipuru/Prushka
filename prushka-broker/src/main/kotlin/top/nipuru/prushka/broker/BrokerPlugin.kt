@@ -14,5 +14,6 @@ class BrokerPlugin : Plugin() {
         server.registerUserProcessor(PlayerPrivateChatBrokerProcessor())
         server.registerUserProcessor(GetTimeBrokerProcessor())
         server.registerUserProcessor(DebugTimeBrokerProcessor())
+        server.registerUserProcessor(TeleportInvokeBrokerProcessor())
     }
 }

@@ -26,13 +26,6 @@ import java.util.concurrent.TimeUnit
  */
 class TeleportManager(player: GamePlayer) : BaseManager(player) {
 
-    private val expire = TimeUnit.SECONDS.toMillis(30)
-    private val requests = mutableMapOf<String, TeleportRequestCache>()
-        get() {
-            val now = System.currentTimeMillis()
-            field.values.removeIf { it.expireAt <= now }
-            return field
-        }
     lateinit var lastLocation: LocationData
         private set
 
@@ -41,13 +34,10 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
     }
 
     fun unpack(dataInfo: DataInfo) {
-        dataInfo.unpackList(TeleportRequestCache::class.java)
-            .forEach { requests[it.sender] = it }
         lastLocation = dataInfo.unpack(LocationData::class.java) ?: LocationData().also { player.insert(it) }
     }
 
     fun pack(dataInfo: DataInfo) {
-        requests.values.forEach(dataInfo::pack)
         dataInfo.pack(lastLocation)
     }
 
@@ -57,112 +47,6 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
 
     fun onQuit() {
         player.update(lastLocation) // 退出的时候保存一下
-    }
-
-    fun teleportRequest(playerName: String, type: TeleportType) {
-        val sender = player.core.playerInfo
-        val request = TeleportRequestMessage(sender, playerName, type)
-        submit {
-            val result = Broker.invokeSync<Int>(request)
-            when (result) {
-                TeleportRequestMessage.SUCCESS -> {
-                    MessageType.ALLOW.sendMessage(
-                        player.bukkitPlayer,
-                        "你向玩家 $playerName 发送了传送请求"
-                    )
-                }
-
-                TeleportRequestMessage.PLAYER_NOT_ONLINE -> {
-                    MessageType.FAILED.sendMessage(player.bukkitPlayer, "玩家 $playerName 不在线")
-                }
-
-                // 已经发送过好友请求了
-                TeleportRequestMessage.REQUEST_ALREADY_EXISTS -> {
-                    MessageType.FAILED.sendMessage(
-                        player.bukkitPlayer,
-                        "你已经向玩家 $playerName 发送了传送请求, 请稍后再试"
-                    )
-                }
-
-                // 对方暂时不可用
-                TeleportRequestMessage.PLAYER_NOT_AVAILABLE -> {
-                    MessageType.FAILED.sendMessage(
-                        player.bukkitPlayer,
-                        "玩家 $playerName 暂时无法回应你的传送请求, 请稍后再试"
-                    )
-                }
-
-                // 对方关闭了好友传送
-                TeleportRequestMessage.REQUEST_DISABLED -> {
-                    MessageType.FAILED.sendMessage(
-                        player.bukkitPlayer,
-                        "玩家 $playerName 关闭了传送请求"
-                    )
-                }
-
-                // 好友快捷传送
-                TeleportRequestMessage.FRIEND_DIRECT -> {
-                    MessageType.INFO.sendMessage(player.bukkitPlayer, "传送将在 3 秒后开始.")
-                    Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-                        teleport(request.receiver, TeleportType.TPA)
-                    }, 60)
-                }
-            }
-        }
-    }
-
-    fun teleportResponse(playerName: String, accept: Boolean) {
-        val sender = player.core.playerInfo
-
-        val request = requests[playerName]
-        if (request == null) {
-            MessageType.FAILED.sendMessage(
-                player.bukkitPlayer,
-                "没有来自玩家 $playerName 的传送请求"
-            )
-            return
-        }
-        val type = TeleportType.values()[request.type]
-        val response = TeleportResponseMessage(sender, playerName, type, accept)
-        submit {
-            val result = Broker.invokeSync<Int>(response)
-            when (result) {
-                TeleportResponseMessage.SUCCESS -> {
-                    if (accept) {
-                        MessageType.ALLOW.sendMessage(
-                            player.bukkitPlayer,
-                            "你接受了玩家 $playerName 的传送请求"
-                        )
-                        if (type == TeleportType.TPAHERE) {
-                            MessageType.INFO.sendMessage(player.bukkitPlayer, "传送将在 3 秒后开始.")
-                            player.teleport.teleport(playerName, TeleportType.TPAHERE)
-                        }
-                    } else {
-                        MessageType.ALLOW.sendMessage(
-                            player.bukkitPlayer,
-                            "你拒绝了玩家 $playerName 的传送请求"
-                        )
-                    }
-                    submit(async = false) {
-                        requests.remove(playerName) // 删除请求
-                    }
-                }
-
-                TeleportRequestMessage.PLAYER_NOT_ONLINE -> {
-                    MessageType.FAILED.sendMessage(player.bukkitPlayer, "玩家 $playerName 不在线")
-                    submit(async = false) {
-                        requests.remove(playerName) // 删除请求
-                    }
-                }
-
-                TeleportResponseMessage.PLAYER_NOT_AVAILABLE -> {
-                    MessageType.FAILED.sendMessage(
-                        player.bukkitPlayer,
-                        "暂时无法与玩家 ${playerName}进行传送, 请稍后再试"
-                    )
-                }
-            }
-        }
     }
 
     fun teleport(playerName: String, type: TeleportType) {
@@ -175,13 +59,6 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
         }
     }
 
-    fun addRequest(sender: String, type: TeleportType) {
-        requests[sender] = TeleportRequestCache().also {
-            it.sender = sender
-            it.type = type.ordinal
-            it.expireAt = System.currentTimeMillis() + expire
-        }
-    }
 
     fun setLastLocation(location: Location) {
         if (!isSafeLocation(location)) return

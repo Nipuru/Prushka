@@ -20,7 +20,7 @@ abstract class PrushkaTeleportAbstractCommand(name: String) : AbstractCommand(na
     override fun canConsoleExecute() = false
     override fun onCommand(sender: CommandSender, args: Array<String>) {
         sender as Player
-        sendUsageIf(sender, "/tale $name <玩家名>") { args.size != 1 }
+        sendUsageIf(sender, "/prushka $name <玩家名>") { args.size != 1 }
         val senderPlayer = GamePlayers.getPlayer(sender.uniqueId)
         async(sender) {
             val receiver = getPlayerInfo(sender, args[0])
