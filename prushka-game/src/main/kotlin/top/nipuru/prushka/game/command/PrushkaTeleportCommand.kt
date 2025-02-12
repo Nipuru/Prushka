@@ -27,7 +27,6 @@ abstract class PrushkaTeleportAbstractCommand(name: String) : AbstractCommand(na
             handle(senderPlayer, receiver.name)
         }
     }
-
     override fun onTabComplete(sender: CommandSender, args: Array<String>): List<String> {
         return when (args.size) {
             // TODO 全服玩家名
@@ -37,7 +36,6 @@ abstract class PrushkaTeleportAbstractCommand(name: String) : AbstractCommand(na
             else -> emptyList()
         }
     }
-
     abstract fun handle(sender: GamePlayer, receiver: String)
 }
 
