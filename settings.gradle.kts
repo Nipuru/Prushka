@@ -7,7 +7,8 @@ sequenceOf(
     "prushka-shared",
     "prushka-broker",
     "prushka-game",
-    "prushka-log"
+    "prushka-log",
+    "prushka-config"
 ).forEach { include(it) }
 
 pluginManagement {
