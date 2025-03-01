@@ -11,3 +11,5 @@ datasource:
   database: prushka_auth
   username: postgres
   password: 123456
+  pool:
+    - 1

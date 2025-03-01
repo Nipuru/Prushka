@@ -6,9 +6,9 @@ import java.io.InputStreamReader
 
 
 /**
-* @author Nipuru
-* @since 2024/11/08 11:27
-*/
+ * @author Nipuru
+ * @since 2024/11/08 11:27
+ */
 class Config {
     var broker: Broker? = null
     var datasource: DataSource? = null
@@ -25,6 +25,7 @@ class DataSource {
     var database: String? = null
     var username: String? = null
     var password: String? = null
+    var pool: List<Int> = emptyList()
 }
 
 fun loadConfig(): Config {

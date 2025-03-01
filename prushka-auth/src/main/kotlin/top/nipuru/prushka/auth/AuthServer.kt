@@ -81,6 +81,7 @@ object AuthServer {
             datasource.host!!, datasource.port!!,
             datasource.database!!, datasource.username!!, datasource.password!!
         )
+        PlayerService.bdIdPool = datasource.pool
     }
 
     private fun initBrokerClient(config: Config) {

@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import top.nipuru.prushka.auth.schema.PlayerTable
 import top.nipuru.prushka.common.message.auth.PlayerMessage
 import java.util.*
+import kotlin.math.abs
 
 
 /**
@@ -15,6 +16,8 @@ import java.util.*
  * @since 2024/11/07 17:28
  */
 object PlayerService {
+
+    var bdIdPool = listOf(1)
 
     init {
         transaction { SchemaUtils.create(PlayerTable) }
@@ -28,7 +31,7 @@ object PlayerService {
                 return@transaction PlayerMessage(rs[PlayerTable.playerId], rs[PlayerTable.dbId])
             }
 
-            val dbId = 1
+            val dbId = allocateDbId(uniqueId)
             val playerId = PlayerTable.insert {
                 it[this.name] = name
                 it[this.uniqueId] = uniqueId.toString()
@@ -38,5 +41,14 @@ object PlayerService {
             } get PlayerTable.playerId
             return@transaction PlayerMessage(playerId, dbId)
         }
+    }
+
+    // 分配DBID
+    fun allocateDbId(uniqueId: UUID): Int {
+        // 通过UUID计算
+        val hash = uniqueId.hashCode()
+        // 取余
+        val index = abs(hash) % bdIdPool.size
+        return bdIdPool[index]
     }
 }
