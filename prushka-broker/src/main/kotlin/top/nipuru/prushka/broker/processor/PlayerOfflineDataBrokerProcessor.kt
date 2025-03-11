@@ -11,7 +11,7 @@ import top.nipuru.prushka.common.message.PlayerOfflineDataMessage
 
 class PlayerOfflineDataBrokerProcessor : SyncUserProcessor<PlayerOfflineDataMessage>() {
 
-    override fun handleRequest(bizContext: BizContext, request: PlayerOfflineDataMessage): Any {
+    override fun handleRequest(bizContext: BizContext, request: PlayerOfflineDataMessage): Boolean {
         // 如果在线处理了则不需要新增离线消息
         if (onlineRequest(request)) return true
 
