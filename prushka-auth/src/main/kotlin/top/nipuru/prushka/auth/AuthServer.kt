@@ -25,7 +25,6 @@ import top.nipuru.prushka.auth.http.rootRouting
 import top.nipuru.prushka.auth.logger.logger
 import top.nipuru.prushka.auth.processor.PlayerRequestHandler
 import top.nipuru.prushka.auth.processor.connection.CloseEventAuthProcessor
-import top.nipuru.prushka.auth.service.PlayerService
 import top.nipuru.prushka.auth.util.JWTUtil
 import top.nipuru.prushka.auth.util.overdue
 import top.nipuru.prushka.common.ClientType

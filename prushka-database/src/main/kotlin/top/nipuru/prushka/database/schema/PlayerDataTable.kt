@@ -11,7 +11,6 @@ import kotlin.reflect.KClass
  * @author Nipuru
  * @since 2024/12/18 15:23
  */
-
 class PlayerDataTable(tableInfo: TableInfo) : Table() {
     override val tableName = tableInfo.tableName
     val playerId = integer("player_id")
@@ -69,26 +68,27 @@ class PlayerDataTable(tableInfo: TableInfo) : Table() {
     }
 
     private fun registerColumn(name: String, clazz: KClass<*>): Column<*> {
+        val fieldName = name.replace("([a-z])([A-Z])".toRegex(), "$1_$2").lowercase()
         return when (clazz) {
-            Boolean::class -> bool(name).default(false)
-            Byte::class -> byte(name).default(0)
-            Short::class -> short(name).default(0)
-            Int::class -> integer(name).default(0)
-            Long::class -> long(name).default(0)
-            Float::class -> float(name).default(0.0F)
-            Double::class -> double(name).default(0.0)
-            Char::class -> char(name).default('\u0000')
-            ByteArray::class -> binary(name).default(ByteArray(0))
-            String::class -> text(name).default("")
-            UUID::class -> uuid(name).default(UUID(0, 0))
-            BooleanArray::class -> array<Boolean>(name).default(emptyList())
-            ShortArray::class -> array<Short>(name).default(emptyList())
-            IntArray::class -> array<Int>(name).default(emptyList())
-            LongArray::class -> array<Long>(name).default(emptyList())
-            FloatArray::class -> array<Float>(name).default(emptyList())
-            DoubleArray::class -> array<Double>(name).default(emptyList())
-            CharArray::class -> array<Char>(name).default(emptyList())
-            Array<String>::class -> array<String>(name).default(emptyList())
+            Boolean::class -> bool(fieldName).default(false)
+            Byte::class -> byte(fieldName).default(0)
+            Short::class -> short(fieldName).default(0)
+            Int::class -> integer(fieldName).default(0)
+            Long::class -> long(fieldName).default(0)
+            Float::class -> float(fieldName).default(0.0F)
+            Double::class -> double(fieldName).default(0.0)
+            Char::class -> char(fieldName).default('\u0000')
+            ByteArray::class -> binary(fieldName).default(ByteArray(0))
+            String::class -> text(fieldName).default("")
+            UUID::class -> uuid(fieldName).default(UUID(0, 0))
+            BooleanArray::class -> array<Boolean>(fieldName).default(emptyList())
+            ShortArray::class -> array<Short>(fieldName).default(emptyList())
+            IntArray::class -> array<Int>(fieldName).default(emptyList())
+            LongArray::class -> array<Long>(fieldName).default(emptyList())
+            FloatArray::class -> array<Float>(fieldName).default(emptyList())
+            DoubleArray::class -> array<Double>(fieldName).default(emptyList())
+            CharArray::class -> array<Char>(fieldName).default(emptyList())
+            Array<String>::class -> array<String>(fieldName).default(emptyList())
             else -> error("Unsupported class ${clazz.simpleName}")
         }
     }
