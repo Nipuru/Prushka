@@ -1,21 +1,28 @@
 package top.nipuru.prushka.shared.service
 
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import top.nipuru.prushka.common.message.shared.PlayerInfoMessage
 import top.nipuru.prushka.shared.schema.PlayerInfoTable
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.forEach
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
+import kotlin.collections.toList
+import kotlin.collections.toTypedArray
 
 object PlayerInfoService {
     private val byId = ConcurrentHashMap<Int, PlayerInfoMessage>()
     private val byName = ConcurrentHashMap<String, PlayerInfoMessage>()
 
     init {
-        transaction { SchemaUtils.create(PlayerInfoTable) }
+        transaction {
+            SchemaUtils.create(PlayerInfoTable)
+            SchemaUtils.createMissingTablesAndColumns(PlayerInfoTable)
+        }
     }
 
     fun getByIds(playerIds: List<Int>): Map<Int, PlayerInfoMessage> {
@@ -32,18 +39,8 @@ object PlayerInfoService {
             return result
         }
         transaction {
-            PlayerInfoTable.select(PlayerInfoTable.playerId inList query).forEach {
-                val info = PlayerInfoMessage()
-                info.playerId = it[PlayerInfoTable.playerId]
-                info.name = it[PlayerInfoTable.name]
-                info.dbId = it[PlayerInfoTable.dbId]
-                info.coin = it[PlayerInfoTable.coin]
-                info.rankId = it[PlayerInfoTable.rankId]
-                info.createTime = it[PlayerInfoTable.createTime]
-                info.logoutTime = it[PlayerInfoTable.logoutTime]
-                info.playedTime = it[PlayerInfoTable.playedTime]
-                info.texture = it[PlayerInfoTable.texture].toTypedArray()
-
+            PlayerInfoTable.selectAll().where { PlayerInfoTable.playerId inList query }.forEach {
+                val info = it.toPlayerInfoMessage()
                 byId[info.playerId] = info
                 byName[info.name] = info
                 result[info.playerId] = info
@@ -57,30 +54,20 @@ object PlayerInfoService {
             return byName[name]
         }
 
-        return transaction {
-            PlayerInfoTable.select(PlayerInfoTable.name eq name).forEach {
-                val info = PlayerInfoMessage()
-                info.playerId = it[PlayerInfoTable.playerId]
-                info.name = it[PlayerInfoTable.name]
-                info.dbId = it[PlayerInfoTable.dbId]
-                info.coin = it[PlayerInfoTable.coin]
-                info.rankId = it[PlayerInfoTable.rankId]
-                info.createTime = it[PlayerInfoTable.createTime]
-                info.logoutTime = it[PlayerInfoTable.logoutTime]
-                info.playedTime = it[PlayerInfoTable.playedTime]
-                info.texture = it[PlayerInfoTable.texture].toTypedArray()
-
+        transaction {
+            PlayerInfoTable.selectAll().where { PlayerInfoTable.name eq name }.forEach {
+                val info = it.toPlayerInfoMessage()
                 byId[info.playerId] = info
                 byName[info.name] = info
-                return@transaction info
             }
-            return@transaction null
         }
+        return byName[name]
     }
 
     fun insertOrUpdate(playerInfo: PlayerInfoMessage) {
         transaction {
-            val result = PlayerInfoTable.update({ PlayerInfoTable.playerId eq playerInfo.playerId }) {
+            PlayerInfoTable.upsert(PlayerInfoTable.playerId) {
+                it[playerId] = playerInfo.playerId
                 it[name] = playerInfo.name
                 it[dbId] = playerInfo.dbId
                 it[coin] = playerInfo.coin
@@ -90,21 +77,22 @@ object PlayerInfoService {
                 it[playedTime] = playerInfo.playedTime
                 it[texture] = playerInfo.texture.toList()
             }
-            if (result == 0) {
-                PlayerInfoTable.insert {
-                    it[playerId] = playerInfo.playerId
-                    it[name] = playerInfo.name
-                    it[dbId] = playerInfo.dbId
-                    it[coin] = playerInfo.coin
-                    it[rankId] = playerInfo.rankId
-                    it[createTime] = playerInfo.createTime
-                    it[logoutTime] = playerInfo.logoutTime
-                    it[playedTime] = playerInfo.playedTime
-                    it[texture] = playerInfo.texture.toList()
-                }
-            }
             byId[playerInfo.playerId] = playerInfo
             byName[playerInfo.name] = playerInfo
         }
+    }
+
+    private fun ResultRow.toPlayerInfoMessage(): PlayerInfoMessage {
+        val info = PlayerInfoMessage()
+        info.playerId = this[PlayerInfoTable.playerId]
+        info.name = this[PlayerInfoTable.name]
+        info.dbId = this[PlayerInfoTable.dbId]
+        info.coin = this[PlayerInfoTable.coin]
+        info.rankId = this[PlayerInfoTable.rankId]
+        info.createTime = this[PlayerInfoTable.createTime]
+        info.logoutTime = this[PlayerInfoTable.logoutTime]
+        info.playedTime = this[PlayerInfoTable.playedTime]
+        info.texture = this[PlayerInfoTable.texture].toTypedArray()
+        return info
     }
 }
