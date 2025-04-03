@@ -15,16 +15,14 @@ class PlayerDataTable(tableInfo: TableInfo) : Table() {
     override val tableName = tableInfo.tableName
     val playerId = integer("player_id")
     val columnMap = mutableMapOf<String, Pair<KClass<*>, Column<*>>>()
+    val uniqueColumn = tableInfo.uniqueKeys.map { columnMap[it]!!.second }.toTypedArray()
+    override val primaryKey = PrimaryKey(playerId, *uniqueColumn)
 
     init {
         for ((name, clazz) in tableInfo.fields) {
             val kClass = clazz.kotlin
             val column = registerColumn(name, kClass)
             columnMap[column.name] = kClass to column
-        }
-        val uniqueColumns = tableInfo.uniqueKeys.map { columnMap[it]!!.second }.toTypedArray()
-        if (uniqueColumns.isNotEmpty()) {
-            uniqueIndex(columns = uniqueColumns)
         }
     }
 
