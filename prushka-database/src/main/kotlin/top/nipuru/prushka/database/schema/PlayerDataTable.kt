@@ -15,15 +15,16 @@ class PlayerDataTable(tableInfo: TableInfo) : Table() {
     override val tableName = tableInfo.tableName
     val playerId = integer("player_id")
     val columnMap = mutableMapOf<String, Pair<KClass<*>, Column<*>>>()
-    val uniqueColumn = tableInfo.uniqueKeys.map { columnMap[it]!!.second }.toTypedArray()
-    override val primaryKey = PrimaryKey(playerId, *uniqueColumn)
+    override val primaryKey: PrimaryKey
 
     init {
         for ((name, clazz) in tableInfo.fields) {
             val kClass = clazz.kotlin
             val column = registerColumn(name, kClass)
-            columnMap[column.name] = kClass to column
+            columnMap[name] = kClass to column
         }
+        val uniqueColumn = tableInfo.uniqueKeys.map { columnMap[it]!!.second }.toTypedArray()
+        primaryKey = PrimaryKey(playerId, *uniqueColumn)
     }
 
     @Suppress("UNCHECKED_CAST")
