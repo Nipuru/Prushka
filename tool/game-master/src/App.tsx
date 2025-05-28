@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { setLanguage } from "@/redux/modules/global/action";
 import { HashRouter } from "react-router-dom";
 import AuthRouter from "@/routers/utils/authRouter";
-import Router from "@/routers/index";
+import Router from "@/routers";
 import useTheme from "@/hooks/useTheme";
 import zhCN from "antd/lib/locale/zh_CN";
 import enUS from "antd/lib/locale/en_US";

@@ -1,4 +1,4 @@
-import Layout from "@/layouts/index";
+import Layout from "@/layouts";
 // 懒加载 Layout
 // import React from "react";
 // import lazyLoad from "@/routers/utils/lazyLoad";

@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv, ConfigEnv, UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
-import { wrapperEnv } from "./src/utils/getEnv";
+import { wrapperEnv } from "@/utils/getEnv";
 import { visualizer } from "rollup-plugin-visualizer";
 import { createHtmlPlugin } from "vite-plugin-html";
 import viteCompression from "vite-plugin-compression";

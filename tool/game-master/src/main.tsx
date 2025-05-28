@@ -3,7 +3,7 @@ import "@/styles/reset.less";
 import "@/assets/iconfont/iconfont.less";
 import "@/assets/fonts/font.less";
 import "@/styles/common.less";
-import "@/language/index";
+import "@/language";
 import "virtual:svg-icons-register";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";

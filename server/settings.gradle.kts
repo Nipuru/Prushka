@@ -1,13 +1,13 @@
 rootProject.name = "prushka"
 
 sequenceOf(
-    "prushka-common",
-    "prushka-database",
-    "prushka-auth",
-    "prushka-shared",
-    "prushka-broker",
-    "prushka-game",
-    "prushka-log",
+    "server-common",
+    "server-database",
+    "server-auth",
+    "server-shared",
+    "server-broker",
+    "server-game",
+    "server-log",
 ).forEach { include(it) }
 
 pluginManagement {

@@ -1,6 +1,6 @@
 import { Navigate, useRoutes } from "react-router-dom";
 import { RouteObject } from "@/routers/interface";
-import Login from "@/views/login/index";
+import Login from "@/views/login";
 
 // * 导入所有router
 const metaRouters = import.meta.globEager("./modules/*.tsx");
