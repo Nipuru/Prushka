@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":prushka-common"))
+    implementation(project(":server-common"))
     implementation(libs.afybroker.client)
     implementation(libs.hikari)
     implementation(libs.snakeyaml)
@@ -17,7 +17,7 @@ dependencies {
     runtimeOnly(libs.logback.classic)
 }
 
-val mainClazz = "top.nipuru.prushka.database.DatabaseServerKt"
+val mainClazz = "top.nipuru.prushka.server.database.DatabaseServerKt"
 
 application {
     mainClass.set(mainClazz)

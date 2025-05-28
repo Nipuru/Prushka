@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":prushka-common"))
+    implementation(project(":server-common"))
     implementation(libs.afybroker.client)
     implementation(libs.hikari)
     implementation(libs.snakeyaml)

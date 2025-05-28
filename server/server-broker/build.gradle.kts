@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":prushka-common"))
+    implementation(project(":server-common"))
     compileOnly(libs.afybroker.server)
 }
 
