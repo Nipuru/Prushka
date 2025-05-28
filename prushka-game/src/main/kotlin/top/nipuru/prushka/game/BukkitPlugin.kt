@@ -54,7 +54,6 @@ class BukkitPlugin : JavaPlugin() {
         dispatcher.registerHandler(KickPlayerHandler())
         builder.registerUserProcessor(dispatcher)
         builder.addTag(ClientTag.GAME)
-
         builder.registerUserProcessor(PlayerDataTransferGameProcessor())
         builder.registerUserProcessor(PlayerOfflineDataGameProcessor())
         builder.registerUserProcessor(PlayerChatServerProcessor())

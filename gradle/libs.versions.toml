@@ -23,7 +23,6 @@ snakeyaml = "org.yaml:snakeyaml:2.2"
 postgresql = "org.postgresql:postgresql:42.7.4"
 logback-classic = "ch.qos.logback:logback-classic:1.5.16"
 gson = "com.google.code.gson:gson:2.8.9"
-fastexcel = "cn.idev.excel:fastexcel:1.1.0"
 
 [plugins]
 kotlin-jvm = "org.jetbrains.kotlin.jvm:1.8.22"
