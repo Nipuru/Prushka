@@ -11,6 +11,10 @@ tasks.build {
     dependsOn(tasks.shadowJar)
 }
 
+tasks.shadowJar {
+    archiveFileName.set("BrokerPlugin.jar")
+}
+
 tasks.processResources {
     val props = mapOf(
         "version" to project.version

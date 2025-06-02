@@ -32,6 +32,10 @@ application {
     mainClass.set(mainClazz)
 }
 
+tasks.shadowJar {
+    archiveFileName.set("AuthServer.jar")
+}
+
 tasks.jar {
     manifest {
         attributes(

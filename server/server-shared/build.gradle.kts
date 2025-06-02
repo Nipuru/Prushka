@@ -31,6 +31,10 @@ tasks.jar {
     }
 }
 
+tasks.shadowJar {
+    archiveFileName.set("SharedServer.jar")
+}
+
 tasks.build {
     dependsOn(tasks.shadowJar)
 }

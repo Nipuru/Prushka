@@ -73,7 +73,7 @@ def __store_json(sheet, row_idx, column_idx, ascent_idx, height_idx, file_idx):
 def __save_json_file(data):
     context = '{"providers":[%s]}'
     try:
-        path = '%s/assets/minecraft/font/afyer_bitmap.json' % (Config.resource_path)
+        path = '%s/assets/minecraft/font/prushka_bitmap.json' % (Config.resource_path)
         print('正在保存 %s' % (path))
         os.makedirs(os.path.dirname(path), exist_ok=True)
         f = open( path, 'w', encoding='utf-8' )

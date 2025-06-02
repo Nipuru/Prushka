@@ -17,7 +17,7 @@ dependencies {
     runtimeOnly(libs.logback.classic)
 }
 
-val mainClazz = "top.nipuru.prushka.log.LogServerKt"
+val mainClazz = "top.nipuru.prushka.server.log.LogServerKt"
 
 application {
     mainClass.set(mainClazz)
@@ -29,6 +29,10 @@ tasks.jar {
             "Main-Class" to mainClazz,
         )
     }
+}
+
+tasks.shadowJar {
+    archiveFileName.set("LogServer.jar")
 }
 
 tasks.build {

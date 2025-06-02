@@ -31,6 +31,10 @@ tasks.jar {
     }
 }
 
+tasks.shadowJar {
+    archiveFileName.set("DatabaseServer.jar")
+}
+
 tasks.build {
     dependsOn(tasks.shadowJar)
 }

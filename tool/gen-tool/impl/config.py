@@ -1,5 +1,5 @@
 class Config:
-    excel_path = "../excel"
-    data_path = ""
-    resource_path = ""
-    code_path = "../"
+    excel_path = "../../sheet"
+    data_path = "../../bin/GameServer/plugins/Prushka/jsons"
+    resource_path = "../../resourcepack"
+    code_path = "../../server"
