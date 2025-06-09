@@ -17,7 +17,7 @@ dependencies {
     runtimeOnly(libs.logback.classic)
 }
 
-val mainClazz = "top.nipuru.prushka.server.log.LogServerKt"
+val mainClazz = "server.log.LogServerKt"
 
 application {
     mainClass.set(mainClazz)

@@ -6,7 +6,7 @@ sequenceOf(
     "server-auth",
     "server-shared",
     "server-broker",
-    "server-game",
+    "server-bukkit",
     "server-log",
 ).forEach { include(it) }
 

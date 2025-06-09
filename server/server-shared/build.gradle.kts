@@ -17,7 +17,7 @@ dependencies {
     runtimeOnly(libs.logback.classic)
 }
 
-val mainClazz = "top.nipuru.prushka.server.shared.SharedServerKt"
+val mainClazz = "server.shared.SharedServerKt"
 
 application {
     mainClass.set(mainClazz)

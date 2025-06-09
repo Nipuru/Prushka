@@ -1,8 +1,0 @@
-name: Prushka
-version: '${version}'
-api-version: 1.20
-depend:
-  - AfyBroker
-main: top.nipuru.prushka.server.game.BukkitPlugin
-authors: [ Nipuru ]
-load: STARTUP

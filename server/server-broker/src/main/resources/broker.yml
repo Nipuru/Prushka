@@ -1,4 +1,4 @@
 name: Prushka
 version: '${version}'
-main: top.nipuru.prushka.server.broker.BrokerPlugin
+main: server.broker.BrokerPlugin
 author: Nipuru

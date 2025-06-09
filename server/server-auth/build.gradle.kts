@@ -26,7 +26,7 @@ dependencies {
     runtimeOnly(libs.logback.classic)
 }
 
-val mainClazz = "top.nipuru.prushka.server.auth.AuthServerKt"
+val mainClazz = "server.auth.AuthServerKt"
 
 application {
     mainClass.set(mainClazz)
