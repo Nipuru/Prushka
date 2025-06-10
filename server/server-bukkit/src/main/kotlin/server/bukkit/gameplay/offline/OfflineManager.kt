@@ -14,11 +14,11 @@ class OfflineManager(player: GamePlayer) : BaseManager(player) {
     private val offlineDataMessageQueue = LinkedList<server.common.message.PlayerOfflineDataMessage>()
 
     fun preload(request: PlayerDataRequestMessage) {
-        request.preload(OfflineData::class.java)
+        request.preload<OfflineData>()
     }
 
     fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
-        dataInfo.unpackList(OfflineData::class.java).forEach(offlineDataList::add)
+        dataInfo.unpackList<OfflineData>().forEach(offlineDataList::add)
     }
 
     fun pack(dataInfo: server.bukkit.gameplay.player.DataInfo) {

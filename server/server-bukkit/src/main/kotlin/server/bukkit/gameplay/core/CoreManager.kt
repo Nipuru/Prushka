@@ -20,11 +20,11 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     var updateShared = false        // 更新个人信息至公共服务器标记
 
     fun preload(request: PlayerDataRequestMessage) {
-        request.preload(PlayerData::class.java)
+        request.preload<PlayerData>()
     }
 
     fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
-        playerData = dataInfo.unpack(PlayerData::class.java) ?: PlayerData()
+        playerData = dataInfo.unpack<PlayerData>() ?: PlayerData()
             .also {
             it.createTime = TimeManager.now
             player.insert(it)

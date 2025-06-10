@@ -28,11 +28,11 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
     private lateinit var data: ChatData
 
     fun preload(request: PlayerDataRequestMessage) {
-        request.preload(ChatData::class.java)
+        request.preload<ChatData>()
     }
 
     fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
-        data = dataInfo.unpack(ChatData::class.java) ?: ChatData().also { player.insert(it) }
+        data = dataInfo.unpack<ChatData>() ?: ChatData().also { player.insert(it) }
     }
 
     fun pack(dataInfo: server.bukkit.gameplay.player.DataInfo) {

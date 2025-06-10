@@ -13,11 +13,11 @@ class ItemManager(player: GamePlayer) : BaseManager(player) {
     private val items = mutableMapOf<Int, MutableMap<Int, ItemData>>()
 
     fun preload(request: PlayerDataRequestMessage) {
-        request.preload(ItemData::class.java)
+        request.preload<ItemData>()
     }
     
     fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
-        for (item in dataInfo.unpackList(ItemData::class.java)) {
+        for (item in dataInfo.unpackList<ItemData>()) {
             val byId = items.getOrPut(item.type) { mutableMapOf() }
             byId[item.id] = item
         }

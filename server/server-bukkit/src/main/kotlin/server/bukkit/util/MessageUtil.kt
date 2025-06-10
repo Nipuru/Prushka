@@ -65,8 +65,7 @@ private fun initMiniMessage(): MiniMessage {
     val bitmap = BitmapResolver(bitmaps)
     val split = split(bitmap)
     val font = font(bitmaps)
-    val fixedWidth =
-        FixedWidthResolver(split, font)
+    val fixedWidth = FixedWidthResolver(split, font)
     return MiniMessage.builder().tags(TagResolver.resolver(
         StandardTags.defaults(),
         split.resolver(),

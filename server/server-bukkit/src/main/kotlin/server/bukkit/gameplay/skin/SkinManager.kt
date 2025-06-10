@@ -27,11 +27,11 @@ class SkinManager(player: GamePlayer) : BaseManager(player) {
         }
 
     fun preload(request: PlayerDataRequestMessage) {
-        request.preload(SkinData::class.java)
+        request.preload<SkinData>()
     }
 
     fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
-        data = dataInfo.unpack(SkinData::class.java) ?: SkinData().also { player.insert(it) }
+        data = dataInfo.unpack<SkinData>() ?: SkinData().also { player.insert(it) }
     }
 
     fun pack(dataInfo: server.bukkit.gameplay.player.DataInfo) {

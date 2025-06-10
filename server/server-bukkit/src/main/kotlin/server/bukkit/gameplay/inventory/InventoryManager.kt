@@ -13,11 +13,11 @@ class InventoryManager(player: GamePlayer) : BaseManager(player) {
     private var data: InventoryData? = null
 
     fun preload(request: PlayerDataRequestMessage) {
-        request.preload(InventoryData::class.java)
+        request.preload<InventoryData>()
     }
 
     fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
-        data = dataInfo.unpack(InventoryData::class.java) ?: return
+        data = dataInfo.unpack<InventoryData>() ?: return
     }
 
     fun pack(dataInfo: server.bukkit.gameplay.player.DataInfo) {

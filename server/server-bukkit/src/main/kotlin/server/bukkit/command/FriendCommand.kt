@@ -24,7 +24,7 @@ class FriendCommand : AbstractCommand("friend") {
                     MessageType.FAILED.sendMessage(sender.bukkitPlayer, "玩家 ${friend.name} 已经是你的好友了")
                     return
                 }
-                sender.friend.addFriend(friend.name, friend.playerId, friend.dbId)
+                sender.friend.requestFriend(friend.name, friend.playerId, friend.dbId)
                 MessageType.ALLOW.sendMessage(sender.bukkitPlayer, "已向玩家 ${friend.name} 发送好友请求")
             }
         })
@@ -41,7 +41,7 @@ class FriendCommand : AbstractCommand("friend") {
         })
         subCommand(object : Abstract("accept") {
             override fun handle(sender: GamePlayer, friend: PlayerInfoMessage) {
-                val friendRequest = sender.friend.getFriendRequest(friend.playerId)
+                val friendRequest = sender.friend.getReceivedFriendRequest(friend.playerId)
                 if (friendRequest == null) {
                     MessageType.FAILED.sendMessage(sender.bukkitPlayer, "没有来自玩家 ${friend.name} 的好友请求")
                     return
@@ -52,12 +52,12 @@ class FriendCommand : AbstractCommand("friend") {
         })
         subCommand(object : Abstract("reject") {
             override fun handle(sender: GamePlayer, friend: PlayerInfoMessage) {
-                val friendRequest = sender.friend.getFriendRequest(friend.playerId)
+                val friendRequest = sender.friend.getReceivedFriendRequest(friend.playerId)
                 if (friendRequest == null) {
                     MessageType.FAILED.sendMessage(sender.bukkitPlayer, "没有来自玩家 ${friend.name} 的好友请求")
                     return
                 }
-                sender.friend.rejectFriend(friend.playerId)
+                sender.friend.rejectFriend(friend.name, friend.playerId, friend.dbId)
                 MessageType.ALLOW.sendMessage(sender.bukkitPlayer, "你拒绝了来自玩家 ${friend.name} 的好友请求")
             }
         })

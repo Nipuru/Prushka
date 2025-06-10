@@ -5,8 +5,8 @@ import server.common.message.database.PlayerDataRequestMessage
 
 interface Data
 
-fun PlayerDataRequestMessage.preload(dataClass: Class<out Data>) {
-    DataConvertor.preload(this, dataClass)
+inline fun <reified T> PlayerDataRequestMessage.preload() {
+    DataConvertor.preload<T>(this)
 }
 
 /**

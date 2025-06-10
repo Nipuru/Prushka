@@ -23,11 +23,11 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
         private set
 
     fun preload(request: PlayerDataRequestMessage) {
-        request.preload(LocationData::class.java)
+        request.preload<LocationData>()
     }
 
     fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
-        lastLocation = dataInfo.unpack(LocationData::class.java) ?: LocationData().also { player.insert(it) }
+        lastLocation = dataInfo.unpack<LocationData>() ?: LocationData().also { player.insert(it) }
     }
 
     fun pack(dataInfo: server.bukkit.gameplay.player.DataInfo) {

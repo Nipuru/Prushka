@@ -8,12 +8,12 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import kotlin.reflect.KProperty1
 
-internal object DataConvertor {
+object DataConvertor {
 
     private val cache = mutableMapOf<Class<*>, DataClassCache>()
 
-    fun preload(request: PlayerDataRequestMessage, dataClass: Class<*>) {
-        val dataClassCache = getOrCache(dataClass)
+    inline fun <reified T> preload(request: PlayerDataRequestMessage) {
+        val dataClassCache = getOrCache(T::class.java)
         if (dataClassCache.isCache) return
         val fields = mutableMapOf<String, Class<*>>()
         dataClassCache.tableFields.forEach{ fields[it.key] = it.value.type }
@@ -21,16 +21,15 @@ internal object DataConvertor {
         request.tables.add(tableInfo)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T> unpack(tables: Map<String, List<List<FieldMessage>>>, dataClass: Class<T>): T? {
-        val dataClassCache = getOrCache(dataClass)
+    inline fun <reified T> unpack(tables: Map<String, List<List<FieldMessage>>>): T? {
+        val dataClassCache = getOrCache(T::class.java)
         val instance = dataClassCache.constructor.newInstance() as T
         val fieldMessagesList = tables[dataClassCache.tableName]
         if (fieldMessagesList.isNullOrEmpty()) {
             return null
         }
         if (fieldMessagesList.size > 1) {
-            throw IOException("Too many results for " + dataClass.name)
+            throw IOException("Too many results for " + T::class.java.name)
         }
         for (fieldMessage in fieldMessagesList[0]) {
             val field = dataClassCache.fields[fieldMessage.name] ?: continue
@@ -39,17 +38,8 @@ internal object DataConvertor {
         return instance
     }
 
-    fun <T : Any> getProperty(data: Any, properties: Array<out KProperty1<T, *>>): Array<String> {
-        if (properties.isEmpty()) {
-            val cache = getOrCache(data.javaClass)
-            return cache.updateFields.keys.toTypedArray()
-        }
-        return properties.map { it.name }.toTypedArray()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun <T> unpackList(tables: Map<String, List<List<FieldMessage>>>, dataClass: Class<T>): List<T> {
-        val dataClassCache = getOrCache(dataClass)
+    inline fun <reified T> unpackList(tables: Map<String, List<List<FieldMessage>>>): List<T> {
+        val dataClassCache = getOrCache(T::class.java)
         val fieldMessagesList = tables[dataClassCache.tableName]
         if (fieldMessagesList.isNullOrEmpty()) {
             return emptyList()
@@ -65,6 +55,16 @@ internal object DataConvertor {
         }
         return result
     }
+
+    fun <T : Any> getProperty(data: Any, properties: Array<out KProperty1<T, *>>): Array<String> {
+        if (properties.isEmpty()) {
+            val cache = getOrCache(data.javaClass)
+            return cache.updateFields.keys.toTypedArray()
+        }
+        return properties.map { it.name }.toTypedArray()
+    }
+
+
 
     fun pack(tables: MutableMap<String, MutableList<List<FieldMessage>>>, data: Any) {
         val dataClassCache = getOrCache(data.javaClass)
