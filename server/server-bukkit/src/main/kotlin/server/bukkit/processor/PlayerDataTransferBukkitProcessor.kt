@@ -9,18 +9,18 @@ import server.bukkit.gameplay.player.GamePlayers
 import server.bukkit.nms.freeze
 import server.bukkit.nms.quit
 import server.bukkit.util.submit
-import server.common.message.PlayerDataMessage
-import server.common.message.PlayerDataTransferMessage
+import server.common.message.PlayerDataTransferRequest
+import server.common.message.database.PlayerDataMessage
 
-class PlayerDataTransferBukkitProcessor : AsyncUserProcessor<PlayerDataTransferMessage>() {
+class PlayerDataTransferBukkitProcessor : AsyncUserProcessor<PlayerDataTransferRequest>() {
 
-    override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: PlayerDataTransferMessage) {
+    override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: PlayerDataTransferRequest) {
         submit(async = false) {
             asyncCtx.sendResponse(handle(request))
         }
     }
 
-    private fun handle(request: PlayerDataTransferMessage): Any? {
+    private fun handle(request: PlayerDataTransferRequest): Any? {
         val bukkitPlayer = Bukkit.getPlayer(request.uniqueId) ?: return null
         val player = GamePlayers.getPlayer(bukkitPlayer.uniqueId)
 
@@ -34,6 +34,6 @@ class PlayerDataTransferBukkitProcessor : AsyncUserProcessor<PlayerDataTransferM
     }
 
     override fun interest(): String {
-        return PlayerDataTransferMessage::class.java.name
+        return PlayerDataTransferRequest::class.java.name
     }
 }

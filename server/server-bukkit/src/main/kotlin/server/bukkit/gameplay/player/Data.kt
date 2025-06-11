@@ -1,11 +1,11 @@
 package server.bukkit.gameplay.player
 
-import server.common.message.database.PlayerDataRequestMessage
+import server.common.message.database.PlayerDataQueryRequest
 
 
 interface Data
 
-inline fun <reified T> PlayerDataRequestMessage.preload() {
+inline fun <reified T> PlayerDataQueryRequest.preload() {
     DataConvertor.preload<T>(this)
 }
 

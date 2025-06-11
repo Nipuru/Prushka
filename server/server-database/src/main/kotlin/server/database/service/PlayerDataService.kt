@@ -4,17 +4,18 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import server.common.message.database.FieldMessage
-import server.common.message.database.PlayerDataRequestMessage
-import server.common.message.database.PlayerDataTransactionMessage
-import server.common.message.database.TableInfo
+import server.common.message.database.PlayerDataQueryRequest
+import server.common.message.database.PlayerDataTransactionRequest
+import server.common.message.database.TableInfoMessage
 import server.database.logger.sqlLogger
 import server.database.schema.PlayerDataTable
+import server.database.schema.initSchema
 import java.util.concurrent.ConcurrentHashMap
 
 object PlayerDataService {
     private val tableInitialized = ConcurrentHashMap<String, PlayerDataTable>()
 
-    fun queryPlayer(request: PlayerDataRequestMessage): Map<String, List<List<FieldMessage>>> {
+    fun queryPlayer(request: PlayerDataQueryRequest): Map<String, List<List<FieldMessage>>> {
         return transaction {
             val result = mutableMapOf<String, List<List<FieldMessage>>>()
             for (tableInfo in request.tables) {
@@ -37,7 +38,7 @@ object PlayerDataService {
     }
 
 
-    fun transaction(request: PlayerDataTransactionMessage) {
+    fun transaction(request: PlayerDataTransactionRequest) {
         transaction {
             addLogger(sqlLogger)
             for (delete in request.deletes) {
@@ -80,14 +81,13 @@ object PlayerDataService {
         }
     }
 
-    private fun getTable(tableInfo: TableInfo) : PlayerDataTable {
+    private fun getTable(tableInfo: TableInfoMessage) : PlayerDataTable {
         val tables = tableInitialized
         var table = tables[tableInfo.tableName]
         if (table == null) {
             table = PlayerDataTable(tableInfo)
             if (tableInfo.autoCreate) {
-                SchemaUtils.create(table)
-                SchemaUtils.createMissingTablesAndColumns(table)
+                table.initSchema()
             }
         }
         return tables.putIfAbsent(tableInfo.tableName, table) ?: table

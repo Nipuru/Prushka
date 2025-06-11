@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import server.auth.schema.PlayerTable
+import server.common.message.auth.PlayerLoginResponse
 import java.util.*
 
 
@@ -19,12 +20,12 @@ object PlayerService {
         transaction { SchemaUtils.create(PlayerTable) }
     }
 
-    fun initPlayer(name: String, uniqueId: UUID, lastIp: String): server.common.message.auth.PlayerMessage {
+    fun initPlayer(name: String, uniqueId: UUID, lastIp: String): PlayerLoginResponse {
         return transaction {
             val rs = PlayerTable.selectAll().where(PlayerTable.uniqueId eq uniqueId.toString())
                 .singleOrNull()
             if (rs != null) {
-                return@transaction server.common.message.auth.PlayerMessage(
+                return@transaction PlayerLoginResponse(
                     rs[PlayerTable.playerId],
                     rs[PlayerTable.dbId]
                 )
@@ -38,7 +39,7 @@ object PlayerService {
                 it[this.dbId] = dbId
                 it[this.createTime] = System.currentTimeMillis()
             } get PlayerTable.playerId
-            return@transaction server.common.message.auth.PlayerMessage(playerId, dbId)
+            return@transaction PlayerLoginResponse(playerId, dbId)
         }
     }
 }

@@ -7,12 +7,12 @@ import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.preload
 import server.bukkit.logger.logger
 import server.bukkit.nms.*
-import server.common.message.database.PlayerDataRequestMessage
+import server.common.message.database.PlayerDataQueryRequest
 
 class InventoryManager(player: GamePlayer) : BaseManager(player) {
     private var data: InventoryData? = null
 
-    fun preload(request: PlayerDataRequestMessage) {
+    fun preload(request: PlayerDataQueryRequest) {
         request.preload<InventoryData>()
     }
 

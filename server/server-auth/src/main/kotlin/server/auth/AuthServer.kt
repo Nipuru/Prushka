@@ -23,7 +23,7 @@ import server.auth.config.loadConfig
 import server.auth.database.DatabaseFactory
 import server.auth.http.rootRouting
 import server.auth.logger.logger
-import server.auth.processor.PlayerRequestHandler
+import server.auth.processor.PlayerLoginHandler
 import server.auth.processor.connection.CloseEventAuthProcessor
 import server.auth.util.JWTUtil
 import server.auth.util.overdue
@@ -36,7 +36,7 @@ object AuthServer {
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         val dispatcher = RequestDispatcher()
 
-        dispatcher.registerHandler(PlayerRequestHandler())
+        dispatcher.registerHandler(PlayerLoginHandler())
 
         builder.registerUserProcessor(dispatcher)
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventAuthProcessor())

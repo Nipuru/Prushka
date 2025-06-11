@@ -14,4 +14,8 @@ object OfflineDataTable : Table() {
     val module = text("module")
     val data = text("data")
     override val primaryKey = PrimaryKey(id)
+
+    init {
+        initSchema()
+    }
 }

@@ -2,7 +2,7 @@ package server.database.schema
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
-import server.common.message.database.TableInfo
+import server.common.message.database.TableInfoMessage
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
  * @author Nipuru
  * @since 2024/12/18 15:23
  */
-class PlayerDataTable(tableInfo: TableInfo) : Table() {
+class PlayerDataTable(tableInfo: TableInfoMessage) : Table() {
     override val tableName = tableInfo.tableName
     val playerId = integer("player_id")
     val columnMap = mutableMapOf<String, Pair<KClass<*>, Column<*>>>()

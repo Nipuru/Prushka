@@ -59,7 +59,7 @@ class DataWriter(private val player: GamePlayer) {
         }
         submit {
             try {
-                val request = PlayerDataTransactionMessage(player.playerId)
+                val request = PlayerDataTransactionRequest(player.playerId)
                 for (dataAction in map.values) {
                     val dataClassCache = getOrCache(dataAction.data.javaClass)
                     val tableName = dataClassCache.tableName
@@ -78,17 +78,17 @@ class DataWriter(private val player: GamePlayer) {
                                 val fieldMessage = FieldMessage(key, value[dataAction.data])
                                 updateFields.add(fieldMessage)
                             }
-                            request.updates.add(Update(tableName, uniqueFields, updateFields))
+                            request.addUpdate(tableName, uniqueFields, updateFields)
                         }
                         DataActionType.INSERT -> {
                             for ((key, value) in dataClassCache.updateFields) {
                                 val fieldMessage = FieldMessage(key, value[dataAction.data])
                                 uniqueFields.add(fieldMessage)
                             }
-                            request.inserts.add(Insert(tableName, uniqueFields))
+                            request.addInsert(tableName, uniqueFields)
                         }
                         DataActionType.DELETE -> {
-                            request.deletes.add(Delete(tableName, uniqueFields))
+                            request.addDelete(tableName, uniqueFields)
                         }
                     }
                 }

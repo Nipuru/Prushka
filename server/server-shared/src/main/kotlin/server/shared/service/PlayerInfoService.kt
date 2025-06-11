@@ -14,13 +14,6 @@ object PlayerInfoService {
     private val byId = ConcurrentHashMap<Int, PlayerInfoMessage>()
     private val byName = ConcurrentHashMap<String, PlayerInfoMessage>()
 
-    init {
-        transaction {
-            SchemaUtils.create(PlayerInfoTable)
-            SchemaUtils.createMissingTablesAndColumns(PlayerInfoTable)
-        }
-    }
-
     fun getByIds(playerIds: List<Int>): Map<Int, PlayerInfoMessage> {
         val result = mutableMapOf<Int, PlayerInfoMessage>()
         val query = mutableListOf<Int>()
@@ -65,6 +58,7 @@ object PlayerInfoService {
             PlayerInfoTable.upsert(PlayerInfoTable.playerId) {
                 it[playerId] = playerInfo.playerId
                 it[name] = playerInfo.name
+                it[uniqueId] = playerInfo.uniqueId
                 it[dbId] = playerInfo.dbId
                 it[coin] = playerInfo.coin
                 it[rankId] = playerInfo.rankId
@@ -82,6 +76,7 @@ object PlayerInfoService {
         val info = PlayerInfoMessage()
         info.playerId = this[PlayerInfoTable.playerId]
         info.name = this[PlayerInfoTable.name]
+        info.uniqueId = this[PlayerInfoTable.uniqueId]
         info.dbId = this[PlayerInfoTable.dbId]
         info.coin = this[PlayerInfoTable.coin]
         info.rankId = this[PlayerInfoTable.rankId]

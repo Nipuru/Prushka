@@ -7,23 +7,14 @@ import net.afyer.afybroker.core.util.AbstractInvokeCallback
 import net.afyer.afybroker.server.Broker
 import server.broker.logger.logger
 import server.common.ClientTag
+import server.common.message.PlayerDataTransferRequest
 
-class PlayerDataTransferBrokerProcessor : AsyncUserProcessor<server.common.message.PlayerDataTransferMessage>() {
+class PlayerDataTransferBrokerProcessor : AsyncUserProcessor<PlayerDataTransferRequest>() {
 
-    override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: server.common.message.PlayerDataTransferMessage) {
-        val player = Broker.getPlayer(request.uniqueId)
-        if (player == null) {
-            asyncCtx.sendResponse(null)
-            return
-        }
-        val currentServer = player.server
-        if (currentServer == null || !currentServer.hasTag(ClientTag.GAME)) {
-            asyncCtx.sendResponse(null)
-            return
-        }
-
+    override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: PlayerDataTransferRequest) {
+        val currentServer = Broker.getPlayer(request.uniqueId)?.server
         val fromServer = Broker.getClient(bizCtx)
-        if (currentServer == fromServer) {
+        if (currentServer == null || !currentServer.hasTag(ClientTag.GAME) || currentServer == fromServer) {
             asyncCtx.sendResponse(null)
             return
         }
@@ -42,6 +33,6 @@ class PlayerDataTransferBrokerProcessor : AsyncUserProcessor<server.common.messa
     }
 
     override fun interest(): String {
-        return server.common.message.PlayerDataTransferMessage::class.java.name
+        return PlayerDataTransferRequest::class.java.name
     }
 }

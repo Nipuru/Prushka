@@ -6,10 +6,11 @@ import net.afyer.afybroker.server.Broker
 import net.afyer.afybroker.server.proxy.BrokerClientItem
 import server.broker.player.GamePlayers
 import server.common.ClientTag
+import server.common.message.PlayerOfflineDataMessage
 
-class PlayerOfflineDataBrokerProcessor : SyncUserProcessor<server.common.message.PlayerOfflineDataMessage>() {
+class PlayerOfflineDataBrokerProcessor : SyncUserProcessor<PlayerOfflineDataMessage>() {
 
-    override fun handleRequest(bizContext: BizContext, request: server.common.message.PlayerOfflineDataMessage): Boolean {
+    override fun handleRequest(bizContext: BizContext, request: PlayerOfflineDataMessage): Boolean {
         // 如果在线处理了则不需要新增离线消息
         if (onlineRequest(request)) return true
 
@@ -17,7 +18,7 @@ class PlayerOfflineDataBrokerProcessor : SyncUserProcessor<server.common.message
         return offlineRequest(request)
     }
 
-    private fun onlineRequest(request: server.common.message.PlayerOfflineDataMessage): Boolean {
+    private fun onlineRequest(request: PlayerOfflineDataMessage): Boolean {
         val player = GamePlayers.getPlayer(request.name)
 
         val bukkit = player?.brokerPlayer?.server ?: return false
@@ -26,7 +27,7 @@ class PlayerOfflineDataBrokerProcessor : SyncUserProcessor<server.common.message
         return bukkit.invokeSync(request)
     }
 
-    private fun offlineRequest(request: server.common.message.PlayerOfflineDataMessage): Boolean {
+    private fun offlineRequest(request: PlayerOfflineDataMessage): Boolean {
         val name = String.format("%s-%d", server.common.ClientType.DB, request.dbId)
         val dbServer: BrokerClientItem = Broker.getClient(name) ?: return false
 
@@ -34,6 +35,6 @@ class PlayerOfflineDataBrokerProcessor : SyncUserProcessor<server.common.message
     }
 
     override fun interest(): String {
-        return server.common.message.PlayerOfflineDataMessage::class.java.name
+        return PlayerOfflineDataMessage::class.java.name
     }
 }

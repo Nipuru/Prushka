@@ -9,11 +9,14 @@ import server.bukkit.gameplay.player.preload
 import server.bukkit.time.TimeManager
 import server.bukkit.util.fromJson
 import server.bukkit.util.toJson
-import server.common.message.database.PlayerDataRequestMessage
+import server.common.message.database.PlayerDataQueryRequest
 
-private const val moduleName = "friendship"
+
 
 class FriendManager(player: GamePlayer) : BaseManager(player) {
+
+    private val moduleName = "friendship"
+
     /** 好友列表  */
     private val friendships = Int2ObjectOpenHashMap<FriendshipData>()
 
@@ -23,7 +26,7 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
     /** 发出的好友请求（防止重复发送离线消息） */
     private val outboundFriendRequests = Int2ObjectOpenHashMap<FriendRequestOutboundData>()
 
-    fun preload(request: PlayerDataRequestMessage) {
+    fun preload(request: PlayerDataQueryRequest) {
         request.preload<FriendshipData>()
         request.preload<FriendRequestInboundData>()
         request.preload<FriendRequestOutboundData>()

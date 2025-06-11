@@ -16,7 +16,7 @@ import server.bukkit.util.submit
 import server.common.message.FragmentMessage
 import server.common.message.PlayerChatMessage
 import server.common.message.PlayerPrivateChatMessage
-import server.common.message.database.PlayerDataRequestMessage
+import server.common.message.database.PlayerDataQueryRequest
 import server.common.message.shared.PlayerInfoMessage
 import server.common.sheet.stRankMap
 import java.time.Instant
@@ -27,7 +27,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
 
     private lateinit var data: ChatData
 
-    fun preload(request: PlayerDataRequestMessage) {
+    fun preload(request: PlayerDataQueryRequest) {
         request.preload<ChatData>()
     }
 

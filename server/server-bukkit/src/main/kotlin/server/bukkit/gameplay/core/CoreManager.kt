@@ -9,7 +9,7 @@ import server.bukkit.logger.logger
 import server.bukkit.route.sharedNotify
 import server.bukkit.time.TimeManager
 import server.bukkit.util.submit
-import server.common.message.database.PlayerDataRequestMessage
+import server.common.message.database.PlayerDataQueryRequest
 import server.common.message.shared.PlayerInfoMessage
 import server.common.message.shared.PlayerInfoUpdateNotify
 
@@ -19,7 +19,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     private var idleTime = 0               // 挂机时间（tick）
     var updateShared = false        // 更新个人信息至公共服务器标记
 
-    fun preload(request: PlayerDataRequestMessage) {
+    fun preload(request: PlayerDataQueryRequest) {
         request.preload<PlayerData>()
     }
 

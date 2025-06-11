@@ -7,7 +7,7 @@ import server.bukkit.gameplay.player.BaseManager
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.preload
 import server.bukkit.util.submit
-import server.common.message.database.PlayerDataRequestMessage
+import server.common.message.database.PlayerDataQueryRequest
 
 
 /**
@@ -26,7 +26,7 @@ class SkinManager(player: GamePlayer) : BaseManager(player) {
             player.core.updateShared = true
         }
 
-    fun preload(request: PlayerDataRequestMessage) {
+    fun preload(request: PlayerDataQueryRequest) {
         request.preload<SkinData>()
     }
 

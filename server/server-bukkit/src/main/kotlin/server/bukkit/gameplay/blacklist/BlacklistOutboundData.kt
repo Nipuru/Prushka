@@ -1,5 +1,6 @@
 package server.bukkit.gameplay.blacklist
 
+import server.bukkit.gameplay.player.Data
 import server.bukkit.gameplay.player.Table
 import server.bukkit.gameplay.player.Unique
 
@@ -11,9 +12,11 @@ import server.bukkit.gameplay.player.Unique
  * @since 2025/06/10 16:41
  */
 @Table(name = "tb_blacklist_outbound")
-class BlacklistOutboundData {
+class BlacklistOutboundData : Data {
+    /** 玩家 id  */
     @Unique
     var blockedId: Int = 0
 
+    /** 建立时间  */
     var createTime: Long = 0
 }

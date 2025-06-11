@@ -12,7 +12,7 @@ import server.database.config.Config
 import server.database.config.loadConfig
 import server.database.database.DatabaseFactory
 import server.database.logger.logger
-import server.database.processor.PlayerDataRequestHandler
+import server.database.processor.PlayerDataQueryHandler
 import server.database.processor.PlayerDataTransactionHandler
 import server.database.processor.PlayerOfflineDataDBProcessor
 import server.database.processor.connection.CloseEventDBProcessor
@@ -40,9 +40,9 @@ internal object DatabaseServer {
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         val dispatcher = RequestDispatcher()
-        dispatcher.registerHandler(server.database.processor.SaveFileHandler())
-        dispatcher.registerHandler(server.database.processor.LoadFileHandler())
-        dispatcher.registerHandler(PlayerDataRequestHandler())
+        dispatcher.registerHandler(server.database.processor.FileSaveHandler())
+        dispatcher.registerHandler(server.database.processor.FileLoadHandler())
+        dispatcher.registerHandler(PlayerDataQueryHandler())
         dispatcher.registerHandler(PlayerDataTransactionHandler())
 
         builder.registerUserProcessor(dispatcher)

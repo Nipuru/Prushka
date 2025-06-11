@@ -1,29 +1,29 @@
 package server.database.processor
 
-import server.common.message.database.LoadFileRequest
-import server.common.message.database.SaveFileRequest
+import server.common.message.database.FileLoadRequest
+import server.common.message.database.FileSaveRequest
 import server.common.processor.RequestDispatcher
 
-class LoadFileHandler : RequestDispatcher.Handler<LoadFileRequest> {
+class FileLoadHandler : RequestDispatcher.Handler<FileLoadRequest> {
 
-    override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: LoadFileRequest) {
+    override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: FileLoadRequest) {
         val data: ByteArray = server.database.service.FileService.getFile(request.filename)
         asyncCtx.sendResponse(data)
     }
 
-    override fun interest(): Class<LoadFileRequest> {
-        return LoadFileRequest::class.java
+    override fun interest(): Class<FileLoadRequest> {
+        return FileLoadRequest::class.java
     }
 }
 
-class SaveFileHandler : RequestDispatcher.Handler<SaveFileRequest> {
+class FileSaveHandler : RequestDispatcher.Handler<FileSaveRequest> {
 
-    override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: SaveFileRequest) {
+    override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: FileSaveRequest) {
         server.database.service.FileService.saveFile(request.filename, request.data)
         asyncCtx.sendResponse(true) // response
     }
 
-    override fun interest(): Class<SaveFileRequest> {
-        return SaveFileRequest::class.java
+    override fun interest(): Class<FileSaveRequest> {
+        return FileSaveRequest::class.java
     }
 }

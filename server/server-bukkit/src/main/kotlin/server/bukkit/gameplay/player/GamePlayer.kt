@@ -15,7 +15,7 @@ import server.bukkit.logger.LogServer
 import server.bukkit.logger.logger
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
-import server.common.message.database.PlayerDataRequestMessage
+import server.common.message.database.PlayerDataQueryRequest
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.KProperty1
@@ -45,7 +45,7 @@ class GamePlayer(
     /**
      * 预加载数据 (告诉 dbserver 要加载哪些数据)
      */
-    fun preload(request: PlayerDataRequestMessage) {
+    fun preload(request: PlayerDataQueryRequest) {
         offline.preload(request)
         core.preload(request)
         inventory.preload(request)

@@ -1,6 +1,7 @@
 package server.common.message.shared
 
 import java.io.Serializable
+import java.util.UUID
 
 class PlayerInfoMessage : Serializable {
     /** 玩家id  */
@@ -8,6 +9,9 @@ class PlayerInfoMessage : Serializable {
 
     /** 玩家名字  */
     var name: String = ""
+
+    /** uuid */
+    var uniqueId: UUID = UUID(0, 0)
 
     /** dbId  */
     var dbId: Int = 0
@@ -31,6 +35,5 @@ class PlayerInfoMessage : Serializable {
     var texture: Array<String> = emptyArray()
 }
 
-class PlayerInfoUpdateNotify(val playerInfo: PlayerInfoMessage) : Serializable
-class GetPlayerInfoRequest(val name: String) : Serializable
-class GetPlayerInfosRequest(val playerIds: List<Int>) : Serializable
+
+
