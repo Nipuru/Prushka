@@ -10,9 +10,6 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
-    group = "top.nipuru.prushka"
-    version = "0.1"
-
     repositories {
         mavenCentral()
         mavenLocal()

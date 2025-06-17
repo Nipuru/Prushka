@@ -15,6 +15,10 @@ tasks.assemble {
     dependsOn(tasks.reobfJar)
 }
 
+tasks.reobfJar {
+    outputJar = File(layout.buildDirectory.get().asFile, "/libs/BukkitPlugin.jar")
+}
+
 tasks.processResources {
     val props = mapOf(
         "version" to project.version

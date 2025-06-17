@@ -4,6 +4,7 @@ import com.destroystokyo.paper.profile.ProfileProperty
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.core.message.PlayerProfilePropertyMessage
 import server.bukkit.gameplay.player.BaseManager
+import server.bukkit.gameplay.player.DataInfo
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.preload
 import server.bukkit.util.submit
@@ -30,11 +31,11 @@ class SkinManager(player: GamePlayer) : BaseManager(player) {
         request.preload<SkinData>()
     }
 
-    fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
+    fun unpack(dataInfo: DataInfo) {
         data = dataInfo.unpack<SkinData>() ?: SkinData().also { player.insert(it) }
     }
 
-    fun pack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
+    fun pack(dataInfo: DataInfo) {
         dataInfo.pack(data)
     }
 

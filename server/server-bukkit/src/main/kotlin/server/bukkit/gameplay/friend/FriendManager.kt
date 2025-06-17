@@ -12,7 +12,6 @@ import server.bukkit.util.toJson
 import server.common.message.database.PlayerDataQueryRequest
 
 
-
 class FriendManager(player: GamePlayer) : BaseManager(player) {
 
     private val moduleName = "friendship"
