@@ -18,9 +18,7 @@ public class ResourceUtil {
      * 将 jar 包内的某个文件提取到 jar 包所在目录
      */
     public static InputStream getResourceOrExtract(String name) throws Exception {
-        URI uri = ResourceUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-        File parentFile = new File(uri.getPath()).getParentFile();
-        File destFile = new File(parentFile, name);
+        File destFile = new File(name);
         if (!destFile.exists()) {
             try(InputStream inputStream = ResourceUtil.class.getClassLoader().getResourceAsStream(name)) {
                 if (inputStream == null) {
