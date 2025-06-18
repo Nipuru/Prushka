@@ -2,6 +2,7 @@ package server.bukkit.gameplay.core
 
 import server.bukkit.constant.Items
 import server.bukkit.gameplay.player.BaseManager
+import server.bukkit.gameplay.player.DataInfo
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.preload
 import server.bukkit.logger.LogServer
@@ -23,16 +24,16 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         request.preload<PlayerData>()
     }
 
-    fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
-        playerData = dataInfo.unpack<PlayerData>() ?: PlayerData()
-            .also {
+    fun unpack(dataInfo: DataInfo) {
+        playerData = dataInfo.unpack<PlayerData>() ?: PlayerData().also {
+            it.logoutTime = TimeManager.now
             it.createTime = TimeManager.now
             player.insert(it)
             updateShared = true
         }
     }
 
-    fun pack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
+    fun pack(dataInfo: DataInfo) {
         dataInfo.pack(playerData)
     }
 

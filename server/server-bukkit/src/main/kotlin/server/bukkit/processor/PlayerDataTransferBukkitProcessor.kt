@@ -1,4 +1,4 @@
-package top.nipuru.prushka.server.game.processor
+package server.bukkit.processor
 
 import com.alipay.remoting.AsyncContext
 import com.alipay.remoting.BizContext

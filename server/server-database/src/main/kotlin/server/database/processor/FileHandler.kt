@@ -3,11 +3,12 @@ package server.database.processor
 import server.common.message.database.FileLoadRequest
 import server.common.message.database.FileSaveRequest
 import server.common.processor.RequestDispatcher
+import server.database.service.FileService
 
 class FileLoadHandler : RequestDispatcher.Handler<FileLoadRequest> {
 
     override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: FileLoadRequest) {
-        val data: ByteArray = server.database.service.FileService.getFile(request.filename)
+        val data: ByteArray = FileService.getFile(request.filename)
         asyncCtx.sendResponse(data)
     }
 
@@ -19,7 +20,7 @@ class FileLoadHandler : RequestDispatcher.Handler<FileLoadRequest> {
 class FileSaveHandler : RequestDispatcher.Handler<FileSaveRequest> {
 
     override fun handle(asyncCtx: RequestDispatcher.ResponseContext, request: FileSaveRequest) {
-        server.database.service.FileService.saveFile(request.filename, request.data)
+        FileService.saveFile(request.filename, request.data)
         asyncCtx.sendResponse(true) // response
     }
 

@@ -6,6 +6,7 @@ import net.afyer.afybroker.server.Broker
 import net.afyer.afybroker.server.proxy.BrokerClientItem
 import server.broker.player.GamePlayers
 import server.common.ClientTag
+import server.common.ClientType
 import server.common.message.PlayerOfflineDataMessage
 
 class PlayerOfflineDataBrokerProcessor : SyncUserProcessor<PlayerOfflineDataMessage>() {
@@ -28,7 +29,7 @@ class PlayerOfflineDataBrokerProcessor : SyncUserProcessor<PlayerOfflineDataMess
     }
 
     private fun offlineRequest(request: PlayerOfflineDataMessage): Boolean {
-        val name = String.format("%s-%d", server.common.ClientType.DB, request.dbId)
+        val name = String.format("%s-%d", ClientType.DB, request.dbId)
         val dbServer: BrokerClientItem = Broker.getClient(name) ?: return false
 
         return dbServer.invokeSync(request)

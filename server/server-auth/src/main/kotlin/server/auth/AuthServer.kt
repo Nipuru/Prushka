@@ -27,6 +27,7 @@ import server.auth.processor.PlayerLoginHandler
 import server.auth.processor.connection.CloseEventAuthProcessor
 import server.auth.util.JWTUtil
 import server.auth.util.overdue
+import server.common.ClientType
 import server.common.processor.RequestDispatcher
 
 object AuthServer {
@@ -86,8 +87,8 @@ object AuthServer {
             val builder = BrokerClient.newBuilder()
             builder.host(config.broker!!.host!!)
             builder.port(config.broker!!.port!!)
-            builder.name(server.common.ClientType.AUTH)
-            builder.type(server.common.ClientType.AUTH)
+            builder.name(ClientType.AUTH)
+            builder.type(ClientType.AUTH)
             buildBrokerClient(builder)
 
             brokerClient = builder.build()

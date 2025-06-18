@@ -24,8 +24,8 @@ import server.bukkit.util.register
 import server.common.ClientTag
 import server.common.processor.RequestDispatcher
 import server.common.sheet.Sheet
-import top.nipuru.prushka.server.game.processor.PlayerDataTransferBukkitProcessor
-import top.nipuru.prushka.server.game.processor.PlayerOfflineDataBukkitProcessor
+import server.bukkit.processor.PlayerDataTransferBukkitProcessor
+import server.bukkit.processor.PlayerOfflineDataBukkitProcessor
 import java.io.File
 import java.util.*
 import java.util.concurrent.CountDownLatch

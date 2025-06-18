@@ -2,6 +2,7 @@ package server.bukkit.command
 
 import org.bukkit.command.CommandSender
 import server.bukkit.plugin
+import server.common.sheet.Sheet
 import java.io.File
 
 
@@ -15,6 +16,6 @@ import java.io.File
 class PrushkaReloadCommand : AbstractCommand("reload") {
     override fun onCommand(sender: CommandSender, args: Array<String>) {
         // 重载表格
-        server.common.sheet.Sheet.load(File(plugin.dataFolder, "jsons").absolutePath)
+        Sheet.load(File(plugin.dataFolder, "jsons").absolutePath)
     }
 }

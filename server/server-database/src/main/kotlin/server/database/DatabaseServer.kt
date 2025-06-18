@@ -5,6 +5,7 @@ import com.alipay.remoting.LifeCycleException
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
+import server.common.ClientType
 import server.common.processor.RequestDispatcher
 import server.database.DatabaseServer.shutdown
 import server.database.DatabaseServer.startup
@@ -12,9 +13,7 @@ import server.database.config.Config
 import server.database.config.loadConfig
 import server.database.database.DatabaseFactory
 import server.database.logger.logger
-import server.database.processor.PlayerDataQueryHandler
-import server.database.processor.PlayerDataTransactionHandler
-import server.database.processor.PlayerOfflineDataDBProcessor
+import server.database.processor.*
 import server.database.processor.connection.CloseEventDBProcessor
 
 
@@ -40,8 +39,8 @@ internal object DatabaseServer {
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         val dispatcher = RequestDispatcher()
-        dispatcher.registerHandler(server.database.processor.FileSaveHandler())
-        dispatcher.registerHandler(server.database.processor.FileLoadHandler())
+        dispatcher.registerHandler(FileSaveHandler())
+        dispatcher.registerHandler(FileLoadHandler())
         dispatcher.registerHandler(PlayerDataQueryHandler())
         dispatcher.registerHandler(PlayerDataTransactionHandler())
 
@@ -63,8 +62,8 @@ internal object DatabaseServer {
             val builder = BrokerClient.newBuilder()
             builder.host(config.broker!!.host!!)
             builder.port(config.broker!!.port!!)
-            builder.name(String.format("%s-%d", server.common.ClientType.DB, config.dbId))
-            builder.type(server.common.ClientType.DB)
+            builder.name(String.format("%s-%d", ClientType.DB, config.dbId))
+            builder.type(ClientType.DB)
             buildBrokerClient(builder)
 
             brokerClient = builder.build()
