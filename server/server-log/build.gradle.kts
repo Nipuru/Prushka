@@ -10,6 +10,9 @@ dependencies {
     implementation(libs.snakeyaml)
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
+    implementation(libs.slf4j.api)
+    implementation(libs.guava)
+    implementation(libs.netty)
 
     // pgsql驱动
     runtimeOnly(libs.postgresql)
