@@ -6,8 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 
-lateinit var stConstantMap: Map<String/* key */, StConstant>
-    private set
+private lateinit var stConstantMap: Map<String, StConstant>
 
 data class StConstant(
     /** 键名 */ 
@@ -15,6 +14,14 @@ data class StConstant(
     /** 键值 */ 
     val value: String
 )
+
+fun Sheet.getAllStConstant(): Map<String, StConstant> {
+    return stConstantMap
+}
+
+fun Sheet.getStConstant(key: String): StConstant? {
+    return stConstantMap[key]
+}
 
 internal fun loadStConstant(gson: Gson, tablePath: String) {
     val jsonFile = File(tablePath, "st_constant.json")

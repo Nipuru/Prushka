@@ -6,8 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 
-lateinit var stBitmapMap: Map<String/* configId */, StBitmap>
-    private set
+private lateinit var stBitmapMap: Map<String, StBitmap>
 
 data class StBitmap(
     /** 配置id */ 
@@ -27,6 +26,14 @@ data class StBitmap(
     /** 图片宽度 */ 
     val imgWidth: Int
 )
+
+fun Sheet.getAllStBitmap(): Map<String, StBitmap> {
+    return stBitmapMap
+}
+
+fun Sheet.getStBitmap(configId: String): StBitmap? {
+    return stBitmapMap[configId]
+}
 
 internal fun loadStBitmap(gson: Gson, tablePath: String) {
     val jsonFile = File(tablePath, "st_bitmap.json")

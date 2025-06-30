@@ -14,7 +14,8 @@ import server.bukkit.util.font.FontRepository
 import server.bukkit.util.font.resolver.BitmapResolver
 import server.bukkit.util.font.resolver.FixedWidthResolver
 import server.bukkit.util.font.resolver.SplitResolver
-import server.common.sheet.stBitmapMap
+import server.common.sheet.Sheet
+import server.common.sheet.getAllStBitmap
 
 /**
  * 目前支持
@@ -104,7 +105,7 @@ private fun bitmaps(): Map<String, Bitmap> {
     // 这里要确保和 python 工具使用一样的算法 /tool/export_bitmap.py
     val bitmaps = mutableMapOf<String, Bitmap>()
     var unicode = 0x1000
-    for (cfg in stBitmapMap.values) {
+    for (cfg in Sheet.getAllStBitmap().values) {
         val chars = mutableListOf<String>()
         for (i in 0 until cfg.row) {
             val builder = StringBuilder()

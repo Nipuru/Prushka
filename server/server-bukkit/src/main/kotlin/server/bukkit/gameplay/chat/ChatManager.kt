@@ -18,7 +18,8 @@ import server.common.message.PlayerChatMessage
 import server.common.message.PlayerPrivateChatMessage
 import server.common.message.database.PlayerDataQueryRequest
 import server.common.message.shared.PlayerInfoMessage
-import server.common.sheet.stRankMap
+import server.common.sheet.Sheet
+import server.common.sheet.getStRank
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -84,7 +85,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
     }
 
     fun receivePublic(sender: PlayerInfoMessage, fragments: Array<FragmentMessage>) {
-        val rank = stRankMap[sender.rankId]!!
+        val rank = Sheet.getStRank(sender.rankId)!!
         val builder = text()
         builder.color(TextColor.fromHexString(rank.chatColor))
         builder.append(publicChatPrefix(sender))
@@ -164,7 +165,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
     }
 
     private fun publicChatPrefix(sender: PlayerInfoMessage): Component {
-        val rank = stRankMap[sender.rankId]!!
+        val rank = Sheet.getStRank(sender.rankId)!!
         val builder = text()
 
         // 玩家名字

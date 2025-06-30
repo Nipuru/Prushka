@@ -32,7 +32,7 @@ class Table:
             ]
         },
         "st_reward": {
-            "key": "reward_id",
+            "akey": "reward_id",
             "unique": [
                 ["reward_id"]
             ]

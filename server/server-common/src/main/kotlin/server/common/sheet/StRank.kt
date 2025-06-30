@@ -6,8 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 
-lateinit var stRankMap: Map<Int/* configId */, StRank>
-    private set
+private lateinit var stRankMap: Map<Int, StRank>
 
 data class StRank(
     /** 配置id */ 
@@ -17,8 +16,16 @@ data class StRank(
     /** 聊天名字颜色 */ 
     val nameColor: String,
     /** 聊天文本颜色 */ 
-    val chatColor: String,
+    val chatColor: String
 )
+
+fun Sheet.getAllStRank(): Map<Int, StRank> {
+    return stRankMap
+}
+
+fun Sheet.getStRank(configId: Int): StRank? {
+    return stRankMap[configId]
+}
 
 internal fun loadStRank(gson: Gson, tablePath: String) {
     val jsonFile = File(tablePath, "st_rank.json")

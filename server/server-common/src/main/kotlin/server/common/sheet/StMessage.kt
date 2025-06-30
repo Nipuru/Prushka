@@ -6,8 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 
-lateinit var stMessageMap: Map<String/* key */, StMessage>
-    private set
+private lateinit var stMessageMap: Map<String, StMessage>
 
 data class StMessage(
     /** 键名 */ 
@@ -15,6 +14,14 @@ data class StMessage(
     /** 键值 */ 
     val value: String
 )
+
+fun Sheet.getAllStMessage(): Map<String, StMessage> {
+    return stMessageMap
+}
+
+fun Sheet.getStMessage(key: String): StMessage? {
+    return stMessageMap[key]
+}
 
 internal fun loadStMessage(gson: Gson, tablePath: String) {
     val jsonFile = File(tablePath, "st_message.json")

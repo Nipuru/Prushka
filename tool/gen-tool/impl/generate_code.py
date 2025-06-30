@@ -47,6 +47,8 @@ data class <name>(
 <field>
 )
 
+<extention>
+
 internal fun load<name>(gson: Gson, tablePath: String) {
     val jsonFile = File(tablePath, "<table_name>.json")
     val jsonString = jsonFile.readText()
@@ -99,15 +101,22 @@ def generate_code():
             print('%s表同时存在key和akey' % (table_name))
             continue
         maps = []
+        extentions = []
         if key:
-            maps.append(f"lateinit var {field_name}Map: Map<{key[1]}/* {key[0]} */, {class_name}>\n    private set")
+            maps.append(f"private lateinit var {field_name}Map: Map<{key[1]}, {class_name}>")
+            extentions.append(f"fun Sheet.getAll{class_name}(): Map<{key[1]}, {class_name}> {{\n    return {field_name}Map\n}}")
+            extentions.append(f"fun Sheet.get{class_name}({key[0]}: {key[1]}): {class_name}? {{\n    return {field_name}Map[{key[0]}]\n}}")
         if vkey:
-            maps.append(f"lateinit var {field_name}VMap: Map<{vkey[1]}/* {vkey[0]} */, {class_name}>\n    private set")
+            maps.append(f"private lateinit var {field_name}VMap: Map<{vkey[1]}, {class_name}>")
+            extentions.append(f"fun Sheet.get{class_name}({vkey[0]}: {vkey[1]})ById: {class_name}? {{\n    return {field_name}Map[{vkey[0]}]\n}}")
         if akey:
             if subkey:
-                maps.append(f"lateinit var {field_name}AMap: Map<Pair<{akey[1]}/* {akey[0]} */, {subkey[1]}/* {subkey[0]} */>>, {class_name}>\n    private set")
+                maps.append(f"private lateinit var {field_name}AMap: Map<Pair<{akey[1]}, {subkey[1]}>>, {class_name}>")
+                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, {subkey[0]}: {subkey[1]}): {class_name}? {{\n    return {field_name}AMap[{akey[0]}]?.get({subkey[0]})\n}}")
             else:
-                maps.append(f"lateinit var {field_name}AMap: Map<{akey[1]}/* {akey[0]} */, List<{class_name}>>\n    private set")
+                maps.append(f"private lateinit var {field_name}AMap: Map<{akey[1]}, List<{class_name}>>")
+                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, index: Int): List<{class_name}> {{\n    return {field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
+                extentions.append(f"fun Sheet.get{class_name}s({akey[0]}: {akey[1]}): List<{class_name}> {{\n    return {field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
             
         fields = []
         for i in range( len(labels) ):
@@ -148,8 +157,13 @@ def generate_code():
         if akey:
             mapping += f"    {field_name}AMap = aMap\n"
         mapping = mapping.rstrip()
-        sheet_code = sheet_template.replace('<name>', class_name).replace('<table_name>', table_name).replace('<field>', ',\n'.join(fields)).replace('<map>', '\n'.join(maps)).replace('<mapping>', mapping)
-        sheet_path = '%s/prushka-common/src/main/kotlin/top/nipuru/prushka/common/sheet/%s.kt' % (Config.code_path, class_name)
+        sheet_code = sheet_template.replace('<name>', class_name)
+        sheet_code = sheet_code.replace('<table_name>', table_name)
+        sheet_code = sheet_code.replace('<field>', ',\n'.join(fields))
+        sheet_code = sheet_code.replace('<map>', '\n'.join(maps))
+        sheet_code = sheet_code.replace('<extention>', '\n\n'.join(extentions))
+        sheet_code = sheet_code.replace('<mapping>', mapping)
+        sheet_path = '%s/server-common/src/main/kotlin/server/common/sheet/%s.kt' % (Config.code_path, class_name)
         write_file(sheet_path, sheet_code)
             
         table = Table.tables[table_name]
@@ -160,7 +174,7 @@ def generate_code():
     for sheet in sheets:
         load_sheets.append(f"        load{snake_to_pascal(sheet)}(gson, tablePath)")
     sheet_loader_code = sheet_loader_template.replace('<sheets>', '\n'.join(load_sheets))
-    sheet_loader_path = '%s/prushka-common/src/main/kotlin/top/nipuru/prushka/common/sheet/Sheet.kt' % (Config.code_path)
+    sheet_loader_path = '%s/server-common/src/main/kotlin/server/common/sheet/Sheet.kt' % (Config.code_path)
     write_file(sheet_loader_path, sheet_loader_code)
     
 def __kotlin_type(column_type):

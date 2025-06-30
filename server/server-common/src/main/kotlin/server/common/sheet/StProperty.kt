@@ -6,8 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 
-lateinit var stPropertyMap: Map<Int/* configId */, StProperty>
-    private set
+private lateinit var stPropertyMap: Map<Int, StProperty>
 
 data class StProperty(
     /** 配置id */ 
@@ -15,6 +14,14 @@ data class StProperty(
     /** 名称 */ 
     val name: String
 )
+
+fun Sheet.getAllStProperty(): Map<Int, StProperty> {
+    return stPropertyMap
+}
+
+fun Sheet.getStProperty(configId: Int): StProperty? {
+    return stPropertyMap[configId]
+}
 
 internal fun loadStProperty(gson: Gson, tablePath: String) {
     val jsonFile = File(tablePath, "st_property.json")

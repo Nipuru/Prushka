@@ -6,8 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File
 
-lateinit var stRewardAMap: Map<Int/* rewardId */, List<StReward>>
-    private set
+private lateinit var stRewardAMap: Map<Int, List<StReward>>
 
 data class StReward(
     /** 配置id */ 
@@ -16,9 +15,17 @@ data class StReward(
     val type: Int,
     /** 物品id */ 
     val id: Int,
-    /** 数量 */
-    val num: Int,
+    /** 数量 */ 
+    val amount: Int
 )
+
+fun Sheet.getStReward(rewardId: Int, index: Int): List<StReward> {
+    return stRewardAMap[rewardId] ?: emptyList()
+}
+
+fun Sheet.getStRewards(rewardId: Int): List<StReward> {
+    return stRewardAMap[rewardId] ?: emptyList()
+}
 
 internal fun loadStReward(gson: Gson, tablePath: String) {
     val jsonFile = File(tablePath, "st_reward.json")

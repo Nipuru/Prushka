@@ -1,6 +1,10 @@
 package server.bukkit.gameplay.player
 
 import server.bukkit.constant.Items
+import server.common.sheet.Sheet
+import server.common.sheet.getStReward
+import server.common.sheet.getStRewardPools
+import server.common.sheet.getStRewards
 
 
 /**
@@ -14,29 +18,29 @@ class RewardInfo(
 )
 
 fun getRewards(rewardId: Int) : List<RewardInfo> {
-    var cfgs = server.common.sheet.stRewardAMap[rewardId]!!
+    val cfgs = Sheet.getStRewards(rewardId)
     val rewards = mutableListOf<RewardInfo>()
     for (cfg in cfgs) {
         if (cfg.type == Items.ITEM_POOL) {
-            for (i in 1..cfg.num) {
+            for (i in 1..cfg.amount) {
                 rewards.add(getRewardByPool(cfg.rewardId))
             }
         } else {
-            rewards.add(RewardInfo(cfg.type, cfg.rewardId, cfg.num))
+            rewards.add(RewardInfo(cfg.type, cfg.rewardId, cfg.amount))
         }
     }
     return rewards
 }
 
 fun getRewardByPool(poolId: Int) : RewardInfo {
-    val cfgs = server.common.sheet.stRewardPoolAMap[poolId]!!
+    val cfgs = Sheet.getStRewardPools(poolId)
     val totalWeight = cfgs.sumOf { it.weight }
     val rd = Math.random() * totalWeight
     var weight = 0.0
     for (cfg in cfgs) {
         weight += cfg.weight
         if (rd < weight) {
-            return RewardInfo(cfg.type, cfg.id, cfg.num)
+            return RewardInfo(cfg.type, cfg.id, cfg.amount)
         }
     }
     return null!!
