@@ -13,6 +13,7 @@ import server.log.config.loadConfig
 import server.log.database.DatabaseFactory
 import server.log.logger.logger
 import server.log.processor.LogHandler
+import server.log.processor.ReportErrorHandler
 import server.log.processor.connection.CloseEventDBProcessor
 
 
@@ -39,6 +40,7 @@ internal object LogServer {
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         val dispatcher = RequestDispatcher()
         dispatcher.registerHandler(LogHandler())
+        dispatcher.registerHandler(ReportErrorHandler())
         builder.registerUserProcessor(dispatcher)
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventDBProcessor())
     }

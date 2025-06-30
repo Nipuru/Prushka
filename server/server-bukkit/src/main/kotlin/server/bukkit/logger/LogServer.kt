@@ -1,12 +1,26 @@
 package server.bukkit.logger
 
+import net.afyer.afybroker.client.Broker
 import server.bukkit.route.logNotify
 import server.bukkit.time.TimeManager
 import server.bukkit.util.submit
 import server.common.message.log.LogMessage
+import server.common.message.log.ReportErrorMessage
 
 object LogServer {
     const val GET_COMMAND = 1
+
+    fun reportError(error: Throwable) {
+        val message = ReportErrorMessage(
+            serverType = Broker.getClientInfo().type,
+            serverName = Broker.getClientInfo().name,
+            errorMessage = error.message ?: "",
+            stackTrace = error.stackTraceToString(),
+            time = TimeManager.now
+        )
+        submit { logNotify(message) }
+    }
+
 
     fun logRegister(playerId: Int) {
         sendLog("tb_register", mapOf("player_id" to playerId, "time" to TimeManager.now))

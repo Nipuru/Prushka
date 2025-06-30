@@ -98,6 +98,7 @@ class BukkitPlugin : JavaPlugin() {
         PlayerCommandListener().register(this)
         PlayerMoveListener().register(this)
         PlayerSpawnLocationListener(spawnLocations.asMap()).register(this)
+        ServerExceptionListener().register(this)
     }
 
     private fun registerCommands() {
