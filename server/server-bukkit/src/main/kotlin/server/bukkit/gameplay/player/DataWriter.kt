@@ -4,7 +4,7 @@ import org.bukkit.Bukkit
 import server.bukkit.gameplay.player.DataConvertor.getOrCache
 import server.bukkit.logger.logger
 import server.bukkit.plugin
-import server.bukkit.route.databaseRequest
+import server.bukkit.route.Router
 import server.bukkit.util.submit
 import server.common.message.database.*
 import java.util.*
@@ -92,7 +92,7 @@ class DataWriter(private val player: GamePlayer) {
                         }
                     }
                 }
-                databaseRequest(player.dbId, request)
+                Router.databaseRequest(player.dbId, request)
             } catch (e: Exception) {
                 logger.error("Failed to write database for player {}", player.playerId, e)
                 kickPlayerIfPossible(player)

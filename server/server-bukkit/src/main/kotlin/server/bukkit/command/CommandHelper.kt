@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import server.bukkit.MessageType
 import server.bukkit.logger.logger
-import server.bukkit.route.sharedRequest
+import server.bukkit.route.Router
 import server.bukkit.util.hasTag
 import server.bukkit.util.submit
 import server.common.message.shared.GetPlayerInfoRequest
@@ -71,7 +71,7 @@ internal fun getBukkitPlayer(sender: CommandSender, name: String): Player {
 internal fun getPlayerInfo(sender: CommandSender, name: String): PlayerInfoMessage {
     if (Bukkit.isPrimaryThread()) throw IllegalStateException("primary thread")
     validateInputs(sender, name)
-    val playerInfo = sharedRequest<PlayerInfoMessage?>(GetPlayerInfoRequest(name))
+    val playerInfo = Router.sharedRequest<PlayerInfoMessage?>(GetPlayerInfoRequest(name))
     if (playerInfo != null) return playerInfo
     MessageType.WARNING.sendMessage(sender, "玩家 $name 不存在")
     throw CommandInterruptException

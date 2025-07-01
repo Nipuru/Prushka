@@ -1,7 +1,7 @@
 package server.bukkit.logger
 
 import net.afyer.afybroker.client.Broker
-import server.bukkit.route.logNotify
+import server.bukkit.route.Router
 import server.bukkit.time.TimeManager
 import server.bukkit.util.submit
 import server.common.message.log.LogMessage
@@ -18,7 +18,7 @@ object LogServer {
             stackTrace = error.stackTraceToString(),
             time = TimeManager.now
         )
-        submit { logNotify(message) }
+        submit { Router.logNotify(message) }
     }
 
 
@@ -44,6 +44,6 @@ object LogServer {
     }
 
     private fun sendLog(tableName: String, fields: Map<String, Any>) {
-        submit { logNotify(LogMessage(tableName, fields)) }
+        submit { Router.logNotify(LogMessage(tableName, fields)) }
     }
 }

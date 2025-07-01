@@ -7,7 +7,7 @@ import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.preload
 import server.bukkit.logger.LogServer
 import server.bukkit.logger.logger
-import server.bukkit.route.sharedNotify
+import server.bukkit.route.Router
 import server.bukkit.time.TimeManager
 import server.bukkit.util.submit
 import server.common.message.database.PlayerDataQueryRequest
@@ -218,7 +218,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         val info: PlayerInfoMessage = playerInfo
         val notify = PlayerInfoUpdateNotify(info)
         submit {
-            sharedNotify(notify)
+            Router.sharedNotify(notify)
         }
     }
 
