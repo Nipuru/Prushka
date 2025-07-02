@@ -11,9 +11,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 
 fun Table.initSchema() {
-    val that = this
     transaction {
-        SchemaUtils.create(that)
-        SchemaUtils.createMissingTablesAndColumns(that)
+        SchemaUtils.create(this@initSchema)
+        SchemaUtils.createMissingTablesAndColumns(this@initSchema)
     }
 }
