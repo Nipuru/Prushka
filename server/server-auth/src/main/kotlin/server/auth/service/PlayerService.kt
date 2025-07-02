@@ -16,9 +16,6 @@ import java.util.*
  */
 object PlayerService {
 
-    init {
-        transaction { SchemaUtils.create(PlayerTable) }
-    }
 
     fun initPlayer(name: String, uniqueId: UUID, lastIp: String): PlayerLoginResponse {
         return transaction {

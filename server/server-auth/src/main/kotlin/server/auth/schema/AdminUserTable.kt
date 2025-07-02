@@ -14,4 +14,8 @@ object AdminUserTable : Table() {
     val password = varchar("password", 32)
     val enabled = bool("enabled")
     override val primaryKey = PrimaryKey(userId)
+
+    init {
+        initSchema()
+    }
 }

@@ -1,7 +1,9 @@
 package server.auth.schema
 
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Sequence
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.transactions.transaction
 
 
 /**
@@ -17,4 +19,9 @@ object PlayerTable : Table() {
     val dbId = integer("db_id")
     val createTime = long("create_time")
     override val primaryKey = PrimaryKey(playerId)
+
+    init {
+        initSchema()
+    }
+
 }
