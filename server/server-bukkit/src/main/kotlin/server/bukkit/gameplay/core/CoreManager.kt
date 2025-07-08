@@ -6,7 +6,7 @@ import server.bukkit.gameplay.player.DataInfo
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.preload
 import server.bukkit.logger.LogServer
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import server.bukkit.route.Router
 import server.bukkit.time.TimeManager
 import server.bukkit.util.submit

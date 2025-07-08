@@ -12,7 +12,7 @@ import server.bukkit.gameplay.offline.OfflineManager
 import server.bukkit.gameplay.skin.SkinManager
 import server.bukkit.gameplay.teleport.TeleportManager
 import server.bukkit.logger.LogServer
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
 import server.common.message.database.PlayerDataQueryRequest

@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import server.bukkit.gameplay.player.BaseManager
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.preload
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import server.bukkit.nms.*
 import server.common.message.database.PlayerDataQueryRequest
 

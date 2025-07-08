@@ -2,18 +2,26 @@ package server.database.service
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.statements.StatementContext
+import org.jetbrains.exposed.sql.statements.expandArgs
 import org.jetbrains.exposed.sql.transactions.transaction
 import server.common.message.database.FieldMessage
 import server.common.message.database.PlayerDataQueryRequest
 import server.common.message.database.PlayerDataTransactionRequest
 import server.common.message.database.TableInfoMessage
-import server.database.logger.sqlLogger
+import server.common.logger.logger
 import server.database.schema.PlayerDataTable
 import server.database.schema.initSchema
 import java.util.concurrent.ConcurrentHashMap
 
 object PlayerDataService {
     private val tableInitialized = ConcurrentHashMap<String, PlayerDataTable>()
+
+    private val sqlLogger = object : SqlLogger {
+        override fun log(context: StatementContext, transaction: Transaction) {
+            logger.info("SQL: ${context.expandArgs(transaction)}")
+        }
+    }
 
     fun queryPlayer(request: PlayerDataQueryRequest): Map<String, List<List<FieldMessage>>> {
         return transaction {

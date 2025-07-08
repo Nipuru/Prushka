@@ -12,7 +12,7 @@ import server.shared.SharedServer.startup
 import server.shared.config.Config
 import server.shared.config.loadConfig
 import server.shared.database.DatabaseFactory
-import server.shared.logger.logger
+import server.common.logger.logger
 import server.shared.processor.connection.CloseEventSharedProcessor
 import server.shared.processor.connection.ConnectEventSharedProcessor
 

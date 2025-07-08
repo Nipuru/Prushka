@@ -2,7 +2,7 @@ package server.bukkit.util
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import org.bukkit.Bukkit
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import server.bukkit.plugin
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors

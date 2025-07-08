@@ -1,7 +1,7 @@
 package server.bukkit.time
 
 import server.bukkit.constant.DAY
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.ZoneId

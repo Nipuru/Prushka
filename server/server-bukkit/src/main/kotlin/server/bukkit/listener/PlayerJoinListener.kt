@@ -8,7 +8,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.GamePlayers
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import java.util.*
 
 class PlayerJoinListener(private val pendingPlayers: MutableMap<UUID, GamePlayer>) : Listener {

@@ -4,7 +4,7 @@ import com.alipay.remoting.Connection
 import com.alipay.remoting.ConnectionEventProcessor
 import net.afyer.afybroker.client.Broker
 import server.bukkit.gameplay.player.GamePlayers
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import server.bukkit.time.TimeManager
 import server.bukkit.util.submit
 import server.common.message.GetTimeRequest

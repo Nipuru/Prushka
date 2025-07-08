@@ -2,7 +2,7 @@ package server.bukkit.gameplay.player
 
 import org.bukkit.Bukkit
 import server.bukkit.gameplay.player.DataConvertor.getOrCache
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import server.bukkit.plugin
 import server.bukkit.route.Router
 import server.bukkit.util.submit

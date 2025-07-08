@@ -4,7 +4,6 @@ import com.destroystokyo.paper.event.server.ServerExceptionEvent
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import server.bukkit.logger.LogServer
-import server.bukkit.logger.logger
 
 
 /**

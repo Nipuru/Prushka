@@ -6,7 +6,7 @@ import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import server.bukkit.gameplay.player.GamePlayers
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import server.bukkit.plugin
 
 

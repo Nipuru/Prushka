@@ -4,7 +4,7 @@ import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import server.bukkit.MessageType
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import server.bukkit.route.Router
 import server.bukkit.util.hasTag
 import server.bukkit.util.submit

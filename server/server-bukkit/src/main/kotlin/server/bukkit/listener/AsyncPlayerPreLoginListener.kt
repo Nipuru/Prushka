@@ -9,7 +9,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import server.bukkit.enableLatch
 import server.bukkit.gameplay.player.DataReader
 import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import java.util.*
 
 class AsyncPlayerPreLoginListener(private val pendingPlayers: MutableMap<UUID, GamePlayer>) : Listener {

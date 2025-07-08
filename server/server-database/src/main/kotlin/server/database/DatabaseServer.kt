@@ -12,7 +12,7 @@ import server.database.DatabaseServer.startup
 import server.database.config.Config
 import server.database.config.loadConfig
 import server.database.database.DatabaseFactory
-import server.database.logger.logger
+import server.common.logger.logger
 import server.database.processor.*
 import server.database.processor.connection.CloseEventDBProcessor
 

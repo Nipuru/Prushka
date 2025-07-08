@@ -11,7 +11,7 @@ import server.log.LogServer.startup
 import server.log.config.Config
 import server.log.config.loadConfig
 import server.log.database.DatabaseFactory
-import server.log.logger.logger
+import server.common.logger.logger
 import server.log.processor.LogHandler
 import server.log.processor.ReportErrorHandler
 import server.log.processor.connection.CloseEventDBProcessor

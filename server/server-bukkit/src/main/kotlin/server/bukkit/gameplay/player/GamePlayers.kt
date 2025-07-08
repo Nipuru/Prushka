@@ -1,7 +1,7 @@
 package server.bukkit.gameplay.player
 
 import org.bukkit.Bukkit
-import server.bukkit.logger.logger
+import server.common.logger.logger
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 

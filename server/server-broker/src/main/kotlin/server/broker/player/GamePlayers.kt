@@ -1,6 +1,6 @@
 package server.broker.player
 
-import server.broker.logger.logger
+import server.common.logger.logger
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
