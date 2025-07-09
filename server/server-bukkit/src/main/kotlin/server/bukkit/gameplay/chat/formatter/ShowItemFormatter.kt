@@ -13,15 +13,14 @@ import java.util.regex.Pattern
 
 class ShowItemFormatter : MessagePattern(Pattern.compile("#展示([0-9]*)#")) {
     override fun parse(player: GamePlayer, vararg args: String?): Fragment {
-        val itemStacks = arrayOfNulls<ItemStack>(1)
-        itemStacks[0] = getItemStack(player, args[0]!!)
-        val data = itemStacks.serialize()
+        val itemStack = getItemStack(player, args[0]!!)
+        val data = itemStack.serializeAsBytes()
         return Fragment(data)
     }
 
     override fun format(sender: PlayerInfoMessage, receiver: GamePlayer, fragment: Fragment): Component {
         val data = fragment.getArg<ByteArray>(0)
-        val itemStack: ItemStack = data.deserializeItemStacks()[0]!!
+        val itemStack = ItemStack.deserializeBytes(data)
         val builder = Component.text()
         builder.append(Component.text("["))
             .append(itemStack.displayName())
