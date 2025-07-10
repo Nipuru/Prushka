@@ -182,12 +182,11 @@ def generate_code():
     write_file(sheet_loader_path, sheet_loader_code)
     
 def __kotlin_type(column_type):
-
     original_type = column_type
     
-    is_array = column_type.endswith("[]")
+    is_array = column_type.startswith("[]")
     if is_array:
-        element_type = column_type[:-2]
+        element_type = column_type[2:]
         
         base_kotlin_type = type_mapping.get(element_type)
         if base_kotlin_type is None:
