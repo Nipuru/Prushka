@@ -9,7 +9,7 @@ def open_file( xls_path, table ):
     xls_file = xls_datas.get(table)
     if xls_file:
         return xls_file
-    file_name = xls_path + os.altsep + table + '.xlsx'
+    file_name = xls_path + "/" + table + '.xlsx'
     try:
         xls_file = xlrd.open_workbook( file_name )
     except Exception as e:
@@ -35,17 +35,30 @@ def to_json_bool(value):
     return 'true' if result else 'false'
     
 def to_json_str( value ):
-    if isinstance( value, float ) or isinstance( value, int ):
-        if value - int( value ) > 0:
-            return str( value )
-        return str( int( value ) )
-    if isinstance( value, str ):
-        if value.strip() == '':
+    if value is None:
+        return None
+    
+    # 必须在数字类型之前，因为bool是int的子类
+    if isinstance(value, bool):
+        return str(value).lower()
+    
+    if isinstance(value, (int, float)):
+        if isinstance(value, float) and value % 1 != 0:
+            return str(value)
+        return str(int(value))
+    
+    if isinstance(value, str):
+        stripped_value = value.strip()
+        if not stripped_value:
             return None
-        value = value.replace( "\r", "" )
-        value = value.replace( "\n", "\\n" )
-        return str(value.encode('utf-8'), encoding='utf-8')
-    return None
+        cleaned_value = stripped_value.replace('\r', '').replace('\n', '\\n')
+        return cleaned_value
+    
+    # 其他类型尝试转换为字符串
+    try:
+        return str(value)
+    except Exception:
+        return None
         
 def split_array( text ):
     elements = []
@@ -72,6 +85,7 @@ def split_array( text ):
     if element:
         elements.append(element.strip())
     return elements
+
 def is_array( text ):
     if len( text ) < 2:
         return False

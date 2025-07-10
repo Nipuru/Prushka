@@ -55,9 +55,13 @@ def __add_json_line(label_indexes, labels, column_types, line):
     for k in range( len( label_indexes ) ):
         idx = label_indexes[k]
         data = to_json_str( line[idx])
+        string_type = column_types[idx].startswith('string')
         if data == None:
-            continue
-        if column_types[idx].startswith('string'):
+            if string_type:
+                data = ''
+            else:
+                continue
+        if string_type:
             fields.append( '"%s":"%s"' % ( labels[idx], data ) )
         else:
             fields.append( '"%s":%s' % ( labels[idx], data ) )

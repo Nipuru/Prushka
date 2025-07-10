@@ -88,6 +88,8 @@ def generate_code():
                 continue
             if labels[i] in exclude:
                 continue
+            if column_types[i] == '':
+                continue
             k = [snake_to_camel(labels[i]), __kotlin_type(column_types[i])]
             if "key" in table and table['key'] == labels[i]:
                 key = k
@@ -111,8 +113,8 @@ def generate_code():
             extentions.append(f"fun Sheet.get{class_name}({vkey[0]}: {vkey[1]})ById: {class_name}? {{\n    return {field_name}Map[{vkey[0]}]\n}}")
         if akey:
             if subkey:
-                maps.append(f"private lateinit var {field_name}AMap: Map<Pair<{akey[1]}, {subkey[1]}>>, {class_name}>")
-                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, {subkey[0]}: {subkey[1]}): {class_name}? {{\n    return {field_name}AMap[{akey[0]}]?.get({subkey[0]})\n}}")
+                maps.append(f"private lateinit var {field_name}AMap: Map<Pair<{akey[1]}, {subkey[1]}>, {class_name}>")
+                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, {subkey[0]}: {subkey[1]}): {class_name}? {{\n    return {field_name}AMap[{akey[0]} to {subkey[0]}]\n}}")
             else:
                 maps.append(f"private lateinit var {field_name}AMap: Map<{akey[1]}, List<{class_name}>>")
                 extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, index: Int): List<{class_name}> {{\n    return {field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
@@ -124,10 +126,12 @@ def generate_code():
                 continue
             if labels[i] in exclude:
                 continue
+            if column_types[i] == '':
+                continue
             name = snake_to_camel(labels[i])
             typ = __kotlin_type(column_types[i])
             comment = comments[i]
-            fields.append(f"    /** {comment} */ \n    val {name}: {typ}")
+            fields.append(f"    /** {comment} */\n    val {name}: {typ}")
             
         mapping = ""
         if key:
@@ -178,12 +182,24 @@ def generate_code():
     write_file(sheet_loader_path, sheet_loader_code)
     
 def __kotlin_type(column_type):
-    is_nullable = column_type.endswith("?")
-    base_type = column_type.rstrip("?")
-    kotlin_type = type_mapping.get(base_type)
-    if kotlin_type is None:
-        raise ValueError(f"不支持的数据类型: {column_type}")
-    return f"{kotlin_type}?" if is_nullable else kotlin_type
+
+    original_type = column_type
+    
+    is_array = column_type.endswith("[]")
+    if is_array:
+        element_type = column_type[:-2]
+        
+        base_kotlin_type = type_mapping.get(element_type)
+        if base_kotlin_type is None:
+            raise ValueError(f"不支持的数据类型: {original_type}")
+        
+        kotlin_type = f"List<{base_kotlin_type}>"
+    else:
+        kotlin_type = type_mapping.get(column_type)
+        if kotlin_type is None:
+            raise ValueError(f"不支持的数据类型: {original_type}")
+    
+    return kotlin_type
 
 def snake_to_pascal(snake_str):
     return ''.join(word.capitalize() for word in snake_str.split('_'))
