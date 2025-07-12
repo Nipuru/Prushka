@@ -22,10 +22,7 @@ import server.bukkit.time.TimeManager
 import server.bukkit.util.bizThread
 import server.bukkit.util.register
 import server.common.ClientTag
-import server.common.processor.RequestDispatcher
 import server.common.sheet.Sheet
-import server.bukkit.processor.PlayerDataTransferBukkitProcessor
-import server.bukkit.processor.PlayerOfflineDataBukkitProcessor
 import java.io.File
 import java.util.*
 import java.util.concurrent.CountDownLatch
@@ -57,9 +54,6 @@ class BukkitPlugin : JavaPlugin() {
             CloseEventBukkitProcessor()
         )
 
-        val dispatcher = RequestDispatcher()
-        dispatcher.registerHandler(KickPlayerHandler())
-        builder.registerUserProcessor(dispatcher)
         builder.addTag(ClientTag.GAME)
         builder.registerUserProcessor(PlayerDataTransferBukkitProcessor())
         builder.registerUserProcessor(PlayerOfflineDataBukkitProcessor())

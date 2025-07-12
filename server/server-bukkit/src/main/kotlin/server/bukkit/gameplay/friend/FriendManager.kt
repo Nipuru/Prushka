@@ -2,14 +2,10 @@ package server.bukkit.gameplay.friend
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
-import server.bukkit.gameplay.player.BaseManager
-import server.bukkit.gameplay.player.DataInfo
-import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.preload
+import server.bukkit.gameplay.player.*
 import server.bukkit.time.TimeManager
 import server.bukkit.util.fromJson
 import server.bukkit.util.toJson
-import server.common.message.database.PlayerDataQueryRequest
 
 
 class FriendManager(player: GamePlayer) : BaseManager(player) {
@@ -25,7 +21,7 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
     /** 发出的好友请求（防止重复发送离线消息） */
     private val outboundFriendRequests = Int2ObjectOpenHashMap<FriendRequestOutboundData>()
 
-    fun preload(request: PlayerDataQueryRequest) {
+    fun preload(request: TableInfos) {
         request.preload<FriendshipData>()
         request.preload<FriendRequestInboundData>()
         request.preload<FriendRequestOutboundData>()

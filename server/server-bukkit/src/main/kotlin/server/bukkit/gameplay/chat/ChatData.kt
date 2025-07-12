@@ -10,4 +10,6 @@ class ChatData : Data {
 
     /** 私聊玩家名  */
     var msgTarget: String = ""
+
+    var msgTargetId: Int = 0
 }

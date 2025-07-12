@@ -3,12 +3,8 @@ package server.bukkit.gameplay.skin
 import com.destroystokyo.paper.profile.ProfileProperty
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.core.message.PlayerProfilePropertyMessage
-import server.bukkit.gameplay.player.BaseManager
-import server.bukkit.gameplay.player.DataInfo
-import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.preload
+import server.bukkit.gameplay.player.*
 import server.bukkit.util.submit
-import server.common.message.database.PlayerDataQueryRequest
 
 
 /**
@@ -27,7 +23,7 @@ class SkinManager(player: GamePlayer) : BaseManager(player) {
             player.core.updateShared = true
         }
 
-    fun preload(request: PlayerDataQueryRequest) {
+    fun preload(request: TableInfos) {
         request.preload<SkinData>()
     }
 

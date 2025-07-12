@@ -2,17 +2,17 @@ package server.bukkit.gameplay.item
 
 import server.bukkit.gameplay.player.BaseManager
 import server.bukkit.gameplay.player.GamePlayer
+import server.bukkit.gameplay.player.TableInfos
 import server.bukkit.gameplay.player.preload
 import server.bukkit.logger.LogServer
 import server.common.logger.logger
-import server.common.message.database.PlayerDataQueryRequest
 
 
 class ItemManager(player: GamePlayer) : BaseManager(player) {
     
     private val items = mutableMapOf<Int, MutableMap<Int, ItemData>>()
 
-    fun preload(request: PlayerDataQueryRequest) {
+    fun preload(request: TableInfos) {
         request.preload<ItemData>()
     }
     

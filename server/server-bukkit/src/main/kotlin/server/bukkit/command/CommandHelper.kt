@@ -1,15 +1,15 @@
 package server.bukkit.command
 
+import net.afyer.afybroker.client.Broker
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import server.bukkit.MessageType
 import server.common.logger.logger
-import server.bukkit.route.Router
 import server.bukkit.util.hasTag
 import server.bukkit.util.submit
-import server.common.message.shared.GetPlayerInfoRequest
-import server.common.message.shared.PlayerInfoMessage
+import server.common.message.PlayerInfoMessage
+import server.common.service.PlayerInfoService
 
 
 /**
@@ -71,7 +71,8 @@ internal fun getBukkitPlayer(sender: CommandSender, name: String): Player {
 internal fun getPlayerInfo(sender: CommandSender, name: String): PlayerInfoMessage {
     if (Bukkit.isPrimaryThread()) throw IllegalStateException("primary thread")
     validateInputs(sender, name)
-    val playerInfo = Router.sharedRequest<PlayerInfoMessage?>(GetPlayerInfoRequest(name))
+    val playerInfoService = Broker.getService(PlayerInfoService::class.java)
+    val playerInfo = playerInfoService.getByName(name)
     if (playerInfo != null) return playerInfo
     MessageType.WARNING.sendMessage(sender, "玩家 $name 不存在")
     throw CommandInterruptException

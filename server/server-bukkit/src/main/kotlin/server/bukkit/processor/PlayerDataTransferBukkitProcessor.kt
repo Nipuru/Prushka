@@ -10,7 +10,7 @@ import server.bukkit.nms.freeze
 import server.bukkit.nms.quit
 import server.bukkit.util.submit
 import server.common.message.PlayerDataTransferRequest
-import server.common.message.database.PlayerDataMessage
+import server.common.message.PlayerDataMessage
 
 class PlayerDataTransferBukkitProcessor : AsyncUserProcessor<PlayerDataTransferRequest>() {
 

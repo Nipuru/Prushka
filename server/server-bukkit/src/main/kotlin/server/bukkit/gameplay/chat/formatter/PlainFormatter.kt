@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import server.bukkit.gameplay.chat.Fragment
 import server.bukkit.gameplay.player.GamePlayer
-import server.common.message.shared.PlayerInfoMessage
+import server.common.message.PlayerInfoMessage
 
 class PlainFormatter : MessageFormatter {
 

@@ -1,11 +1,7 @@
 package server.bukkit.gameplay.blacklist
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
-import server.bukkit.gameplay.player.BaseManager
-import server.bukkit.gameplay.player.DataInfo
-import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.preload
-import server.common.message.database.PlayerDataQueryRequest
+import server.bukkit.gameplay.player.*
 
 
 /**
@@ -18,7 +14,7 @@ class BlacklistManager(player: GamePlayer) : BaseManager(player) {
     private val inboundBlacklists = Int2ObjectOpenHashMap<BlacklistInboundData>()
     private val outboundBlacklists = Int2ObjectOpenHashMap<BlacklistOutboundData>()
 
-    fun preload(request: PlayerDataQueryRequest) {
+    fun preload(request: TableInfos) {
         request.preload<BlacklistInboundData>()
         request.preload<BlacklistInboundData>()
     }

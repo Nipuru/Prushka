@@ -1,6 +1,6 @@
 package server.bukkit.gameplay.player
 
-import server.common.message.database.FieldMessage
+import server.common.message.FieldMessage
 
 class DataInfo(val tables: MutableMap<String, MutableList<List<FieldMessage>>>) {
 

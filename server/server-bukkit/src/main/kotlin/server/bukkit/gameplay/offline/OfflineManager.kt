@@ -3,18 +3,18 @@ package server.bukkit.gameplay.offline
 import net.afyer.afybroker.client.Broker
 import server.bukkit.gameplay.player.BaseManager
 import server.bukkit.gameplay.player.GamePlayer
+import server.bukkit.gameplay.player.TableInfos
 import server.bukkit.gameplay.player.preload
 import server.bukkit.util.submit
 import server.common.message.PlayerOfflineDataMessage
-import server.common.message.database.PlayerDataQueryRequest
 import java.util.*
 
 class OfflineManager(player: GamePlayer) : BaseManager(player) {
     private val offlineDataHandlers = mutableMapOf<String, OfflineDataHandler>()
     private val offlineDataList = mutableListOf<OfflineData>()
-    private val offlineDataMessageQueue = LinkedList<server.common.message.PlayerOfflineDataMessage>()
+    private val offlineDataMessageQueue = LinkedList<PlayerOfflineDataMessage>()
 
-    fun preload(request: PlayerDataQueryRequest) {
+    fun preload(request: TableInfos) {
         request.preload<OfflineData>()
     }
 

@@ -6,9 +6,7 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import server.bukkit.gameplay.chat.Fragment
 import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.nms.deserializeItemStacks
-import server.bukkit.nms.serialize
-import server.common.message.shared.PlayerInfoMessage
+import server.common.message.PlayerInfoMessage
 import java.util.regex.Pattern
 
 class ShowItemFormatter : MessagePattern(Pattern.compile("#展示([0-9]*)#")) {

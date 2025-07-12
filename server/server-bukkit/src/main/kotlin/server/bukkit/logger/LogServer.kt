@@ -1,24 +1,25 @@
 package server.bukkit.logger
 
 import net.afyer.afybroker.client.Broker
-import server.bukkit.route.Router
 import server.bukkit.time.TimeManager
 import server.bukkit.util.submit
-import server.common.message.log.LogMessage
-import server.common.message.log.ReportErrorMessage
+import server.common.service.LogService
 
 object LogServer {
     const val GET_COMMAND = 1
 
+    private val service = Broker.getService(LogService::class.java)
+
     fun reportError(error: Throwable) {
-        val message = ReportErrorMessage(
-            serverType = Broker.getClientInfo().type,
-            serverName = Broker.getClientInfo().name,
-            errorMessage = error.message ?: "",
-            stackTrace = error.stackTraceToString(),
-            time = TimeManager.now
-        )
-        submit { Router.logNotify(message) }
+        submit {
+            service.reportError(
+                serverType = Broker.getClientInfo().type,
+                serverName = Broker.getClientInfo().name,
+                errorMessage = error.message ?: "",
+                stackTrace = error.stackTraceToString(),
+                time = TimeManager.now
+            )
+        }
     }
 
 
@@ -35,15 +36,35 @@ object LogServer {
     }
 
     fun logAddItem(playerId: Int, itemType: Int, itemId: Int, amount: Long, way: Int) {
-        sendLog("tb_add_item", mapOf("player_id" to playerId, "item_type" to itemType, "item_id" to itemId, "amount" to amount, "time" to TimeManager.now, "way" to way))
+        sendLog(
+            "tb_add_item",
+            mapOf(
+                "player_id" to playerId,
+                "item_type" to itemType,
+                "item_id" to itemId,
+                "amount" to amount,
+                "time" to TimeManager.now,
+                "way" to way
+            )
+        )
     }
 
 
     fun logSubtractItem(playerId: Int, itemType: Int, itemId: Int, amount: Long, way: Int) {
-        sendLog("tb_sub_item", mapOf("player_id" to playerId, "item_type" to itemType, "item_id" to itemId, "amount" to amount, "time" to TimeManager.now, "way" to way))
+        sendLog(
+            "tb_sub_item",
+            mapOf(
+                "player_id" to playerId,
+                "item_type" to itemType,
+                "item_id" to itemId,
+                "amount" to amount,
+                "time" to TimeManager.now,
+                "way" to way
+            )
+        )
     }
 
     private fun sendLog(tableName: String, fields: Map<String, Any>) {
-        submit { Router.logNotify(LogMessage(tableName, fields)) }
+        submit { service.log(tableName, fields) }
     }
 }

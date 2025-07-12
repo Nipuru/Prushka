@@ -1,12 +1,10 @@
 package server.bukkit.gameplay.player
 
 import net.afyer.afybroker.client.Broker
-import server.bukkit.route.Router
 import server.common.message.PlayerDataTransferRequest
-import server.common.message.auth.PlayerLoginResponse
-import server.common.message.auth.PlayerLoginRequest
-import server.common.message.database.PlayerDataMessage
-import server.common.message.database.PlayerDataQueryRequest
+import server.common.message.PlayerDataMessage
+import server.common.service.PlayerDataService
+import server.common.service.PlayerLoginService
 import java.net.InetAddress
 import java.util.*
 
@@ -23,13 +21,16 @@ object DataReader {
             return gamePlayer
         } else {
             // 其他服务器没有数据代表登录 需要新建数据或从数据库加载
-            val loginRequest = PlayerLoginRequest(name, uniqueId, address.hostAddress)
-            val loginResponse = Router.authRequest<PlayerLoginResponse>(loginRequest)!!
-            val queryRequest = PlayerDataQueryRequest(loginResponse.playerId)
-            val gamePlayer = GamePlayer(loginResponse.playerId, loginResponse.dbId, name, uniqueId)
-            gamePlayer.preload(queryRequest)
-            val dataInfo = DataInfo(Router.databaseRequest(loginResponse.dbId, queryRequest)!!)
-            gamePlayer.unpack(dataInfo)
+            val playerLoginService = Broker.getService(PlayerLoginService::class.java)
+
+            val loginData = playerLoginService.login(name, uniqueId, address.hostAddress)
+
+            val gamePlayer = GamePlayer(loginData.playerId, loginData.dbId, name, uniqueId)
+            val tableInfos = TableInfos()
+            gamePlayer.preload(tableInfos)
+            val playerDataService = Broker.getService(PlayerDataService::class.java, loginData.dbId.toString())
+            val data = playerDataService.queryPlayer(loginData.playerId, tableInfos.tables)
+            gamePlayer.unpack(DataInfo(data))
             return gamePlayer
         }
     }

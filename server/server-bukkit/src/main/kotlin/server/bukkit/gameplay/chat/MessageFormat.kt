@@ -8,7 +8,7 @@ import server.bukkit.gameplay.chat.formatter.PlainFormatter
 import server.bukkit.gameplay.chat.formatter.ShowItemFormatter
 import server.bukkit.gameplay.player.GamePlayer
 import server.common.message.FragmentMessage
-import server.common.message.shared.PlayerInfoMessage
+import server.common.message.PlayerInfoMessage
 import java.util.*
 import java.util.regex.Matcher
 

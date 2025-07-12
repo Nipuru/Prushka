@@ -1,6 +1,5 @@
 package server.common.message
 
-import server.common.message.shared.PlayerInfoMessage
 import java.io.Serializable
 
 

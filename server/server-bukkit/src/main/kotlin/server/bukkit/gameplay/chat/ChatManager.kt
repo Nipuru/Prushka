@@ -10,14 +10,14 @@ import net.kyori.adventure.text.format.TextColor.color
 import server.bukkit.MessageType
 import server.bukkit.gameplay.player.BaseManager
 import server.bukkit.gameplay.player.GamePlayer
+import server.bukkit.gameplay.player.TableInfos
 import server.bukkit.gameplay.player.preload
 import server.bukkit.time.TimeManager
 import server.bukkit.util.submit
 import server.common.message.FragmentMessage
 import server.common.message.PlayerChatMessage
 import server.common.message.PlayerPrivateChatMessage
-import server.common.message.database.PlayerDataQueryRequest
-import server.common.message.shared.PlayerInfoMessage
+import server.common.message.PlayerInfoMessage
 import server.common.sheet.Sheet
 import server.common.sheet.getStRank
 import java.time.Instant
@@ -28,7 +28,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
 
     private lateinit var data: ChatData
 
-    fun preload(request: PlayerDataQueryRequest) {
+    fun preload(request: TableInfos) {
         request.preload<ChatData>()
     }
 

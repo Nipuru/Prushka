@@ -1,4 +1,4 @@
-package server.common.message.shared
+package server.common.message
 
 import java.io.Serializable
 import java.util.UUID

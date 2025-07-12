@@ -1,18 +1,14 @@
 package server.bukkit.gameplay.core
 
+import net.afyer.afybroker.client.Broker
 import server.bukkit.constant.Items
-import server.bukkit.gameplay.player.BaseManager
-import server.bukkit.gameplay.player.DataInfo
-import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.preload
+import server.bukkit.gameplay.player.*
 import server.bukkit.logger.LogServer
 import server.common.logger.logger
-import server.bukkit.route.Router
 import server.bukkit.time.TimeManager
 import server.bukkit.util.submit
-import server.common.message.database.PlayerDataQueryRequest
-import server.common.message.shared.PlayerInfoMessage
-import server.common.message.shared.PlayerInfoUpdateNotify
+import server.common.message.PlayerInfoMessage
+import server.common.service.PlayerInfoService
 
 class CoreManager(player: GamePlayer) : BaseManager(player) {
     private lateinit var playerData: PlayerData
@@ -20,7 +16,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     private var idleTime = 0               // 挂机时间（tick）
     var updateShared = false        // 更新个人信息至公共服务器标记
 
-    fun preload(request: PlayerDataQueryRequest) {
+    fun preload(request: TableInfos) {
         request.preload<PlayerData>()
     }
 
@@ -215,10 +211,9 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     private fun updatePublic() {
         if (!updateShared) return
         updateShared = false
-        val info: PlayerInfoMessage = playerInfo
-        val notify = PlayerInfoUpdateNotify(info)
+        val playerInfoService = Broker.getService(PlayerInfoService::class.java)
         submit {
-            Router.sharedNotify(notify)
+            playerInfoService.insertOrUpdate(playerInfo)
         }
     }
 

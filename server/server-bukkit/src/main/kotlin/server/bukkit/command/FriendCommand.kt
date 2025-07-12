@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 import server.bukkit.MessageType
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.GamePlayers
-import server.common.message.shared.PlayerInfoMessage
+import server.common.message.PlayerInfoMessage
 
 
 /**

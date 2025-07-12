@@ -7,7 +7,6 @@ import server.broker.processor.*
 class BrokerPlugin : Plugin() {
     override fun onEnable() {
         server.pluginManager.registerListener(this, PlayerListener())
-        server.registerUserProcessor(RequestMessageRouter())
         server.registerUserProcessor(PlayerDataTransferBrokerProcessor())
         server.registerUserProcessor(PlayerOfflineDataBrokerProcessor())
         server.registerUserProcessor(PlayerChatBrokerProcessor())

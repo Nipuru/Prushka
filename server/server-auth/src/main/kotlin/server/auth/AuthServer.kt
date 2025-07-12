@@ -23,23 +23,19 @@ import server.auth.config.loadConfig
 import server.auth.database.DatabaseFactory
 import server.auth.http.rootRouting
 import server.auth.logger.logger
-import server.auth.processor.PlayerLoginHandler
 import server.auth.processor.connection.CloseEventAuthProcessor
+import server.auth.service.PlayerLoginServiceImpl
 import server.auth.util.JWTUtil
 import server.auth.util.overdue
 import server.common.ClientType
-import server.common.processor.RequestDispatcher
+import server.common.service.PlayerLoginService
 
 object AuthServer {
     private lateinit var brokerClient: BrokerClient
     private lateinit var httpServer: EmbeddedServer<*, *>
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
-        val dispatcher = RequestDispatcher()
-
-        dispatcher.registerHandler(PlayerLoginHandler())
-
-        builder.registerUserProcessor(dispatcher)
+        builder.registerService(PlayerLoginService::class.java, PlayerLoginServiceImpl())
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventAuthProcessor())
     }
 

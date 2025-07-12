@@ -5,32 +5,33 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.StatementContext
 import org.jetbrains.exposed.sql.statements.expandArgs
 import org.jetbrains.exposed.sql.transactions.transaction
-import server.common.message.database.FieldMessage
-import server.common.message.database.PlayerDataQueryRequest
-import server.common.message.database.PlayerDataTransactionRequest
-import server.common.message.database.TableInfoMessage
+import server.common.message.FieldMessage
 import server.common.logger.logger
+import server.common.service.PlayerDataService
+import server.common.service.PlayerDataService.Transaction
+import server.common.service.PlayerDataService.TableInfo
 import server.database.schema.PlayerDataTable
 import server.database.schema.initSchema
 import java.util.concurrent.ConcurrentHashMap
+import org.jetbrains.exposed.sql.Transaction as ETransaction
 
-object PlayerDataService {
+class PlayerDataServiceImpl : PlayerDataService {
     private val tableInitialized = ConcurrentHashMap<String, PlayerDataTable>()
 
     private val sqlLogger = object : SqlLogger {
-        override fun log(context: StatementContext, transaction: Transaction) {
+        override fun log(context: StatementContext, transaction: ETransaction) {
             logger.info("SQL: ${context.expandArgs(transaction)}")
         }
     }
 
-    fun queryPlayer(request: PlayerDataQueryRequest): Map<String, List<List<FieldMessage>>> {
+    override fun queryPlayer(playerId: Int, tables: List<TableInfo>): MutableMap<String, MutableList<List<FieldMessage>>> {
         return transaction {
-            val result = mutableMapOf<String, List<List<FieldMessage>>>()
-            for (tableInfo in request.tables) {
+            val result = mutableMapOf<String, MutableList<List<FieldMessage>>>()
+            for (tableInfo in tables) {
                 val table = getTable(tableInfo)
                 val lists = mutableListOf<List<FieldMessage>>()
                 if (table.exists()) {
-                    table.selectAll().where(table.playerId eq request.playerId).forEach {
+                    table.selectAll().where(table.playerId eq playerId).forEach {
                         val fields = mutableListOf<FieldMessage>()
                         for (fieldName in tableInfo.fields.keys) {
                             val field = FieldMessage(fieldName, table.getColumn(it, fieldName))
@@ -46,7 +47,7 @@ object PlayerDataService {
     }
 
 
-    fun transaction(request: PlayerDataTransactionRequest) {
+    override fun transaction(request: Transaction) {
         transaction {
             addLogger(sqlLogger)
             for (delete in request.deletes) {
@@ -89,7 +90,7 @@ object PlayerDataService {
         }
     }
 
-    private fun getTable(tableInfo: TableInfoMessage) : PlayerDataTable {
+    private fun getTable(tableInfo: TableInfo) : PlayerDataTable {
         val tables = tableInitialized
         var table = tables[tableInfo.tableName]
         if (table == null) {

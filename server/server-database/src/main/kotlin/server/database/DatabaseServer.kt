@@ -6,15 +6,19 @@ import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import server.common.ClientType
-import server.common.processor.RequestDispatcher
+import server.common.logger.logger
+import server.common.service.FileService
+import server.common.service.OfflineDataService
+import server.common.service.PlayerDataService
 import server.database.DatabaseServer.shutdown
 import server.database.DatabaseServer.startup
 import server.database.config.Config
 import server.database.config.loadConfig
 import server.database.database.DatabaseFactory
-import server.common.logger.logger
-import server.database.processor.*
 import server.database.processor.connection.CloseEventDBProcessor
+import server.database.service.FileServiceImpl
+import server.database.service.OfflineDataServiceImpl
+import server.database.service.PlayerDataServiceImpl
 
 
 fun main() {
@@ -37,15 +41,11 @@ internal object DatabaseServer {
         brokerClient.shutdown()
     }
 
-    private fun buildBrokerClient(builder: BrokerClientBuilder) {
-        val dispatcher = RequestDispatcher()
-        dispatcher.registerHandler(FileSaveHandler())
-        dispatcher.registerHandler(FileLoadHandler())
-        dispatcher.registerHandler(PlayerDataQueryHandler())
-        dispatcher.registerHandler(PlayerDataTransactionHandler())
-
-        builder.registerUserProcessor(dispatcher)
-        builder.registerUserProcessor(PlayerOfflineDataDBProcessor())
+    private fun buildBrokerClient(builder: BrokerClientBuilder, config: Config) {
+        val dbId = config.dbId.toString()
+        builder.registerService(FileService::class.java, FileServiceImpl(), dbId)
+        builder.registerService(PlayerDataService::class.java, PlayerDataServiceImpl(), dbId)
+        builder.registerService(OfflineDataService::class.java, OfflineDataServiceImpl(), dbId)
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventDBProcessor())
     }
 
@@ -64,7 +64,7 @@ internal object DatabaseServer {
             builder.port(config.broker!!.port!!)
             builder.name(String.format("%s-%d", ClientType.DB, config.dbId))
             builder.type(ClientType.DB)
-            buildBrokerClient(builder)
+            buildBrokerClient(builder, config)
 
             brokerClient = builder.build()
             Broker.setClient(brokerClient)

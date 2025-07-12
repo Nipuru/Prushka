@@ -5,16 +5,15 @@ import com.alipay.remoting.LifeCycleException
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
-import server.common.processor.RequestDispatcher
+import server.common.logger.logger
+import server.common.service.LogService
 import server.log.LogServer.shutdown
 import server.log.LogServer.startup
 import server.log.config.Config
 import server.log.config.loadConfig
 import server.log.database.DatabaseFactory
-import server.common.logger.logger
-import server.log.processor.LogHandler
-import server.log.processor.ReportErrorHandler
 import server.log.processor.connection.CloseEventDBProcessor
+import server.log.service.LogServiceImpl
 
 
 fun main() {
@@ -38,10 +37,7 @@ internal object LogServer {
     }
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
-        val dispatcher = RequestDispatcher()
-        dispatcher.registerHandler(LogHandler())
-        dispatcher.registerHandler(ReportErrorHandler())
-        builder.registerUserProcessor(dispatcher)
+        builder.registerService(LogService::class.java, LogServiceImpl())
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventDBProcessor())
     }
 

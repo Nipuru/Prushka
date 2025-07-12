@@ -6,11 +6,11 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import server.bukkit.gameplay.player.BaseManager
 import server.bukkit.gameplay.player.GamePlayer
+import server.bukkit.gameplay.player.TableInfos
 import server.bukkit.gameplay.player.preload
 import server.bukkit.util.submit
 import server.common.message.TeleportInvokeRequest
 import server.common.message.TeleportType
-import server.common.message.database.PlayerDataQueryRequest
 
 
 /**
@@ -22,7 +22,7 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
     lateinit var lastLocation: LocationData
         private set
 
-    fun preload(request: PlayerDataQueryRequest) {
+    fun preload(request: TableInfos) {
         request.preload<LocationData>()
     }
 

@@ -6,15 +6,17 @@ import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
-import server.common.processor.RequestDispatcher
+import server.common.logger.logger
+import server.common.service.PlayerInfoService
 import server.shared.SharedServer.shutdown
 import server.shared.SharedServer.startup
 import server.shared.config.Config
 import server.shared.config.loadConfig
 import server.shared.database.DatabaseFactory
-import server.common.logger.logger
+import server.shared.processor.GetTimeSharedProcessor
 import server.shared.processor.connection.CloseEventSharedProcessor
 import server.shared.processor.connection.ConnectEventSharedProcessor
+import server.shared.service.PlayerInfoServiceImpl
 
 fun main() {
     startup()
@@ -40,13 +42,9 @@ internal object SharedServer {
         builder.addConnectionEventProcessor(ConnectionEventType.CONNECT, ConnectEventSharedProcessor())
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventSharedProcessor())
 
-        val dispatcher = RequestDispatcher()
-        dispatcher.registerHandler(server.shared.processor.GetPlayerInfoHandler())
-        dispatcher.registerHandler(server.shared.processor.GetPlayerInfosHandler())
-        dispatcher.registerHandler(server.shared.processor.PlayerInfoUpdateHandler())
-        builder.registerUserProcessor(dispatcher)
+        builder.registerService(PlayerInfoService::class.java, PlayerInfoServiceImpl())
 
-        builder.registerUserProcessor(server.shared.processor.GetTimeSharedProcessor())
+        builder.registerUserProcessor(GetTimeSharedProcessor())
     }
 
     private fun initDataSource(config: Config) {

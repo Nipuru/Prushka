@@ -4,15 +4,15 @@ import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import server.bukkit.gameplay.player.BaseManager
 import server.bukkit.gameplay.player.GamePlayer
+import server.bukkit.gameplay.player.TableInfos
 import server.bukkit.gameplay.player.preload
 import server.common.logger.logger
 import server.bukkit.nms.*
-import server.common.message.database.PlayerDataQueryRequest
 
 class InventoryManager(player: GamePlayer) : BaseManager(player) {
     private var data: InventoryData? = null
 
-    fun preload(request: PlayerDataQueryRequest) {
+    fun preload(request: TableInfos) {
         request.preload<InventoryData>()
     }
 

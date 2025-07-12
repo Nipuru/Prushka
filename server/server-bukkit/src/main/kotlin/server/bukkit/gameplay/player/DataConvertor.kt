@@ -1,8 +1,7 @@
 package server.bukkit.gameplay.player
 
-import server.common.message.database.FieldMessage
-import server.common.message.database.PlayerDataQueryRequest
-import server.common.message.database.TableInfoMessage
+import server.common.message.FieldMessage
+import server.common.service.PlayerDataService.TableInfo
 import java.io.IOException
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -12,12 +11,17 @@ object DataConvertor {
 
     private val cache = mutableMapOf<Class<*>, DataClassCache>()
 
-    inline fun <reified T> preload(request: PlayerDataQueryRequest) {
+    inline fun <reified T> preload(request: TableInfos) {
         val dataClassCache = getOrCache(T::class.java)
         if (dataClassCache.isCache) return
         val fields = mutableMapOf<String, Class<*>>()
         dataClassCache.tableFields.forEach{ fields[it.key] = it.value.type }
-        val tableInfo = TableInfoMessage(dataClassCache.tableName, dataClassCache.autoCreate, fields, dataClassCache.uniqueFields)
+        val tableInfo = TableInfo(
+            dataClassCache.tableName,
+            dataClassCache.autoCreate,
+            fields,
+            dataClassCache.uniqueFields
+        )
         request.tables.add(tableInfo)
     }
 
