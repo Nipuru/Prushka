@@ -24,18 +24,18 @@ import server.auth.database.DatabaseFactory
 import server.auth.http.rootRouting
 import server.auth.logger.logger
 import server.auth.processor.connection.CloseEventAuthProcessor
-import server.auth.service.PlayerLoginServiceImpl
+import server.auth.service.PlayerServiceImpl
 import server.auth.util.JWTUtil
 import server.auth.util.overdue
 import server.common.ClientType
-import server.common.service.PlayerLoginService
+import server.common.service.PlayerService
 
 object AuthServer {
     private lateinit var brokerClient: BrokerClient
     private lateinit var httpServer: EmbeddedServer<*, *>
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
-        builder.registerService(PlayerLoginService::class.java, PlayerLoginServiceImpl())
+        builder.registerService(PlayerService::class.java, PlayerServiceImpl())
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventAuthProcessor())
     }
 

@@ -7,15 +7,14 @@ import server.common.logger.logger
 import server.bukkit.plugin
 import server.bukkit.util.submit
 import server.common.message.FieldMessage
+import server.common.message.PlayerDataTransactionMessage
 import server.common.service.PlayerDataService
-import server.common.service.PlayerDataService.Transaction
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class DataWriter(private val player: GamePlayer) {
 
     private val writeQueue = ConcurrentLinkedQueue<DataAction>()
-    private val dataService = Broker.getService(PlayerDataService::class.java, player.dbId.toString())
 
     fun add(info: DataAction) {
         writeQueue.add(info)
@@ -62,7 +61,7 @@ class DataWriter(private val player: GamePlayer) {
         }
         submit {
             try {
-                val transaction = Transaction(player.playerId)
+                val transaction = PlayerDataTransactionMessage(player.playerId)
                 for (dataAction in map.values) {
                     val dataClassCache = getOrCache(dataAction.data.javaClass)
                     val tableName = dataClassCache.tableName
@@ -95,7 +94,7 @@ class DataWriter(private val player: GamePlayer) {
                         }
                     }
                 }
-                dataService.transaction(transaction)
+                player.dataService.transaction(transaction)
             } catch (e: Exception) {
                 logger.error("Failed to write database for player {}", player.playerId, e)
                 kickPlayerIfPossible(player)

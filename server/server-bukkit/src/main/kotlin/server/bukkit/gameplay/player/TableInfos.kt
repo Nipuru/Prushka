@@ -1,6 +1,6 @@
 package server.bukkit.gameplay.player
 
-import server.common.service.PlayerDataService.TableInfo
+import server.common.message.TableInfo
 import java.io.Serializable
 
 

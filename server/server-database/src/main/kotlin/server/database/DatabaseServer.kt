@@ -15,6 +15,7 @@ import server.database.DatabaseServer.startup
 import server.database.config.Config
 import server.database.config.loadConfig
 import server.database.database.DatabaseFactory
+import server.database.processor.PlayerOfflineDataDBProcessor
 import server.database.processor.connection.CloseEventDBProcessor
 import server.database.service.FileServiceImpl
 import server.database.service.OfflineDataServiceImpl
@@ -45,7 +46,8 @@ internal object DatabaseServer {
         val dbId = config.dbId.toString()
         builder.registerService(FileService::class.java, FileServiceImpl(), dbId)
         builder.registerService(PlayerDataService::class.java, PlayerDataServiceImpl(), dbId)
-        builder.registerService(OfflineDataService::class.java, OfflineDataServiceImpl(), dbId)
+        builder.registerService(OfflineDataService::class.java, OfflineDataServiceImpl, dbId)
+        builder.registerUserProcessor(PlayerOfflineDataDBProcessor())
         builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventDBProcessor())
     }
 
