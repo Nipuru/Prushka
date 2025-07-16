@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import server.common.service.OfflineDataService
 import server.database.schema.OfflineDataTable
 
-class OfflineDataServiceImpl : OfflineDataService {
+object OfflineDataServiceImpl : OfflineDataService {
 
     override fun insert(playerId: Int, module: String, data: String) {
         transaction {

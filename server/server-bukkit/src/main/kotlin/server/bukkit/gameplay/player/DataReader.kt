@@ -4,11 +4,14 @@ import net.afyer.afybroker.client.Broker
 import server.common.message.PlayerDataTransferRequest
 import server.common.message.PlayerDataMessage
 import server.common.service.PlayerDataService
-import server.common.service.PlayerLoginService
+import server.common.service.PlayerService
 import java.net.InetAddress
 import java.util.*
 
 object DataReader {
+
+    private val playerService = Broker.getService(PlayerService::class.java)
+
     fun read(name: String, uniqueId: UUID, address: InetAddress): GamePlayer {
         // 优先从别的服务器转移数据
         val transferRequest = PlayerDataTransferRequest(uniqueId)
@@ -21,17 +24,13 @@ object DataReader {
             return gamePlayer
         } else {
             // 其他服务器没有数据代表登录 需要新建数据或从数据库加载
-            val playerLoginService = Broker.getService(PlayerLoginService::class.java)
-
-            val loginData = playerLoginService.login(name, uniqueId, address.hostAddress)
-
-            val gamePlayer = GamePlayer(loginData.playerId, loginData.dbId, name, uniqueId)
+            val playerMessage = playerService.login(name, uniqueId, address.hostAddress)
+            val player = GamePlayer(playerMessage.playerId, playerMessage.dbId, name, uniqueId)
             val tableInfos = TableInfos()
-            gamePlayer.preload(tableInfos)
-            val playerDataService = Broker.getService(PlayerDataService::class.java, loginData.dbId.toString())
-            val data = playerDataService.queryPlayer(loginData.playerId, tableInfos.tables)
-            gamePlayer.unpack(DataInfo(data))
-            return gamePlayer
+            player.preload(tableInfos)
+            val data = player.dataService.queryPlayer(playerMessage.playerId, tableInfos.tables)
+            player.unpack(DataInfo(data))
+            return player
         }
     }
 }

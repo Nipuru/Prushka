@@ -1,7 +1,7 @@
 package server.bukkit.gameplay.player
 
 import server.common.message.FieldMessage
-import server.common.service.PlayerDataService.TableInfo
+import server.common.message.TableInfo
 import java.io.IOException
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field

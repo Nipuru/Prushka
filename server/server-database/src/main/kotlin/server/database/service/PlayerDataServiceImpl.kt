@@ -7,9 +7,9 @@ import org.jetbrains.exposed.sql.statements.expandArgs
 import org.jetbrains.exposed.sql.transactions.transaction
 import server.common.message.FieldMessage
 import server.common.logger.logger
+import server.common.message.PlayerDataTransactionMessage
+import server.common.message.TableInfo
 import server.common.service.PlayerDataService
-import server.common.service.PlayerDataService.Transaction
-import server.common.service.PlayerDataService.TableInfo
 import server.database.schema.PlayerDataTable
 import server.database.schema.initSchema
 import java.util.concurrent.ConcurrentHashMap
@@ -47,7 +47,7 @@ class PlayerDataServiceImpl : PlayerDataService {
     }
 
 
-    override fun transaction(request: Transaction) {
+    override fun transaction(request: PlayerDataTransactionMessage) {
         transaction {
             addLogger(sqlLogger)
             for (delete in request.deletes) {

@@ -2,7 +2,7 @@ package server.database.schema
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
-import server.common.service.PlayerDataService.TableInfo
+import server.common.message.TableInfo
 import java.util.*
 import kotlin.reflect.KClass
 

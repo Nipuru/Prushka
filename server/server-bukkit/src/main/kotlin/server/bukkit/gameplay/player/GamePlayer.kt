@@ -1,5 +1,6 @@
 package server.bukkit.gameplay.player
 
+import net.afyer.afybroker.client.Broker
 import org.bukkit.Bukkit
 import server.bukkit.MessageType
 import server.bukkit.constant.DAY
@@ -16,6 +17,7 @@ import server.bukkit.logger.LogServer
 import server.common.logger.logger
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
+import server.common.service.PlayerDataService
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.KProperty1
@@ -30,6 +32,7 @@ class GamePlayer(
     val uniqueId: UUID
 ) {
     val namePattern: Pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE)
+    val dataService: PlayerDataService = Broker.getService(PlayerDataService::class.java, dbId.toString())
     val bukkitPlayer by lazy { Bukkit.getPlayer(uniqueId)!! }
 
     private val writer = DataWriter(this)
