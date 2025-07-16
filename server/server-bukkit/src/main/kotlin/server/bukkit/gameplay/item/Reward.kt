@@ -1,8 +1,7 @@
-package server.bukkit.gameplay.player
+package server.bukkit.gameplay.item
 
 import server.bukkit.constant.Items
 import server.common.sheet.Sheet
-import server.common.sheet.getStReward
 import server.common.sheet.getStRewardPools
 import server.common.sheet.getStRewards
 

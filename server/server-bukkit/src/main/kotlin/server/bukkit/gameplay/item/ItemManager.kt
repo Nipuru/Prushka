@@ -1,41 +1,81 @@
 package server.bukkit.gameplay.item
 
-import server.bukkit.gameplay.player.BaseManager
-import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.TableInfos
-import server.bukkit.gameplay.player.preload
+import server.bukkit.constant.Items
+import server.bukkit.gameplay.player.*
 import server.bukkit.logger.LogServer
 import server.common.logger.logger
 
 
 class ItemManager(player: GamePlayer) : BaseManager(player) {
     
-    private val items = mutableMapOf<Int, MutableMap<Int, ItemData>>()
+    private val items = mutableMapOf<Pair<Int, Int>, ItemData>()
 
     fun preload(request: TableInfos) {
         request.preload<ItemData>()
     }
     
-    fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
+    fun unpack(dataInfo: DataInfo) {
         for (item in dataInfo.unpackList<ItemData>()) {
-            val byId = items.getOrPut(item.type) { mutableMapOf() }
-            byId[item.id] = item
+            items[item.type to item.id] = item
         }
     }
     
-    fun pack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
-        for (byId in items.values) {
-            for (item in byId.values) {
-                dataInfo.pack(item)
+    fun pack(dataInfo: DataInfo) {
+        for (item in items.values) {
+            dataInfo.pack(item)
+        }
+    }
+
+    fun giveRewards(rewards: Array<RewardInfo>, way: Int) {
+        for (reward in rewards) {
+            when (reward.type) {
+                Items.ITEM_PROPERTY -> addProperty(reward.id, reward.num.toLong(), way)
+                else -> addItem(reward.type, reward.id, reward.num.toLong(), way)
             }
         }
     }
 
-    fun getItemAmount(type: Int, id: Int): Long {
+    fun getPropertyAmount(id: Int): Long {
+        return when (id) {
+            Items.PROPERTY_COIN -> player.core.coin
+            Items.PROPERTY_POINTS -> player.core.points
+            else -> getItemAmount(Items.ITEM_PROPERTY, id)
+        }
+    }
+
+    fun addProperty(id: Int, amount: Long, way: Int): Boolean {
+        return when (id) {
+            Items.PROPERTY_COIN -> player.core.addCoin(amount, way)
+            Items.PROPERTY_POINTS -> player.core.addPoints(amount, way)
+            else -> addItem(Items.ITEM_PROPERTY, id, amount, way)
+        }
+    }
+
+    fun subtractProperty(id: Int, amount: Long, way: Int): Boolean {
+        return when (id) {
+            Items.PROPERTY_COIN -> player.core.subtractCoin(amount, way)
+            Items.PROPERTY_POINTS -> player.core.subtractPoints(amount, way)
+            else -> subtractItem(Items.ITEM_PROPERTY, id, amount, way)
+        }
+    }
+
+    fun checkProperties(properties: Map<Int, Int>): Boolean {
+        return properties.all { (id, needAmount) ->
+            needAmount == 0 || needAmount > 0 && getPropertyAmount(id) >= needAmount
+        }
+    }
+
+    fun subtractProperties(properties: Map<Int, Int>, way: Int) {
+        properties.forEach { (id, amount) ->
+            subtractProperty(id, amount.toLong(), way)
+        }
+    }
+
+    private fun getItemAmount(type: Int, id: Int): Long {
         return getItem(type, id).amount
     }
 
-    fun addItem(type: Int, id: Int, amount: Long, way: Int): Boolean {
+    private fun addItem(type: Int, id: Int, amount: Long, way: Int): Boolean {
         if (amount == 0L) return true
         if (amount < 0L) {
             logger.error("add invalid item amount: {}", amount)
@@ -48,7 +88,7 @@ class ItemManager(player: GamePlayer) : BaseManager(player) {
         return true
     }
 
-    fun subtractItem(type: Int, id: Int, amount: Long, way: Int): Boolean {
+    private fun subtractItem(type: Int, id: Int, amount: Long, way: Int): Boolean {
         if (amount == 0L) return true
         if (amount < 0L) {
             logger.error("subtract invalid item amount: {}", amount)
@@ -62,13 +102,12 @@ class ItemManager(player: GamePlayer) : BaseManager(player) {
     }
 
     private fun getItem(type: Int, id: Int): ItemData {
-        return items.getOrPut(type) { mutableMapOf() }
-            .getOrPut(id) {
-                ItemData().apply {
-                    this.type = type
-                    this.id = id
-                    player.insert(this)
-                }
+        return items.getOrPut(type to id) {
+            ItemData().apply {
+                this.type = type
+                this.id = id
+                player.insert(this)
             }
+        }
     }
 }

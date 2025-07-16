@@ -8,6 +8,7 @@ import server.bukkit.gameplay.chat.ChatManager
 import server.bukkit.gameplay.friend.FriendManager
 import server.bukkit.gameplay.inventory.InventoryManager
 import server.bukkit.gameplay.item.ItemManager
+import server.bukkit.gameplay.item.RewardInfo
 import server.bukkit.gameplay.offline.OfflineManager
 import server.bukkit.gameplay.skin.SkinManager
 import server.bukkit.gameplay.teleport.TeleportManager
@@ -197,51 +198,6 @@ class GamePlayer(
      */
     fun onNewDay(time: Long) {
         core.resetTime = time
-    }
-
-    fun giveRewards(rewards: Array<RewardInfo>, way: Int) {
-        for (reward in rewards) {
-            when (reward.type) {
-                Items.ITEM_PROPERTY -> addProperty(reward.id, reward.num.toLong(), way)
-                else -> item.addItem(reward.type, reward.id, reward.num.toLong(), way)
-            }
-        }
-    }
-
-    fun getPropertyAmount(id: Int): Long {
-        return when (id) {
-            Items.PROPERTY_COIN -> core.coin
-            Items.PROPERTY_POINTS -> core.points
-            else -> item.getItemAmount(Items.ITEM_PROPERTY, id)
-        }
-    }
-
-    fun addProperty(id: Int, amount: Long, way: Int): Boolean {
-        return when (id) {
-            Items.PROPERTY_COIN -> core.addCoin(amount, way)
-            Items.PROPERTY_POINTS -> core.addPoints(amount, way)
-            else -> item.addItem(Items.ITEM_PROPERTY, id, amount, way)
-        }
-    }
-
-    fun subtractProperty(id: Int, amount: Long, way: Int): Boolean {
-        return when (id) {
-            Items.PROPERTY_COIN -> core.subtractCoin(amount, way)
-            Items.PROPERTY_POINTS -> core.subtractPoints(amount, way)
-            else -> item.subtractItem(Items.ITEM_PROPERTY, id, amount, way)
-        }
-    }
-
-    fun checkProperties(properties: Map<Int, Int>): Boolean {
-        return properties.all { (id, needAmount) ->
-            needAmount == 0 || needAmount > 0 && getPropertyAmount(id) >= needAmount
-        }
-    }
-
-    fun subtractProperties(properties: Map<Int, Int>, way: Int) {
-        properties.forEach { (id, amount) ->
-            subtractProperty(id, amount.toLong(), way)
-        }
     }
 
     fun <T : Any> update(data: T, vararg properties: KProperty1<T, *>) {
