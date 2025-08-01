@@ -4,17 +4,55 @@ package server.common.sheet
 
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import java.io.File
+import java.util.*
 
 object Sheet {
     fun load(tablePath: String) {
-        val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
-        loadStBitmap(gson, tablePath)
-        loadStBitmap(gson, tablePath)
-        loadStConstant(gson, tablePath)
-        loadStMessage(gson, tablePath)
-        loadStProperty(gson, tablePath)
-        loadStRank(gson, tablePath)
-        loadStReward(gson, tablePath)
-        loadStRewardPool(gson, tablePath)
+        loadStBitmap(tablePath)
+        loadStBitmap(tablePath)
+        loadStConstant(tablePath)
+        loadStMessage(tablePath)
+        loadStProperty(tablePath)
+        loadStRank(tablePath)
+        loadStReward(tablePath)
+        loadStRewardPool(tablePath)
+    }
+}
+
+internal object SheetSerializer {
+    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
+
+    inline fun <reified T> serialize(json: String): List<T> {
+        val type = object : TypeToken<List<T>>() {}.type
+        return gson.fromJson(json, type)
+    }
+}
+
+internal class SheetHolder<T: Any> {
+    lateinit var default: T
+    var locales = mutableMapOf<Locale, T>()
+
+    infix operator fun get(locale: Locale?): T {
+        if (locale == null) return default
+        return locales[locale] ?: default
+    }
+
+    inline fun <reified E> load(sheetPath: String, sheetName: String, builder: (elements: List<E>) -> T) {
+        val sheetFiles = File(sheetPath).listFiles { _, fileName -> fileName.startsWith("$sheetName.")}
+        if (sheetFiles == null) return
+        for (sheetFile in sheetFiles) {
+            val fileName = sheetFile.nameWithoutExtension
+            val parts = fileName.split(".")
+            require(parts.size == 1 || parts.size == 2) { "Invalid sheet name: $sheetName"}
+            val elements = SheetSerializer.serialize<E>(sheetFile.readText())
+            if (parts.size == 1) {
+                default = builder(elements)
+            } else {
+                val locale = Locale.forLanguageTag(parts[1])
+                locales[locale] = builder(elements)
+            }
+        }
     }
 }
