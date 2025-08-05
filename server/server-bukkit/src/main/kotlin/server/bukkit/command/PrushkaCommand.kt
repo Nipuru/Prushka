@@ -33,10 +33,10 @@ object PrushkaCommand {
                 .then(Commands.argument("world_name", WorldArgument)
                     .executes(::world)))
             .then(Commands.literal("tpa")
-                .then(Commands.argument("player_name", StringArgumentType.string())
+                .then(Commands.argument("player_name", PlayerInfoArgument)
                     .executes(::tpa)))
             .then(Commands.literal("tpahere")
-                .then(Commands.argument("player_name", StringArgumentType.string())
+                .then(Commands.argument("player_name", PlayerInfoArgument)
                     .executes(::tpahere)))
             .build())
     }
