@@ -1,8 +1,9 @@
 package server.bukkit.command
 
-import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
-import server.bukkit.gameplay.player.GamePlayers
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.context.CommandContext
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
 
 
 /**
@@ -12,11 +13,17 @@ import server.bukkit.gameplay.player.GamePlayers
  * @author Nipuru
  * @since 2024/11/12 18:02
  */
-class AfkCommand : AbstractCommand("afk") {
-    override fun canConsoleExecute() = false
-    override fun onCommand(sender: CommandSender, args: Array<String>) {
-        sender as Player
-        val player = GamePlayers.getPlayer(sender.uniqueId)
+@Suppress("UnstableApiUsage")
+object AfkCommand {
+    fun register(registrar: Commands) {
+        registrar.register(Commands.literal("afk")
+            .executes(::afk)
+            .build())
+    }
+
+    private fun afk(context: CommandContext<CommandSourceStack>): Int {
+        val player = context.source.sender.player
         player.core.afk = true
+        return Command.SINGLE_SUCCESS
     }
 }

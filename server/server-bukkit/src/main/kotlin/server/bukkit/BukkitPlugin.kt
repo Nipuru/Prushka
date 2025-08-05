@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit
  */
 val enableLatch = CountDownLatch(1)
 
-lateinit var plugin: Plugin
+lateinit var plugin: BukkitPlugin
     private set
 
 class BukkitPlugin : JavaPlugin() {
@@ -65,11 +65,10 @@ class BukkitPlugin : JavaPlugin() {
     }
 
     override fun onEnable() {
-        Sheet.load(File(dataFolder, "jsons").absolutePath)
+        reload()
         GamePlayers.loadAll()
         registerTasks()
         registerListeners()
-        registerCommands()
         enableLatch.countDown()
     }
 
@@ -78,6 +77,10 @@ class BukkitPlugin : JavaPlugin() {
         bizThread.shutdown()
         bizThread.awaitTermination(1L, TimeUnit.MINUTES)
         TimeManager.cancel()
+    }
+
+    fun reload() {
+        Sheet.load(File(dataFolder, "jsons").absolutePath)
     }
 
     private fun registerTasks() {
@@ -93,12 +96,5 @@ class BukkitPlugin : JavaPlugin() {
         PlayerMoveListener().register(this)
         PlayerSpawnLocationListener(spawnLocations.asMap()).register(this)
         ServerExceptionListener().register(this)
-    }
-
-    private fun registerCommands() {
-        PrushkaCommand().register(this)
-        AfkCommand().register(this)
-        WhereAmICommand().register(this)
-        FriendCommand().register(this)
     }
 }

@@ -2,6 +2,7 @@ package server.bukkit
 
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.command.CommandSender
+import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.util.component
 import java.awt.Color
 
@@ -22,5 +23,11 @@ enum class MessageType(val color: Color) {
         val hexString = TextColor.color(color.rgb).asHexString()
         val message = "<$hexString>" + args.joinToString()
         sender?.sendMessage(message.component())
+    }
+
+    fun sendMessage(sender: GamePlayer, vararg args: Any?) {
+        val hexString = TextColor.color(color.rgb).asHexString()
+        val message = "<$hexString>" + args.joinToString()
+        sender.bukkitPlayer.sendMessage(message.component())
     }
 }

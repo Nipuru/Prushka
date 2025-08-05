@@ -7,5 +7,6 @@ dependencies:
       load: AFTER
       required: true
 main: server.bukkit.BukkitPlugin
+bootstrapper: server.bukkit.BukkitBootstrap
 authors: [ Nipuru ]
 load: STARTUP

@@ -1,9 +1,12 @@
 package server.bukkit.command
 
+import com.mojang.brigadier.Command
+import com.mojang.brigadier.context.CommandContext
+import io.papermc.paper.command.brigadier.CommandSourceStack
+import io.papermc.paper.command.brigadier.Commands
 import net.afyer.afybroker.client.Broker
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 
@@ -14,12 +17,14 @@ import org.bukkit.entity.Player
  * @author Nipuru
  * @since 2024/11/13 15:25
  */
-class WhereAmICommand : AbstractCommand("whereami") {
-    override fun hasPermission(sender: CommandSender): Boolean = true
+@Suppress("UnstableApiUsage")
+object WhereAmICommand {
+    fun register(registrar: Commands) {
+        registrar.register(Commands.literal("whereami").executes(::whereami).build())
+    }
 
-    override fun canConsoleExecute(): Boolean = true
-
-    override fun onCommand(sender: CommandSender, args: Array<String>) {
+    private fun whereami(ctx: CommandContext<CommandSourceStack>): Int {
+        val sender = ctx.source.sender
         val serverName = Broker.getClientInfo().name
         sender.sendMessage(
             text("你位于服务器: ").color(NamedTextColor.BLUE)
@@ -32,6 +37,6 @@ class WhereAmICommand : AbstractCommand("whereami") {
                     .append(text(worldName).color(NamedTextColor.WHITE))
             )
         }
+        return Command.SINGLE_SUCCESS
     }
-
 }
