@@ -1,7 +1,7 @@
 [versions]
 exposed = "0.57.0"
 afybroker = "2.5"
-paper = "1.20.4-R0.1-SNAPSHOT"
+paper = "1.21.4-R0.1-SNAPSHOT"
 ktor = "3.0.2"
 
 [libraries]
@@ -28,6 +28,6 @@ slf4j-api = "org.slf4j:slf4j-api:1.7.21"
 netty = "io.netty:netty-all:4.1.42.Final"
 
 [plugins]
-kotlin-jvm = "org.jetbrains.kotlin.jvm:1.8.22"
+kotlin-jvm = "org.jetbrains.kotlin.jvm:2.1.0"
 shadow = "com.github.johnrengelman.shadow:7.1.2"
-paperweight = "io.papermc.paperweight.userdev:1.7.2"
+paperweight = "io.papermc.paperweight.userdev:2.0.0-beta.10"

@@ -2,6 +2,7 @@ package server.bukkit.gameplay.inventory
 
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import server.bukkit.gameplay.player.BaseManager
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.TableInfos
@@ -56,7 +57,7 @@ class InventoryManager(player: GamePlayer) : BaseManager(player) {
 
     private fun resetPlayer(bukkitPlayer: Player) {
         bukkitPlayer.inventory.clear()
-        bukkitPlayer.inventory.setArmorContents(null)
+        bukkitPlayer.inventory.armorContents = emptyArray()
         bukkitPlayer.enderChest.clear()
         bukkitPlayer.exp = 0.0f
         bukkitPlayer.level = 0
@@ -70,18 +71,20 @@ class InventoryManager(player: GamePlayer) : BaseManager(player) {
         }
         bukkitPlayer.health = 20.0
         bukkitPlayer.healthScale = 20.0
-        bukkitPlayer.persistentDataContainer.clear()
+        bukkitPlayer.persistentDataContainer.keys.forEach {
+            bukkitPlayer.persistentDataContainer.remove(it)
+        }
     }
 
     private fun applyPlayer(bukkitPlayer: Player, data: InventoryData) {
         if (data.inventory.isNotEmpty()) {
-            bukkitPlayer.inventory.contents = data.inventory.deserializeItemStacks()
+            bukkitPlayer.inventory.contents = ItemStack.deserializeItemsFromBytes(data.inventory)
         }
 
         bukkitPlayer.inventory.heldItemSlot = data.hotBar
-        bukkitPlayer.gameMode = GameMode.values()[data.gameMode]
+        bukkitPlayer.gameMode = GameMode.entries[data.gameMode]
         if (data.enderChest.isNotEmpty()) {
-            bukkitPlayer.enderChest.contents = data.enderChest.deserializeItemStacks()
+            bukkitPlayer.enderChest.contents = ItemStack.deserializeItemsFromBytes(data.enderChest)
         }
         bukkitPlayer.exp = data.experience
         bukkitPlayer.totalExperience = data.totalExperience
@@ -97,7 +100,7 @@ class InventoryManager(player: GamePlayer) : BaseManager(player) {
         bukkitPlayer.remainingAir = data.air
         bukkitPlayer.maximumAir = data.maxAir
         if (data.bukkitValues.isNotEmpty()) {
-            bukkitPlayer.persistentDataContainer.deserialize(data.bukkitValues)
+            bukkitPlayer.persistentDataContainer.readFromBytes(data.bukkitValues)
         }
         bukkitPlayer.fireTicks = data.fireTicks
         bukkitPlayer.freezeTicks = data.freezeTicks
@@ -108,10 +111,10 @@ class InventoryManager(player: GamePlayer) : BaseManager(player) {
     }
 
     private fun savePlayer(bukkitPlayer: Player, data: InventoryData) {
-        data.inventory = bukkitPlayer.inventory.contents.serialize()
+        data.inventory = ItemStack.serializeItemsAsBytes(bukkitPlayer.inventory.contents)
         data.hotBar = bukkitPlayer.inventory.heldItemSlot
         data.gameMode = bukkitPlayer.gameMode.ordinal
-        data.enderChest = bukkitPlayer.enderChest.contents.serialize()
+        data.enderChest = ItemStack.serializeItemsAsBytes(bukkitPlayer.enderChest.contents)
         data.experience = bukkitPlayer.exp
         data.totalExperience = bukkitPlayer.totalExperience
         data.experienceLevel = bukkitPlayer.level
@@ -123,7 +126,7 @@ class InventoryManager(player: GamePlayer) : BaseManager(player) {
         data.saturation = bukkitPlayer.saturation
         data.air = bukkitPlayer.remainingAir
         data.maxAir = bukkitPlayer.maximumAir
-        data.bukkitValues = bukkitPlayer.persistentDataContainer.serialize()
+        data.bukkitValues = bukkitPlayer.persistentDataContainer.serializeToBytes()
         data.fireTicks = bukkitPlayer.fireTicks
         data.freezeTicks = bukkitPlayer.freezeTicks
         logger.info("Saving InventoryData for GamePlayer: {}", player.name)

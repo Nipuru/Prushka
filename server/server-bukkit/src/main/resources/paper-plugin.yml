@@ -1,0 +1,11 @@
+name: Prushka
+version: 'dev'
+api-version: "1.21"
+dependencies:
+  server:
+    AfyBroker:
+      load: AFTER
+      required: true
+main: server.bukkit.BukkitPlugin
+authors: [ Nipuru ]
+load: STARTUP

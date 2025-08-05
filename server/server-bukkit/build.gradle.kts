@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
     implementation(project(":server-common"))
-    paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
     paperweight.paperDevBundle(libs.versions.paper)
     compileOnly(libs.afybroker.client)
 }
