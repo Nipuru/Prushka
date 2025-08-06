@@ -24,6 +24,7 @@ import server.common.message.TeleportType
 object PrushkaCommand {
     fun register(registrar: Commands) {
         registrar.register(Commands.literal("prushka")
+            .requireOperator()
             .then(Commands.literal("text")
                 .then(Commands.argument("args", StringArgumentType.greedyString()))
                 .executes(::text))

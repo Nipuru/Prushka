@@ -17,6 +17,7 @@ import io.papermc.paper.command.brigadier.Commands
 object AfkCommand {
     fun register(registrar: Commands) {
         registrar.register(Commands.literal("afk")
+            .requires(CommandSourceStack::isPlayer)
             .executes(::afk)
             .build())
     }

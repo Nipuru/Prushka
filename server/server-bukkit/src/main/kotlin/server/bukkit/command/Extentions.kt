@@ -1,7 +1,10 @@
 package server.bukkit.command
 
 import com.mojang.brigadier.LiteralMessage
+import com.mojang.brigadier.builder.ArgumentBuilder
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
+import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import server.bukkit.gameplay.player.GamePlayer
@@ -15,3 +18,6 @@ import server.bukkit.gameplay.player.GamePlayers
 internal val PLAYER_ONLY = SimpleCommandExceptionType(LiteralMessage("只有玩家才能执行此命令"))
 
 internal val CommandSender.player: GamePlayer get() = if (this is Player) GamePlayers.getPlayer(uniqueId) else throw PLAYER_ONLY.create()
+
+@Suppress("UnstableApiUsage")
+fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.requireOperator(): T = requires { it.sender.isOp }
