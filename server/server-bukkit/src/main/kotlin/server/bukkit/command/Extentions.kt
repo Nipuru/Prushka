@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 package server.bukkit.command
 
-import com.mojang.brigadier.LiteralMessage
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
@@ -19,8 +18,6 @@ import server.bukkit.nms.message
 val ERROR_NOT_PLAYER = SimpleCommandExceptionType("只有玩家才能执行此命令".message())
 
 fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.requireOperator(): T = requires { it.sender.isOp }
-
-fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.requirePlayer(): T = requires { it.sender is Player }
 
 inline fun <reified T> CommandContext<*>.getArgument(name: String): T = getArgument(name, T::class.java)
 

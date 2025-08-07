@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.Commands.literal
 
 
 /**
@@ -16,7 +17,7 @@ import io.papermc.paper.command.brigadier.Commands
 @Suppress("UnstableApiUsage")
 object AfkCommand {
     fun register(registrar: Commands) {
-        registrar.register(Commands.literal("afk")
+        registrar.register(literal("afk")
             .executes(::afk)
             .build())
     }

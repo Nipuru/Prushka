@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.Commands.literal
 import net.afyer.afybroker.client.Broker
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -20,7 +21,9 @@ import org.bukkit.entity.Player
 @Suppress("UnstableApiUsage")
 object WhereAmICommand {
     fun register(registrar: Commands) {
-        registrar.register(Commands.literal("whereami").executes(::whereami).build())
+        registrar.register(literal("whereami")
+            .executes(::whereami)
+            .build())
     }
 
     private fun whereami(ctx: CommandContext<CommandSourceStack>): Int {

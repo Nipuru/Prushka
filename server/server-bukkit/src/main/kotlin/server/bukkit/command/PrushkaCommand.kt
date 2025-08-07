@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.Commands.argument
+import io.papermc.paper.command.brigadier.Commands.literal
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import org.bukkit.World
 import server.bukkit.MessageType
@@ -25,21 +27,21 @@ import server.common.message.TeleportType
 @Suppress("UnstableApiUsage")
 object PrushkaCommand {
     fun register(registrar: Commands) {
-        registrar.register(Commands.literal("prushka")
+        registrar.register(literal("prushka")
             .requireOperator()
-            .then(Commands.literal("text")
-                .then(Commands.argument("args", StringArgumentType.greedyString()))
-                .executes(::text))
-            .then(Commands.literal("reload")
+            .then(literal("text")
+                .then(argument("args", StringArgumentType.greedyString())
+                    .executes(::text)))
+            .then(literal("reload")
                 .executes(::reload))
-            .then(Commands.literal("world")
-                .then(Commands.argument("world_name", ArgumentTypes.world())
+            .then(literal("world")
+                .then(argument("world_name", ArgumentTypes.world())
                     .executes(::world)))
-            .then(Commands.literal("tpa")
-                .then(Commands.argument("player_name", PlayerInfoArgument)
+            .then(literal("tpa")
+                .then(argument("player_name", PlayerInfoArgument)
                     .executes(::tpa)))
-            .then(Commands.literal("tpahere")
-                .then(Commands.argument("player_name", PlayerInfoArgument)
+            .then(literal("tpahere")
+                .then(argument("player_name", PlayerInfoArgument)
                     .executes(::tpahere)))
             .build())
     }

@@ -4,6 +4,8 @@ import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.Commands.argument
+import io.papermc.paper.command.brigadier.Commands.literal
 import server.bukkit.MessageType
 import server.bukkit.command.argument.PlayerInfoArgument
 import server.common.message.PlayerInfoMessage
@@ -17,18 +19,18 @@ import server.common.message.PlayerInfoMessage
 object FriendCommand {
 
     fun register(registrar: Commands) {
-        registrar.register(Commands.literal("target")
-            .then(Commands.literal("add")
-                .then(Commands.argument("player_name", PlayerInfoArgument)
-                .executes(::add)))
-            .then(Commands.literal("remove")
-                .then(Commands.argument("player_name", PlayerInfoArgument)
+        registrar.register(literal("target")
+            .then(literal("add")
+                .then(argument("player_name", PlayerInfoArgument)
+                    .executes(::add)))
+            .then(literal("remove")
+                .then(argument("player_name", PlayerInfoArgument)
                     .executes(::remove)))
-            .then(Commands.literal("accept")
-                .then(Commands.argument("player_name", PlayerInfoArgument)
+            .then(literal("accept")
+                .then(argument("player_name", PlayerInfoArgument)
                     .executes(::accept)))
-            .then(Commands.literal("reject")
-                .then(Commands.argument("player_name", PlayerInfoArgument)
+            .then(literal("reject")
+                .then(argument("player_name", PlayerInfoArgument)
                     .executes(::reject)))
             .build())
     }
