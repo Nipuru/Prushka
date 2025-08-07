@@ -4,6 +4,7 @@ package server.bukkit.command
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
+import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import server.bukkit.gameplay.player.GamePlayer
@@ -27,3 +28,17 @@ val CommandSourceStack.gamePlayer: GamePlayer
         if (entity !is Player) throw ERROR_NOT_PLAYER.create()
         return GamePlayers.getPlayer(entity.uniqueId)
     }
+
+fun SuggestionsBuilder.remaining(): String {
+    var remaining = remaining
+    for (quote in arrayOf('"', '\'')) {
+        if (remaining.startsWith(quote)) {
+            remaining = remaining.substring(1)
+            if (remaining.endsWith(quote)) {
+                remaining = remaining.substring(0, remaining.length - 1)
+            }
+            break
+        }
+    }
+    return remaining
+}

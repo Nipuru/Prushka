@@ -15,7 +15,7 @@ import server.bukkit.command.WhereAmICommand
 
 /**
  * paper 启动类
- * 用于注册一些原版特性支持，例如 Command, Registry.
+ * 用于注册一些原版特性支持，例如 Registry.
  *
  * @author Nipuru
  * @since 2025/08/05 15:37
@@ -24,12 +24,5 @@ import server.bukkit.command.WhereAmICommand
 class BukkitBootstrap : PluginBootstrap {
     override fun bootstrap(context: BootstrapContext) {
         val manager = context.lifecycleManager
-        manager.registerEventHandler(LifecycleEvents.COMMANDS) { commands ->
-            val registrar = commands.registrar()
-            WhereAmICommand.register(registrar)
-            PrushkaCommand.register(registrar)
-            AfkCommand.register(registrar)
-            FriendCommand.register(registrar)
-        }
     }
 }

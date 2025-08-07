@@ -2,10 +2,10 @@ package server.bukkit
 
 import com.alipay.remoting.ConnectionEventType
 import com.google.common.cache.CacheBuilder
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClientBuilder
 import org.bukkit.Location
-import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 import server.bukkit.command.AfkCommand
 import server.bukkit.command.FriendCommand
@@ -69,6 +69,7 @@ class BukkitPlugin : JavaPlugin() {
         GamePlayers.loadAll()
         registerTasks()
         registerListeners()
+        registerCommands()
         enableLatch.countDown()
     }
 
@@ -96,5 +97,16 @@ class BukkitPlugin : JavaPlugin() {
         PlayerMoveListener().register(this)
         PlayerSpawnLocationListener(spawnLocations.asMap()).register(this)
         ServerExceptionListener().register(this)
+    }
+
+    private fun registerCommands() {
+        @Suppress("UnstableApiUsage")
+        lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commands ->
+            val registrar = commands.registrar()
+            WhereAmICommand.register(registrar)
+            PrushkaCommand.register(registrar)
+            AfkCommand.register(registrar)
+            FriendCommand.register(registrar)
+        }
     }
 }

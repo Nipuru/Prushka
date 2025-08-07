@@ -19,7 +19,7 @@ import server.common.message.PlayerInfoMessage
 object FriendCommand {
 
     fun register(registrar: Commands) {
-        registrar.register(literal("target")
+        registrar.register(literal("friend")
             .then(literal("add")
                 .then(argument("player_name", PlayerInfoArgument)
                     .executes(::add)))
