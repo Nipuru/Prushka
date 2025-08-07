@@ -17,13 +17,12 @@ import io.papermc.paper.command.brigadier.Commands
 object AfkCommand {
     fun register(registrar: Commands) {
         registrar.register(Commands.literal("afk")
-            .requires(CommandSourceStack::isPlayer)
             .executes(::afk)
             .build())
     }
 
     private fun afk(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.sender.player
+        val player = context.source.gamePlayer
         player.core.afk = true
         return Command.SINGLE_SUCCESS
     }

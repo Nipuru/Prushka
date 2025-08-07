@@ -16,6 +16,7 @@ class AsyncPlayerPreLoginListener(private val pendingPlayers: MutableMap<UUID, G
 
     @EventHandler(priority = EventPriority.LOW)
     fun onEventLow(event: AsyncPlayerPreLoginEvent) {
+
         try {
             // 防止在插件启用之前玩家加入进来
             enableLatch.await()

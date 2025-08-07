@@ -1,5 +1,9 @@
 package server.bukkit.nms
 
+import com.mojang.brigadier.Message
+import io.papermc.paper.adventure.AdventureComponent
+import io.papermc.paper.text.PaperComponents
+import net.kyori.adventure.text.Component
 import net.minecraft.network.Connection
 import net.minecraft.server.MinecraftServer
 import org.bukkit.craftbukkit.entity.CraftPlayer
@@ -10,6 +14,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
+import server.bukkit.util.component
 import sun.misc.Unsafe
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -79,6 +84,15 @@ fun ByteArray.deserializePotionEffects(): Collection<PotionEffect> {
 
     bukkitObjectInputStream.close()
     return effects
+}
+
+/** 将 adventure Component 转换成 brigadier Message **/
+fun Component.message(): Message {
+    return AdventureComponent( this)
+}
+
+fun String.message(): Message {
+    return component().message()
 }
 
 private object UnsafeHolder {

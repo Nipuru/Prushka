@@ -6,6 +6,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import server.bukkit.MessageType
 import server.bukkit.command.argument.PlayerInfoArgument
+import server.common.message.PlayerInfoMessage
 
 
 /**
@@ -33,8 +34,8 @@ object FriendCommand {
     }
 
     private fun add(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.sender.player
-        val target = PlayerInfoArgument.getPlayerInfo(context, "player_name")
+        val player = context.source.gamePlayer
+        val target = context.getArgument<PlayerInfoMessage>("player_name")
         val targetship = player.friend.getFriend(target.playerId)
         if (targetship != null) {
             MessageType.FAILED.sendMessage(player, "玩家 ${target.name} 已经是你的好友了")
@@ -46,8 +47,8 @@ object FriendCommand {
     }
     
     private fun remove(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.sender.player
-        val target = PlayerInfoArgument.getPlayerInfo(context, "player_name")
+        val player = context.source.gamePlayer
+        val target = context.getArgument<PlayerInfoMessage>("player_name")
         val targetship = player.friend.getFriend(target.playerId)
         if (targetship == null) {
             MessageType.FAILED.sendMessage(player, "玩家 ${target.name} 不在你的好友列表")
@@ -59,8 +60,8 @@ object FriendCommand {
     }
     
     private fun accept(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.sender.player
-        val target = PlayerInfoArgument.getPlayerInfo(context, "player_name")
+        val player = context.source.gamePlayer
+        val target = context.getArgument<PlayerInfoMessage>("player_name")
         val targetRequest = player.friend.getReceivedFriendRequest(target.playerId)
         if (targetRequest == null) {
             MessageType.FAILED.sendMessage(player, "没有来自玩家 ${target.name} 的好友请求")
@@ -72,8 +73,8 @@ object FriendCommand {
     }
     
     private fun reject(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.sender.player
-        val target = PlayerInfoArgument.getPlayerInfo(context, "player_name")
+        val player = context.source.gamePlayer
+        val target = context.getArgument<PlayerInfoMessage>("player_name")
         val targetRequest = player.friend.getReceivedFriendRequest(target.playerId)
         if (targetRequest == null) {
             MessageType.FAILED.sendMessage(player, "没有来自玩家 ${target.name} 的好友请求")

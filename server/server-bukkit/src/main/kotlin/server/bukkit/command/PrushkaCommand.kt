@@ -5,11 +5,13 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import org.bukkit.World
 import server.bukkit.MessageType
 import server.bukkit.command.argument.PlayerInfoArgument
-import server.bukkit.command.argument.WorldArgument
 import server.bukkit.plugin
 import server.bukkit.util.component
+import server.common.message.PlayerInfoMessage
 import server.common.message.TeleportType
 
 
@@ -31,7 +33,7 @@ object PrushkaCommand {
             .then(Commands.literal("reload")
                 .executes(::reload))
             .then(Commands.literal("world")
-                .then(Commands.argument("world_name", WorldArgument)
+                .then(Commands.argument("world_name", ArgumentTypes.world())
                     .executes(::world)))
             .then(Commands.literal("tpa")
                 .then(Commands.argument("player_name", PlayerInfoArgument)
@@ -58,8 +60,8 @@ object PrushkaCommand {
     }
 
     private fun world(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.sender.player
-        val world = WorldArgument.getWorld(context, "world_name")
+        val player = context.source.gamePlayer
+        val world = context.getArgument<World>("world_name")
         if (player.bukkitPlayer.world == world) {
             MessageType.FAILED.sendMessage(player, "你已经位于世界 ${world.name}")
             return Command.SINGLE_SUCCESS
@@ -69,15 +71,15 @@ object PrushkaCommand {
     }
 
     fun tpa(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.sender.player
-        val target = PlayerInfoArgument.getPlayerInfo(context, "player_name")
+        val player = context.source.gamePlayer
+        val target = context.getArgument<PlayerInfoMessage>("player_name")
         player.teleport.teleport(target.name, TeleportType.TPA)
         return Command.SINGLE_SUCCESS
     }
 
     fun tpahere(context: CommandContext<CommandSourceStack>): Int {
-        val player = context.source.sender.player
-        val target = PlayerInfoArgument.getPlayerInfo(context, "player_name")
+        val player = context.source.gamePlayer
+        val target = context.getArgument<PlayerInfoMessage>("player_name")
         player.teleport.teleport(target.name, TeleportType.TPAHERE)
         return Command.SINGLE_SUCCESS
     }

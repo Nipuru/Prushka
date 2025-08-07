@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
+import server.bukkit.nms.message
 import server.common.message.PlayerInfoMessage
 import java.util.concurrent.CompletableFuture
 
@@ -18,11 +19,7 @@ import java.util.concurrent.CompletableFuture
 object PlayerInfoArgument : ArgumentType<PlayerInfoMessage> {
 
     private val ERROR_PLAYER_NOT_FOUND = DynamicCommandExceptionType { playerName ->
-        LiteralMessage("Player not found: '$playerName'")
-    }
-
-    fun getPlayerInfo(context: CommandContext<*>, name: String): PlayerInfoMessage {
-        return context.getArgument(name, PlayerInfoMessage::class.java)
+        "玩家不存在: '$playerName'".message()
     }
 
     override fun parse(reader: StringReader): PlayerInfoMessage {
