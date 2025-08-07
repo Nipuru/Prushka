@@ -11,11 +11,11 @@ dependencies {
 }
 
 tasks.assemble {
-    dependsOn(tasks.reobfJar)
+    dependsOn(tasks.shadowJar)
 }
 
-tasks.reobfJar {
-    outputJar = File(layout.buildDirectory.get().asFile, "/libs/BukkitPlugin.jar")
+tasks.shadowJar {
+    archiveFileName.set("BukkitPlugin.jar")
 }
 
 tasks.processResources {
