@@ -1,14 +1,18 @@
 @file:Suppress("UnstableApiUsage")
 package server.bukkit.command
 
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
+import com.mojang.brigadier.suggestion.Suggestions
+import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.GamePlayers
 import server.bukkit.nms.message
+import java.util.concurrent.CompletableFuture
 
 
 /**
@@ -27,3 +31,24 @@ val CommandSourceStack.gamePlayer: GamePlayer
         if (entity !is Player) throw ERROR_NOT_PLAYER.create()
         return GamePlayers.getPlayer(entity.uniqueId)
     }
+
+fun <S : Any> suggestion(context: CommandContext<S>, builder: SuggestionsBuilder, suggestions: () -> List<String>): CompletableFuture<Suggestions> {
+    if (context.source !is CommandSourceStack) return Suggestions.empty()
+    var remaining = builder.remaining
+    // 去掉引号
+    for (quote in arrayOf('"', '\'')) {
+        if (remaining.startsWith(quote)) {
+            remaining = remaining.substring(1)
+            if (remaining.endsWith(quote)) {
+                remaining = remaining.substring(0, remaining.length - 1)
+            }
+            break
+        }
+    }
+    suggestions.invoke().forEach {
+        if (it.contains(remaining, ignoreCase = true)) {
+            builder.suggest(StringArgumentType.escapeIfRequired(it))
+        }
+    }
+    return builder.buildFuture()
+}
