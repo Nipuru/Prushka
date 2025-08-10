@@ -1,15 +1,18 @@
 @file:Suppress("UnstableApiUsage")
 package server.bukkit.command
 
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
+import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.GamePlayers
 import server.bukkit.nms.message
+import java.util.concurrent.CompletableFuture
 
 
 /**
@@ -29,8 +32,10 @@ val CommandSourceStack.gamePlayer: GamePlayer
         return GamePlayers.getPlayer(entity.uniqueId)
     }
 
-fun SuggestionsBuilder.remaining(): String {
-    var remaining = remaining
+fun <S : Any> suggestion(context: CommandContext<S>, builder: SuggestionsBuilder, suggestions: () -> List<String>): CompletableFuture<Suggestions> {
+    if (context.source !is CommandSourceStack) return Suggestions.empty()
+    var remaining = builder.remaining
+    // 去掉引号
     for (quote in arrayOf('"', '\'')) {
         if (remaining.startsWith(quote)) {
             remaining = remaining.substring(1)
@@ -40,5 +45,10 @@ fun SuggestionsBuilder.remaining(): String {
             break
         }
     }
-    return remaining
+    suggestions.invoke().forEach {
+        if (it.contains(remaining, ignoreCase = true)) {
+            builder.suggest(StringArgumentType.escapeIfRequired(it))
+        }
+    }
+    return builder.buildFuture()
 }
