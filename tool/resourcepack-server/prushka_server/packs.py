@@ -9,11 +9,22 @@ import hashlib
 import time
 import zipfile
 import tempfile
+import threading
+import asyncio
 from pathlib import Path
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 import aiohttp
 from aiohttp import web
+
+# 添加文件监控相关导入
+try:
+    from watchdog.observers import Observer
+    from watchdog.events import FileSystemEventHandler, FileSystemEvent
+    WATCHDOG_AVAILABLE = True
+except ImportError:
+    WATCHDOG_AVAILABLE = False
+    print("⚠️ watchdog 库未安装，文件监控功能将不可用。请运行: pip install watchdog")
 
 
 @dataclass
@@ -47,26 +58,112 @@ class PacksManager:
     """资源包管理器 - 专门为 Bukkit 设计"""
     
     def __init__(self, config):
+        """初始化资源包管理器"""
         self.config = config
-        self.packs_directory = Path(config.get("packs.directory", "data/packs"))
-        self.packs: Dict[str, ResourcePack] = {}
-        self.temp_dir = Path(tempfile.gettempdir()) / "prushka_packs"
+        self.packs_directory = Path(config.get("packs.directory", "resourcepack"))
+        self.packs = {}
+        self.temp_dir = Path(tempfile.gettempdir()) / "prushka_resourcepacks"
         
-        # 确保目录存在（只在不存在时创建）
-        if not self.packs_directory.exists():
-            self.packs_directory.mkdir(parents=True, exist_ok=True)
-            print(f"📁 创建资源包目录: {self.packs_directory}")
+        # 确保临时目录存在
+        self.temp_dir.mkdir(parents=True, exist_ok=True)
         
-        if not self.temp_dir.exists():
-            self.temp_dir.mkdir(parents=True, exist_ok=True)
-            print(f"📁 创建临时目录: {self.temp_dir}")
+        # 文件监控相关配置
+        self.file_monitor_enabled = config.get("packs.file_monitor", True)
+        self.file_monitor_interval = config.get("packs.file_monitor_interval", 1.0)  # 秒
+        self.observer = None
+        self.file_monitor_thread = None
+        self.last_scan_time = 0
+        self.scan_cooldown = config.get("packs.scan_cooldown", 2.0)  # 扫描冷却时间（秒）
+        
+        # 添加停止标志
+        self._stop_monitoring = False
         
         # 扫描资源包
         self.scan_packs()
+        
+        # 启动文件监控
+        if self.file_monitor_enabled and WATCHDOG_AVAILABLE:
+            self.start_file_monitoring()
+        elif self.file_monitor_enabled and not WATCHDOG_AVAILABLE:
+            print("⚠️ 文件监控功能已启用但 watchdog 库未安装")
+            print("💡 请运行以下命令安装: pip install watchdog")
+    
+    def start_file_monitoring(self):
+        """启动文件监控"""
+        if not WATCHDOG_AVAILABLE:
+            return
+            
+        try:
+            # 重置停止标志
+            self._stop_monitoring = False
+            
+            # 创建文件系统事件处理器
+            event_handler = ResourcePackFileHandler(self)
+            
+            # 创建观察者
+            self.observer = Observer()
+            self.observer.schedule(event_handler, str(self.packs_directory), recursive=True)
+            
+            # 启动监控
+            self.observer.start()
+            print(f"🔍 文件监控已启动，监控目录: {self.packs_directory}")
+            
+        except Exception as e:
+            print(f"❌ 启动文件监控失败: {e}")
+    
+    def stop_file_monitoring(self):
+        """停止文件监控"""
+        if self.observer:
+            try:
+                # 设置停止标志
+                self._stop_monitoring = True
+                
+                # 立即停止观察者
+                self.observer.stop()
+                
+                # 等待观察者线程结束，但设置超时
+                self.observer.join(timeout=1.0)
+                
+                # 如果超时，强制清理
+                if self.observer.is_alive():
+                    print("⚠️ 文件监控线程超时，强制清理")
+                    # 在Python中无法强制杀死线程，但我们可以标记为停止
+                
+                print("🔍 文件监控已停止")
+                
+            except Exception as e:
+                print(f"❌ 停止文件监控失败: {e}")
+    
+    def schedule_rescan(self):
+        """计划重新扫描资源包（带冷却时间）"""
+        # 检查是否已停止监控
+        if self._stop_monitoring:
+            return
+            
+        current_time = time.time()
+        if current_time - self.last_scan_time >= self.scan_cooldown:
+            self.last_scan_time = current_time
+            
+            # 在新线程中执行扫描，避免阻塞主线程
+            def delayed_scan():
+                # 再次检查停止标志
+                if self._stop_monitoring:
+                    return
+                    
+                time.sleep(0.5)  # 短暂延迟，确保文件操作完成
+                
+                # 最终检查停止标志
+                if not self._stop_monitoring:
+                    self.scan_packs()
+            
+            scan_thread = threading.Thread(target=delayed_scan, daemon=True)
+            scan_thread.start()
+            print("🔄 检测到文件变化，计划重新扫描资源包...")
     
     def scan_packs(self) -> None:
         """扫描资源包目录"""
         try:
+            old_packs = set(self.packs.keys())
             self.packs.clear()
             print(f"🔍 开始扫描资源包目录: {self.packs_directory.absolute()}")
             
@@ -92,6 +189,17 @@ class PacksManager:
                     if pack:
                         self.packs[pack.name] = pack
                         print(f"📁 发现子目录资源包: {pack.name}")
+            
+            new_packs = set(self.packs.keys())
+            
+            # 检查变化
+            added = new_packs - old_packs
+            removed = old_packs - new_packs
+            
+            if added:
+                print(f"✨ 新增资源包: {', '.join(added)}")
+            if removed:
+                print(f"🗑️ 移除资源包: {', '.join(removed)}")
             
             print(f"✅ 扫描完成，共发现 {len(self.packs)} 个资源包")
             
@@ -304,3 +412,55 @@ class PacksManager:
         except Exception as e:
             print(f"❌ 创建 zip 文件失败 {dir_path}: {e}")
             return None
+
+    def __del__(self):
+        """析构函数，确保停止文件监控"""
+        self.stop_file_monitoring()
+
+
+class ResourcePackFileHandler(FileSystemEventHandler):
+    """资源包文件系统事件处理器"""
+    
+    def __init__(self, packs_manager: PacksManager):
+        self.packs_manager = packs_manager
+        super().__init__()
+    
+    def on_created(self, event: FileSystemEvent):
+        """文件/目录创建事件"""
+        if not event.is_directory and event.src_path.endswith('.zip'):
+            print(f"📦 检测到新的 ZIP 资源包: {event.src_path}")
+            self.packs_manager.schedule_rescan()
+        elif event.is_directory:
+            # 检查新创建的目录是否是资源包
+            dir_path = Path(event.src_path)
+            if self.packs_manager._is_resource_pack_directory(dir_path):
+                print(f"📁 检测到新的目录资源包: {event.src_path}")
+                self.packs_manager.schedule_rescan()
+    
+    def on_deleted(self, event: FileSystemEvent):
+        """文件/目录删除事件"""
+        if not event.is_directory and event.src_path.endswith('.zip'):
+            print(f"🗑️ 检测到 ZIP 资源包被删除: {event.src_path}")
+            self.packs_manager.schedule_rescan()
+        elif event.is_directory:
+            print(f"🗑️ 检测到目录被删除: {event.src_path}")
+            self.packs_manager.schedule_rescan()
+    
+    def on_modified(self, event: FileSystemEvent):
+        """文件修改事件"""
+        if not event.is_directory:
+            if event.src_path.endswith('.zip'):
+                print(f"📝 检测到 ZIP 资源包被修改: {event.src_path}")
+                self.packs_manager.schedule_rescan()
+            elif event.src_path.endswith('pack.mcmeta'):
+                print(f"📝 检测到 pack.mcmeta 被修改: {event.src_path}")
+                self.packs_manager.schedule_rescan()
+    
+    def on_moved(self, event: FileSystemEvent):
+        """文件/目录移动事件"""
+        if not event.is_directory and (event.src_path.endswith('.zip') or event.dest_path.endswith('.zip')):
+            print(f"🔄 检测到 ZIP 资源包被移动: {event.src_path} -> {event.dest_path}")
+            self.packs_manager.schedule_rescan()
+        elif event.is_directory:
+            print(f"🔄 检测到目录被移动: {event.src_path} -> {event.dest_path}")
+            self.packs_manager.schedule_rescan()

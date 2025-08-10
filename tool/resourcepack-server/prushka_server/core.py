@@ -8,6 +8,7 @@ import os
 import sys
 import signal
 import logging
+import threading
 from pathlib import Path
 from colorama import Fore, Style, init
 from aiohttp import web
@@ -30,15 +31,47 @@ class PrushkaServer:
         self.runner = None
         self.site = None
         self.is_running = False
+        self.shutdown_event = asyncio.Event()
         
         # 设置信号处理
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
     
     def _signal_handler(self, signum, frame):
-        """信号处理器"""
-        print(f"\n{Fore.YELLOW}收到信号 {signum}，正在关闭服务器...{Style.RESET_ALL}")
-        asyncio.create_task(self.shutdown())
+        """信号处理器 - 强制退出"""
+        print(f"\n{Fore.RED}🚨 收到信号 {signum}，正在强制关闭服务器...{Style.RESET_ALL}")
+        
+        # 设置关闭事件
+        if hasattr(self, 'shutdown_event'):
+            self.shutdown_event.set()
+        
+        # 强制退出所有后台线程
+        self._force_exit()
+    
+    def _force_exit(self):
+        """强制退出所有后台线程和程序"""
+        print(f"{Fore.YELLOW}🔄 正在强制关闭所有后台线程...{Style.RESET_ALL}")
+        
+        try:
+            # 停止文件监控
+            if self.packs_manager and hasattr(self.packs_manager, 'stop_file_monitoring'):
+                self.packs_manager.stop_file_monitoring()
+                print(f"{Fore.GREEN}✅ 文件监控已停止{Style.RESET_ALL}")
+            
+            # 强制退出所有Python线程
+            for thread in threading.enumerate():
+                if thread != threading.main_thread() and thread.is_alive():
+                    print(f"{Fore.YELLOW}⚠️ 强制停止线程: {thread.name}{Style.RESET_ALL}")
+                    # 注意：在Python中无法强制杀死线程，只能设置标志位
+                    # 这里我们直接退出程序
+            
+        except Exception as e:
+            print(f"{Fore.RED}❌ 强制关闭时出错: {e}{Style.RESET_ALL}")
+        
+        finally:
+            print(f"{Fore.RED}💀 强制退出程序{Style.RESET_ALL}")
+            # 强制退出，不等待任何清理
+            os._exit(0)
     
     async def initialize(self):
         """初始化服务器"""
@@ -161,6 +194,11 @@ class PrushkaServer:
         print(f"{Fore.YELLOW}🔄 正在关闭服务器...{Style.RESET_ALL}")
         
         try:
+            # 停止文件监控
+            if self.packs_manager and hasattr(self.packs_manager, 'stop_file_monitoring'):
+                self.packs_manager.stop_file_monitoring()
+                print(f"{Fore.GREEN}✅ 文件监控已停止{Style.RESET_ALL}")
+            
             # 关闭站点
             if self.site:
                 await self.site.stop()
@@ -176,25 +214,26 @@ class PrushkaServer:
             print(f"{Fore.RED}❌ 服务器关闭时出错: {e}{Style.RESET_ALL}")
         
         finally:
-            # 退出程序
-            sys.exit(0)
+            # 强制退出程序
+            print(f"{Fore.RED}💀 强制退出程序{Style.RESET_ALL}")
+            os._exit(0)
     
     async def run(self):
         """运行服务器"""
         try:
             if await self.start():
-                # 保持服务器运行
-                await asyncio.Event().wait()
+                # 保持服务器运行，等待关闭事件
+                await self.shutdown_event.wait()
             else:
                 print(f"{Fore.RED}❌ 服务器启动失败，程序退出{Style.RESET_ALL}")
-                sys.exit(1)
+                os._exit(1)
                 
         except KeyboardInterrupt:
-            print(f"\n{Fore.YELLOW}⚠️ 收到键盘中断信号{Style.RESET_ALL}")
-            await self.shutdown()
+            print(f"\n{Fore.RED}🚨 收到键盘中断信号，强制退出{Style.RESET_ALL}")
+            self._force_exit()
         except Exception as e:
             print(f"{Fore.RED}❌ 服务器运行出错: {e}{Style.RESET_ALL}")
-            await self.shutdown()
+            self._force_exit()
 
 
 def main():

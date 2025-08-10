@@ -34,6 +34,9 @@ class Server:
         # Hash 端点 
         self.app.router.add_get('/hash/{name}', self.hash_handler)
         
+        # 手动重新扫描端点
+        self.app.router.add_post('/api/rescan', self.rescan_packs_handler)
+        
         # 调试路由
         self.app.router.add_get('/debug', self.debug_handler)
         
@@ -228,7 +231,7 @@ class Server:
             
             # 返回文件
             response = await self.packs_manager.serve_pack(name)
-            if response:
+            if response is not None:
                 return response
             else:
                 return web.json_response({
@@ -269,6 +272,29 @@ class Server:
                 'error': str(e)
             }, status=500)
     
+    async def rescan_packs_handler(self, request: Request) -> Response:
+        """手动重新扫描资源包"""
+        try:
+            # 在新线程中执行扫描，避免阻塞HTTP请求
+            import threading
+            def scan_task():
+                self.packs_manager.scan_packs()
+            
+            scan_thread = threading.Thread(target=scan_task, daemon=True)
+            scan_thread.start()
+            
+            return web.json_response({
+                'success': True,
+                'message': '资源包重新扫描已启动',
+                'timestamp': time.time()
+            })
+            
+        except Exception as e:
+            return web.json_response({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
     async def debug_handler(self, request: Request) -> Response:
         """调试信息处理器"""
         debug_info = {
@@ -283,13 +309,21 @@ class Server:
             'packs': {
                 'directory': str(self.packs_manager.packs_directory),
                 'count': len(self.packs_manager.packs),
-                'temp_directory': str(self.packs_manager.temp_dir)
+                'temp_directory': str(self.packs_manager.temp_dir),
+                'file_monitor': {
+                    'enabled': self.packs_manager.file_monitor_enabled,
+                    'watchdog_available': hasattr(self.packs_manager, 'observer') and self.packs_manager.observer is not None,
+                    'last_scan_time': self.packs_manager.last_scan_time,
+                    'scan_cooldown': self.packs_manager.scan_cooldown
+                }
             },
             'endpoints': {
                 'list_packs': '/api/packs',
                 'get_pack': '/api/packs/{name}',
                 'download': '/download/{name}',
-                'hash': '/hash/{name}'
+                'hash': '/hash/{name}',
+                'rescan': '/api/rescan',
+                'debug': '/debug'
             },
             'timestamp': time.time()
         }
