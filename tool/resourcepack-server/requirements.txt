@@ -1,0 +1,6 @@
+aiohttp>=3.8.0
+toml>=0.10.2
+colorama>=0.4.5
+aiofiles>=0.8.0
+python-multipart>=0.0.5
+pathlib2>=2.3.7
