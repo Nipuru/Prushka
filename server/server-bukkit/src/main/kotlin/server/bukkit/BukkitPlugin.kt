@@ -81,6 +81,7 @@ class BukkitPlugin : JavaPlugin() {
     }
 
     fun reload() {
+        saveDefaultConfig()
         Sheet.load(File(dataFolder, "jsons").absolutePath)
     }
 
