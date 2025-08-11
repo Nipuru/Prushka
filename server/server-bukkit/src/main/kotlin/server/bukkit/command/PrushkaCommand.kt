@@ -14,6 +14,7 @@ import server.bukkit.MessageType
 import server.bukkit.command.argument.PlayerInfoArgument
 import server.bukkit.config.Config
 import server.bukkit.plugin
+import server.bukkit.util.ResourcePack
 import server.bukkit.util.component
 import server.bukkit.util.gson
 import server.bukkit.util.submit
@@ -126,39 +127,13 @@ object PrushkaCommand {
         val url = Config.RESOURCEPACK_URL.string()
 
         // 异步获取资源包信息
-        CompletableFuture.runAsync {
+        submit {
             try {
-                var uri = URI.create(url)
-                val client = HttpClient.newHttpClient()
-                val request = HttpRequest.newBuilder()
-                    .uri(uri)
-                    .GET()
-                    .build()
-                val response = client.send(request, HttpResponse.BodyHandlers.ofString())
-                client.close()
-
-                if (response.statusCode() == 200) {
-                    val jsonResponse = gson.fromJson(response.body(), JsonObject::class.java)
-
-                    if (jsonResponse.get("success").asBoolean) {
-                        val data = jsonResponse.getAsJsonObject("data")
-                        val downloadUrl = data.get("download_url").asString
-                        val hash = data.get("hash").asString
-
-                        // 构建完整的下载URL
-                        val baseUrl = "${uri.scheme}://${uri.host}:${uri.port}"
-                        val fullDownloadUrl = baseUrl + downloadUrl
-
-                        // 在主线程中发送资源包
-                        submit(async = false) {
-                            player.bukkitPlayer.setResourcePack(fullDownloadUrl, hash)
-                            MessageType.INFO.sendMessage(context.source.sender, "资源包已发送给玩家 ${player.name}")
-                        }
-                    } else {
-                        MessageType.WARNING.sendMessage(context.source.sender, "获取资源包信息失败")
-                    }
-                } else {
-                    MessageType.WARNING.sendMessage(context.source.sender, "HTTP请求失败，状态码: ${response.statusCode()}")
+                val pack = ResourcePack.parse(url)
+                // 在主线程中发送资源包
+                submit(async = false) {
+                    player.bukkitPlayer.setResourcePack(pack.url, pack.hash)
+                    MessageType.INFO.sendMessage(context.source.sender, "资源包已发送给玩家 ${player.name}")
                 }
             } catch (e: Exception) {
                 MessageType.WARNING.sendMessage(context.source.sender, "获取资源包信息时发生错误: ${e.message}")
