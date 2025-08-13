@@ -1,7 +1,4 @@
-"""
-工具函数模块
-提供各种辅助功能
-"""
+"""工具函数模块"""
 
 import os
 import time
@@ -48,7 +45,6 @@ def validate_zip_file(file_path: Path) -> bool:
     """验证 ZIP 文件的有效性"""
     try:
         with zipfile.ZipFile(file_path, 'r') as zip_file:
-            # 检查是否包含 pack.mcmeta 文件
             return 'pack.mcmeta' in zip_file.namelist()
     except Exception:
         return False
@@ -58,7 +54,6 @@ def extract_pack_info(zip_path: Path) -> Optional[Dict[str, Any]]:
     """从 ZIP 文件中提取资源包信息"""
     try:
         with zipfile.ZipFile(zip_path, 'r') as zip_file:
-            # 读取 pack.mcmeta 文件
             if 'pack.mcmeta' not in zip_file.namelist():
                 return None
             
@@ -78,7 +73,7 @@ def extract_pack_info(zip_path: Path) -> Optional[Dict[str, Any]]:
 
 
 def create_directory_structure(base_path: Path) -> None:
-    """创建必要的目录结构（只在不存在时创建）"""
+    """创建必要的目录结构"""
     directories = [
         "logs",
         "config"
@@ -88,19 +83,17 @@ def create_directory_structure(base_path: Path) -> None:
         dir_path = base_path / directory
         if not dir_path.exists():
             dir_path.mkdir(parents=True, exist_ok=True)
-            print(f"📁 创建目录: {directory}")
+            print(f"创建目录: {directory}")
         else:
-            print(f"✅ 目录已存在: {directory}")
+            print(f"目录已存在: {directory}")
 
 
 def get_safe_filename(filename: str) -> str:
     """获取安全的文件名"""
-    # 移除或替换不安全的字符
     unsafe_chars = '<>:"/\\|?*'
     for char in unsafe_chars:
         filename = filename.replace(char, '_')
     
-    # 限制文件名长度
     if len(filename) > 100:
         name, ext = os.path.splitext(filename)
         filename = name[:100-len(ext)] + ext
@@ -127,7 +120,6 @@ def validate_config(config: Dict[str, Any]) -> List[str]:
     """验证配置的有效性"""
     errors = []
     
-    # 检查必需的配置项
     required_fields = [
         'server.host',
         'server.port',
@@ -138,7 +130,6 @@ def validate_config(config: Dict[str, Any]) -> List[str]:
         if not config.get(field):
             errors.append(f"缺少必需的配置项: {field}")
     
-    # 验证端口号
     port = config.get('server.port')
     if port and (not isinstance(port, int) or port < 1 or port > 65535):
         errors.append("端口号必须是 1-65535 之间的整数")
@@ -149,11 +140,9 @@ def validate_config(config: Dict[str, Any]) -> List[str]:
 def create_sample_resource_pack(output_dir: Path) -> None:
     """创建示例资源包"""
     try:
-        # 创建示例资源包目录
         pack_dir = output_dir / "sample_pack"
         pack_dir.mkdir(parents=True, exist_ok=True)
         
-        # 创建 pack.mcmeta
         pack_meta = {
             "pack": {
                 "description": "示例资源包 - 用于测试",
@@ -164,11 +153,9 @@ def create_sample_resource_pack(output_dir: Path) -> None:
         with open(pack_dir / "pack.mcmeta", 'w', encoding='utf-8') as f:
             json.dump(pack_meta, f, indent=4, ensure_ascii=False)
         
-        # 创建示例资源目录结构
         assets_dir = pack_dir / "assets" / "minecraft"
         assets_dir.mkdir(parents=True, exist_ok=True)
         
-        # 创建示例纹理文件说明
         readme_content = """这是一个示例资源包，用于测试资源包服务器功能。
 
 目录结构:
@@ -181,10 +168,10 @@ def create_sample_resource_pack(output_dir: Path) -> None:
         with open(pack_dir / "README.txt", 'w', encoding='utf-8') as f:
             f.write(readme_content)
         
-        print(f"✅ 示例资源包已创建: {pack_dir}")
+        print(f"示例资源包已创建: {pack_dir}")
         
     except Exception as e:
-        print(f"❌ 创建示例资源包失败: {e}")
+        print(f"创建示例资源包失败: {e}")
 
 
 def cleanup_old_files(directory: Path, max_age_days: int = 30) -> int:
@@ -202,9 +189,9 @@ def cleanup_old_files(directory: Path, max_age_days: int = 30) -> int:
                     cleaned_count += 1
         
         if cleaned_count > 0:
-            print(f"🧹 清理了 {cleaned_count} 个旧文件")
+            print(f"清理了 {cleaned_count} 个旧文件")
             
     except Exception as e:
-        print(f"❌ 清理旧文件失败: {e}")
+        print(f"清理旧文件失败: {e}")
     
     return cleaned_count

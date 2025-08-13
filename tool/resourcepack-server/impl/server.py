@@ -1,7 +1,4 @@
-"""
-HTTP 服务器模块
-专门为 Bukkit 插件提供资源包下载服务
-"""
+"""HTTP 服务器模块"""
 
 import json
 import time
@@ -11,7 +8,7 @@ from aiohttp.web import Request, Response
 
 
 class Server:
-    """HTTP 服务器类 - 专门为 Bukkit 设计"""
+    """HTTP 服务器类"""
     
     def __init__(self, config, packs_manager):
         self.config = config
@@ -21,30 +18,23 @@ class Server:
     
     def setup_routes(self):
         """设置路由"""
-        # 主页 - 简单的资源包列表
         self.app.router.add_get('/', self.index_handler)
         
-        # Bukkit 专用 API 路由
         self.app.router.add_get('/api/packs', self.list_packs_handler)
         self.app.router.add_get('/api/packs/{name}', self.get_pack_handler)
         
-        # 资源包下载路由
         self.app.router.add_get('/download/{name}', self.download_pack_handler)
         
-        # Hash 端点 
         self.app.router.add_get('/hash/{name}', self.hash_handler)
         
-        # 手动重新扫描端点
         self.app.router.add_post('/api/rescan', self.rescan_packs_handler)
         
-        # 调试路由
         self.app.router.add_get('/debug', self.debug_handler)
         
-        # 错误处理
         self.app.middlewares.append(self.error_middleware)
     
     async def index_handler(self, request: Request) -> Response:
-        """主页处理器 - 显示可用的资源包"""
+        """主页处理器"""
         try:
             packs = self.packs_manager.get_all_packs()
             
@@ -54,7 +44,7 @@ class Server:
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Prushka 资源包服务器</title>
+                <title>Minecraft 资源包服务器</title>
                 <style>
                     body {{ font-family: 'Microsoft YaHei', sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }}
                     .container {{ max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
@@ -107,7 +97,6 @@ class Server:
                         navigator.clipboard.writeText(hash).then(function() {{
                             showCopyFeedback('Hash 已复制到剪贴板！');
                         }}).catch(function(err) {{
-                            // 降级方案：使用传统方法
                             const textArea = document.createElement('textarea');
                             textArea.value = hash;
                             document.body.appendChild(textArea);
@@ -135,11 +124,11 @@ class Server:
             </head>
             <body>
                 <div class="container">
-                    <h1>🎮 Prushka 资源包服务器</h1>
+                    <h1>Minecraft 资源包服务器</h1>
                     <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px;">
                     </p>
                     
-                    <h2>📦 可用资源包 ({len(packs)} 个)</h2>
+                    <h2>可用资源包 ({len(packs)} 个)</h2>
             """
             
             if not packs:
@@ -159,14 +148,17 @@ class Server:
                         <div class="hash-info">
                             <strong>Hash (MD5):</strong> {pack.hash}
                         </div>
-                        <a href="/download/{pack.name}" class="download-btn">📥 下载资源包</a>
-                        <button onclick="copyHash('{pack.hash}')" class="copy-btn">📋 复制 Hash</button>
+                        <a href="/download/{pack.name}" class="download-btn">下载资源包</a>
+                        <button onclick="copyHash('{pack.hash}')" class="copy-btn">复制 Hash</button>
                     </div>
                     """
             
             html_content += """
                 </div>
                 <div id="copy-feedback" class="copy-feedback"></div>
+                <div style="text-align: center; margin-top: 30px; padding: 20px; color: #7f8c8d; border-top: 1px solid #eee;">
+                    <p>&copy; 2025 Nipuru. All rights reserved.</p>
+                </div>
             </body>
             </html>
             """
@@ -177,7 +169,7 @@ class Server:
             return web.Response(text=f"页面加载失败: {str(e)}", status=500)
     
     async def list_packs_handler(self, request: Request) -> Response:
-        """获取所有资源包列表 - Bukkit 插件可以调用这个 API"""
+        """获取所有资源包列表"""
         try:
             packs = self.packs_manager.get_all_packs()
             packs_data = [pack.to_dict() for pack in packs]
@@ -218,7 +210,7 @@ class Server:
             }, status=500)
     
     async def download_pack_handler(self, request: Request) -> Response:
-        """下载资源包 - Bukkit 插件调用这个端点下载资源包"""
+        """下载资源包"""
         try:
             name = request.match_info['name']
             pack = self.packs_manager.get_pack(name)
@@ -229,7 +221,6 @@ class Server:
                     'error': '资源包不存在'
                 }, status=404)
             
-            # 返回文件
             response = await self.packs_manager.serve_pack(name)
             if response is not None:
                 return response
@@ -275,7 +266,6 @@ class Server:
     async def rescan_packs_handler(self, request: Request) -> Response:
         """手动重新扫描资源包"""
         try:
-            # 在新线程中执行扫描，避免阻塞HTTP请求
             import threading
             def scan_task():
                 self.packs_manager.scan_packs()
@@ -298,9 +288,8 @@ class Server:
     async def debug_handler(self, request: Request) -> Response:
         """调试信息处理器"""
         debug_info = {
-            'server': 'Prushka Resource Pack Server',
+            'server': 'Resource Pack Server',
             'version': '1.0.0',
-            'description': '专门为 Bukkit 插件设计的资源包分发服务',
             'config': {
                 'host': self.config.get('server.host'),
                 'port': self.config.get('server.port'),

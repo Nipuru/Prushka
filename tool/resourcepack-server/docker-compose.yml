@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  prushka-resourcepack-server:
+  resourcepack-server:
     build: .
-    container_name: prushka-resourcepack-server
+    container_name: resourcepack-server
     ports:
       - "8080:8080"
     volumes:

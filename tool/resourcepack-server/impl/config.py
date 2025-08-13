@@ -1,7 +1,4 @@
-"""
-配置管理模块
-负责加载和管理服务器配置
-"""
+"""配置管理模块"""
 
 import os
 import toml
@@ -24,14 +21,12 @@ class Config:
     def _load_config(self):
         """加载配置文件"""
         try:
-            # 如果配置文件不存在，从模板创建
             if not self.config_path.exists():
                 if self.template_path.exists():
                     self._create_config_from_template()
                 else:
                     self._create_default_config()
             
-            # 加载配置文件
             with open(self.config_path, 'r', encoding='utf-8') as f:
                 self.config = toml.load(f)
             
@@ -48,10 +43,8 @@ class Config:
             with open(self.template_path, 'r', encoding='utf-8') as f:
                 template_config = toml.load(f)
             
-            # 确保配置目录存在
             self.config_path.parent.mkdir(parents=True, exist_ok=True)
             
-            # 写入配置文件
             with open(self.config_path, 'w', encoding='utf-8') as f:
                 toml.dump(template_config, f)
             
@@ -78,10 +71,8 @@ class Config:
             }
         }
         
-        # 确保配置目录存在
         self.config_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # 写入默认配置
         with open(self.config_path, 'w', encoding='utf-8') as f:
             toml.dump(default_config, f)
         
