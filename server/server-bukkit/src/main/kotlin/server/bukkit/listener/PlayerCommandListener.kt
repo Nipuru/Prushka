@@ -3,7 +3,8 @@ package server.bukkit.listener
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
-import server.bukkit.gameplay.player.GamePlayers
+import server.bukkit.gameplay.player.GamePlayerManager
+import server.bukkit.gameplay.player.gamePlayer
 
 
 /**
@@ -15,7 +16,7 @@ class PlayerCommandListener : Listener {
     @EventHandler
     fun onPlayerCommand(event: PlayerCommandPreprocessEvent) {
         //解除afk
-        val player = GamePlayers.getPlayer(event.player.uniqueId)
+        val player = event.player.gamePlayer
         player.core.afk = false
     }
 }

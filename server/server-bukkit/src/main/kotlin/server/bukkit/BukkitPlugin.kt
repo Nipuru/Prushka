@@ -12,7 +12,7 @@ import server.bukkit.command.FriendCommand
 import server.bukkit.command.PrushkaCommand
 import server.bukkit.command.WhereAmICommand
 import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.GamePlayers
+import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.listener.*
 import server.bukkit.processor.*
 import server.bukkit.processor.connection.CloseEventBukkitProcessor
@@ -66,7 +66,7 @@ class BukkitPlugin : JavaPlugin() {
 
     override fun onEnable() {
         reload()
-        GamePlayers.loadAll()
+        GamePlayerManager.loadAll()
         registerTasks()
         registerListeners()
         registerCommands()
@@ -74,7 +74,7 @@ class BukkitPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
-        GamePlayers.unloadAll()
+        GamePlayerManager.unloadAll()
         bizThread.shutdown()
         bizThread.awaitTermination(1L, TimeUnit.MINUTES)
         TimeManager.cancel()

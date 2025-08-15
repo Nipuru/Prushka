@@ -5,7 +5,8 @@ import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import server.bukkit.gameplay.player.GamePlayers
+import server.bukkit.gameplay.player.GamePlayerManager
+import server.bukkit.gameplay.player.gamePlayer
 import server.bukkit.util.submit
 import server.common.message.GetPlayerLocationRequest
 import server.common.message.LocationMessage
@@ -25,7 +26,7 @@ class GetPlayerLocationBukkitProcessor : AsyncUserProcessor<GetPlayerLocationReq
 
     private fun handle(message: GetPlayerLocationRequest): LocationMessage? {
         val bukkitPlayer = Bukkit.getPlayerExact(message.name) ?: return null
-        val player = GamePlayers.getPlayer(bukkitPlayer.uniqueId)
+        val player = bukkitPlayer.gamePlayer
         val location = player.teleport.lastLocation
         return LocationMessage(location.worldName, location.x, location.y, location.z)
     }

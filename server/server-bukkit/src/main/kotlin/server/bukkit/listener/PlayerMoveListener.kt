@@ -4,7 +4,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
-import server.bukkit.gameplay.player.GamePlayers
+import server.bukkit.gameplay.player.GamePlayerManager
+import server.bukkit.gameplay.player.gamePlayer
 
 
 /**
@@ -16,7 +17,7 @@ class PlayerMoveListener : Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     fun onEvent(event: PlayerMoveEvent) {
         //解除afk
-        val player = GamePlayers.getPlayer(event.player.uniqueId)
+        val player = event.player.gamePlayer
         player.core.afk = false
         player.teleport.setLastLocation(event.to)
     }

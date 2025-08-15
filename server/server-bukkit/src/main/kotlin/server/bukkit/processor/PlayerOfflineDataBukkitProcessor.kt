@@ -3,7 +3,7 @@ package server.bukkit.processor
 import com.alipay.remoting.AsyncContext
 import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
-import server.bukkit.gameplay.player.GamePlayers
+import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.util.submit
 import server.common.message.PlayerOfflineDataMessage
 
@@ -16,7 +16,7 @@ class PlayerOfflineDataBukkitProcessor : AsyncUserProcessor<PlayerOfflineDataMes
     }
 
     private fun handle(request: PlayerOfflineDataMessage) : Boolean {
-        val gamePlayer = GamePlayers.getPlayer(request.playerId)
+        val gamePlayer = GamePlayerManager.getPlayer(request.playerId)
         val handler = gamePlayer.offline.getHandler(request.module) ?: return false
         val result = handler.handle(request.data, true)
         return result

@@ -1,7 +1,7 @@
 package server.bukkit.scheduler
 
 import org.bukkit.Bukkit
-import server.bukkit.gameplay.player.GamePlayers
+import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.plugin
 
 /**
@@ -13,6 +13,6 @@ class ServerTickTask : Runnable {
         Bukkit.getScheduler().runTaskTimer(plugin, this, 1L, 1L)
     }
     override fun run() {
-        GamePlayers.tick()
+        GamePlayerManager.tick()
     }
 }

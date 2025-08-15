@@ -3,7 +3,7 @@ package server.bukkit.processor.connection
 import com.alipay.remoting.Connection
 import com.alipay.remoting.ConnectionEventProcessor
 import net.afyer.afybroker.client.Broker
-import server.bukkit.gameplay.player.GamePlayers
+import server.bukkit.gameplay.player.GamePlayerManager
 import server.common.logger.logger
 import server.bukkit.time.TimeManager
 import server.bukkit.util.submit
@@ -22,7 +22,7 @@ class ConnectEventBukkitProcessor : ConnectionEventProcessor {
             debugTime = Broker.invokeSync(GetTimeRequest())
             newDayFunc = {
                 submit(async = false) {
-                    GamePlayers.onNewDay(it)
+                    GamePlayerManager.onNewDay(it)
                 }
             }
             init()

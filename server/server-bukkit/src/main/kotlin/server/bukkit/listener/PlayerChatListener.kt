@@ -3,9 +3,11 @@ package server.bukkit.listener
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import server.bukkit.gameplay.player.GamePlayers
+import server.bukkit.gameplay.player.GamePlayerManager
+import server.bukkit.gameplay.player.gamePlayer
 import server.common.logger.logger
 import server.bukkit.plugin
 
@@ -22,8 +24,8 @@ class PlayerChatListener : Listener {
         }
     }
 
-    private fun handleChat(bukkitPlayer: org.bukkit.entity.Player, message: String) {
-        val player = GamePlayers.getPlayer(bukkitPlayer.uniqueId)
+    private fun handleChat(bukkitPlayer: Player, message: String) {
+        val player = bukkitPlayer.gamePlayer
         Bukkit.getScheduler().runTask(plugin, Runnable {
             player.core.afk = false
             if (player.chat.isMuted) {

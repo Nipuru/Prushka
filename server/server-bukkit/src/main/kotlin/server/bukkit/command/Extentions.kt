@@ -10,7 +10,8 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.GamePlayers
+import server.bukkit.gameplay.player.GamePlayerManager
+import server.bukkit.gameplay.player.gamePlayer
 import server.bukkit.nms.message
 import java.util.concurrent.CompletableFuture
 
@@ -29,7 +30,7 @@ val CommandSourceStack.gamePlayer: GamePlayer
     get() {
         val entity = this.executor
         if (entity !is Player) throw ERROR_NOT_PLAYER.create()
-        return GamePlayers.getPlayer(entity.uniqueId)
+        return entity.gamePlayer
     }
 
 fun <S : Any> suggestion(context: CommandContext<S>, builder: SuggestionsBuilder, suggestions: () -> List<String>): CompletableFuture<Suggestions> {
