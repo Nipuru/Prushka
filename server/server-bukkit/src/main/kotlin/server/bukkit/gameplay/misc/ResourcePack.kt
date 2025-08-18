@@ -1,9 +1,11 @@
-package server.bukkit.gameplay.player
+package server.bukkit.gameplay.misc
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import net.kyori.adventure.resource.ResourcePackInfo
+import net.kyori.adventure.resource.ResourcePackRequest
 import server.bukkit.config.Config
+import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.util.gson
 import java.io.IOException
 import java.net.URI
@@ -13,12 +15,16 @@ import java.net.http.HttpResponse
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
+fun GamePlayer.setResourcePack(pack: ResourcePack) {
+    val request = ResourcePackRequest.resourcePackRequest()
+        .packs(pack.toResourcePackInfo())
+        .replace(true)
+        .required(true)
+    bukkitPlayer.sendResourcePacks(request)
+}
 
 /**
  * 将 resourcepack_server 的资源包信息进行提取
- *
- * @author Nipuru
- * @since 2025/08/11 10:11
  */
 class ResourcePack(
     /** 名称 */

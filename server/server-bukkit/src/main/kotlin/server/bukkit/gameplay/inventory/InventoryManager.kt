@@ -3,10 +3,7 @@ package server.bukkit.gameplay.inventory
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import server.bukkit.gameplay.player.BaseManager
-import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.TableInfos
-import server.bukkit.gameplay.player.preload
+import server.bukkit.gameplay.player.*
 import server.common.logger.logger
 import server.bukkit.nms.*
 

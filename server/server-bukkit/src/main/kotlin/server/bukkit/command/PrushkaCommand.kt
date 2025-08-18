@@ -13,7 +13,8 @@ import server.bukkit.MessageType
 import server.bukkit.command.argument.GamePlayerArgument
 import server.bukkit.command.argument.PlayerInfoArgument
 import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.ResourcePack
+import server.bukkit.gameplay.misc.ResourcePack
+import server.bukkit.gameplay.misc.setResourcePack
 import server.bukkit.gameplay.skin.PlayerSkin
 import server.bukkit.plugin
 import server.bukkit.util.*

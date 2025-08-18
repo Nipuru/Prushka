@@ -9,6 +9,7 @@ import server.bukkit.gameplay.chat.ChatManager
 import server.bukkit.gameplay.friend.FriendManager
 import server.bukkit.gameplay.inventory.InventoryManager
 import server.bukkit.gameplay.item.ItemManager
+import server.bukkit.gameplay.misc.ResourcePack
 import server.bukkit.gameplay.offline.OfflineManager
 import server.bukkit.gameplay.skin.SkinManager
 import server.bukkit.gameplay.teleport.TeleportManager
@@ -34,7 +35,7 @@ class GamePlayer(
     val dataService: PlayerDataService = Broker.getService(PlayerDataService::class.java, dbId.toString())
     val bukkitPlayer by lazy { Bukkit.getPlayer(uniqueId)!! }
 
-    private val writer = DataWriter(this)
+    val writer = DataWriter(this)
     val offline = OfflineManager(this)
     val core = server.bukkit.gameplay.core.CoreManager(this)
     val inventory = InventoryManager(this)
@@ -201,23 +202,5 @@ class GamePlayer(
         core.resetTime = time
     }
 
-    fun <T : Any> update(data: T, vararg properties: KProperty1<T, *>) {
-        this.writer.add(DataAction(DataActionType.UPDATE, data, DataConvertor.getProperty(data, properties)))
-    }
 
-    fun <T: Any> insert(data: T) {
-        this.writer.add(DataAction(DataActionType.INSERT, data, null))
-    }
-
-    fun <T: Any> delete(data: T) {
-        this.writer.add(DataAction(DataActionType.DELETE, data, null))
-    }
-
-    fun setResourcePack(pack: ResourcePack) {
-        val request = ResourcePackRequest.resourcePackRequest()
-            .packs(pack.toResourcePackInfo())
-            .replace(true)
-            .required(true)
-        bukkitPlayer.sendResourcePacks(request)
-    }
 }

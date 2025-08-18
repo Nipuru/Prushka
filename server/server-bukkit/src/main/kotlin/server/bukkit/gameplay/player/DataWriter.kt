@@ -1,16 +1,34 @@
 package server.bukkit.gameplay.player
 
-import net.afyer.afybroker.client.Broker
 import org.bukkit.Bukkit
 import server.bukkit.gameplay.player.DataConvertor.getOrCache
-import server.common.logger.logger
 import server.bukkit.plugin
 import server.bukkit.util.submit
+import server.common.logger.logger
 import server.common.message.FieldMessage
 import server.common.message.PlayerDataTransactionMessage
-import server.common.service.PlayerDataService
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.reflect.KProperty1
+
+class DataAction(val type: DataActionType, val data: Any, val fields: Array<String>?)
+
+enum class DataActionType {
+    INSERT, UPDATE, DELETE
+}
+
+
+fun <T : Any> GamePlayer.update(data: T, vararg properties: KProperty1<T, *>) {
+    writer.add(DataAction(DataActionType.UPDATE, data, DataConvertor.getProperty(data, properties)))
+}
+
+fun <T: Any> GamePlayer.insert(data: T) {
+    writer.add(DataAction(DataActionType.INSERT, data, null))
+}
+
+fun <T: Any> GamePlayer.delete(data: T) {
+    writer.add(DataAction(DataActionType.DELETE, data, null))
+}
 
 class DataWriter(private val player: GamePlayer) {
 
