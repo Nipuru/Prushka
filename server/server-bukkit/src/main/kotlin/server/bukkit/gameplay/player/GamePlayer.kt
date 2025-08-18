@@ -1,6 +1,8 @@
 package server.bukkit.gameplay.player
 
 import net.afyer.afybroker.client.Broker
+import net.kyori.adventure.resource.ResourcePackInfo
+import net.kyori.adventure.resource.ResourcePackRequest
 import org.bukkit.Bukkit
 import server.bukkit.MessageType
 import server.bukkit.constant.DAY
@@ -17,6 +19,7 @@ import server.bukkit.logger.LogServer
 import server.common.logger.logger
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
+import server.bukkit.util.ResourcePack
 import server.common.service.PlayerDataService
 import java.util.*
 import java.util.regex.Pattern
@@ -213,5 +216,13 @@ class GamePlayer(
 
     fun <T: Any> delete(data: T) {
         this.writer.add(DataAction(DataActionType.DELETE, data, null))
+    }
+
+    fun setResourcePack(pack: ResourcePack) {
+        val request = ResourcePackRequest.resourcePackRequest()
+            .packs(pack.toResourcePackInfo())
+            .replace(true)
+            .required(true)
+        bukkitPlayer.sendResourcePacks(request)
     }
 }

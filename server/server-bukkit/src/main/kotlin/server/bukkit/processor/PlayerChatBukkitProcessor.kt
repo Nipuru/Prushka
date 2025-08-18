@@ -14,7 +14,7 @@ import server.common.message.PlayerPrivateChatMessage
 class PlayerChatServerProcessor : AsyncUserProcessor<PlayerChatMessage>() {
 
     override fun handleRequest(bizContext: BizContext, asyncContext: AsyncContext, request: PlayerChatMessage) {
-        for (player in GamePlayerManager.players) {
+        for (player in GamePlayerManager.getPlayers()) {
             val manager = player.chat
             manager.receivePublic(request.sender, request.fragments)
         }

@@ -124,17 +124,14 @@ object PrushkaCommand {
      */
     fun resourcepack(context: CommandContext<CommandSourceStack>): Int {
         val player = context.source.gamePlayer
-        val url = Config.RESOURCEPACK_URL.string()
-
         // 异步获取资源包信息
         submit {
             try {
-                val pack = ResourcePack.parse(url)
-                // 在主线程中发送资源包
-                submit(async = false) {
-                    player.bukkitPlayer.setResourcePack(pack.url, pack.hash)
-                    MessageType.INFO.sendMessage(context.source.sender, "资源包已发送给玩家 ${player.name}")
-                }
+                val serverAddress = Config.RESOURCEPACK_URL.string()
+                val packName = Config.RESOURCEPACK_PACK.string()
+                val pack = ResourcePack.getPack(serverAddress, packName)!!
+                player.setResourcePack(pack)
+                MessageType.INFO.sendMessage(context.source.sender, "资源包已发送")
             } catch (e: Exception) {
                 MessageType.WARNING.sendMessage(context.source.sender, "获取资源包信息时发生错误: ${e.message}")
             }

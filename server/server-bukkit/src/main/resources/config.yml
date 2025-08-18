@@ -1,2 +1,4 @@
 debug: false
-resourcepack-url: "localhost:8080/api/packs/resourcepack"
+resourcepack-server:
+  url: "http://localhost:8080"
+  pack: "resourcepack"

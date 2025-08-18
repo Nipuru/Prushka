@@ -15,10 +15,18 @@ enum class Config(val path: String) {
      * 是否开启调试模式
      */
     DEBUG("debug"),
+
     /**
-     * 资源包下载地址
+     * 资源包服务器地址
      */
-    RESOURCEPACK_URL("resourcepack-url");
+    RESOURCEPACK_URL("resourcepack-server.url"),
+
+    /**
+     * 资源包名称
+     */
+    RESOURCEPACK_PACK("resourcepack-server.pack");
+
+
 
     fun int(def: Int = 0): Int {
         return plugin.config.getInt(path, def)

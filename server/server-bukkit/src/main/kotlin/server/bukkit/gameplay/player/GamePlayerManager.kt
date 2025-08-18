@@ -72,8 +72,12 @@ object GamePlayerManager {
         return gamePlayer
     }
 
-    val players: Collection<GamePlayer>
-        get() = Collections.unmodifiableCollection(byUniqueId.values)
+    /**
+     * 获取所有玩家
+     */
+    fun getPlayers(): Collection<GamePlayer> {
+        return byPlayerId.values
+    }
 
     fun removePlayer(player: GamePlayer) {
         logger.info("Remove GamePlayer: {}", player.name)
