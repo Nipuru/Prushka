@@ -1,11 +1,11 @@
-package server.bukkit.gameplay.item
+package server.bukkit.gameplay.reward
 
 import server.bukkit.gameplay.player.Data
 import server.bukkit.gameplay.player.Table
 import server.bukkit.gameplay.player.Unique
 
-@Table(name = "tb_item")
-class ItemData : Data {
+@Table(name = "tb_reward")
+class RewardData : Data {
     /** 物品类型  */
     @Unique
     var type: Int = 0

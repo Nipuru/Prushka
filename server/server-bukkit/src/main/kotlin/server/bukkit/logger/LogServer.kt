@@ -35,9 +35,9 @@ object LogServer {
         sendLog("tb_logout", mapOf("player_id" to playerId, "address" to address, "time" to TimeManager.now))
     }
 
-    fun logAddItem(playerId: Int, itemType: Int, itemId: Int, amount: Long, way: Int) {
+    fun logAddReward(playerId: Int, itemType: Int, itemId: Int, amount: Long, way: Int) {
         sendLog(
-            "tb_add_item",
+            "tb_add_reward",
             mapOf(
                 "player_id" to playerId,
                 "item_type" to itemType,
@@ -50,13 +50,13 @@ object LogServer {
     }
 
 
-    fun logSubtractItem(playerId: Int, itemType: Int, itemId: Int, amount: Long, way: Int) {
+    fun logSubtractReward(playerId: Int, rewardType: Int, rewardId: Int, amount: Long, way: Int) {
         sendLog(
-            "tb_sub_item",
+            "tb_sub_reward",
             mapOf(
                 "player_id" to playerId,
-                "item_type" to itemType,
-                "item_id" to itemId,
+                "reward_type" to rewardType,
+                "reward_id" to rewardId,
                 "amount" to amount,
                 "time" to TimeManager.now,
                 "way" to way

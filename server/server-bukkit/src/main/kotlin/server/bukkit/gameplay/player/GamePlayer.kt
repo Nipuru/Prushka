@@ -1,15 +1,13 @@
 package server.bukkit.gameplay.player
 
 import net.afyer.afybroker.client.Broker
-import net.kyori.adventure.resource.ResourcePackRequest
 import org.bukkit.Bukkit
 import server.bukkit.MessageType
 import server.bukkit.constant.DAY
 import server.bukkit.gameplay.chat.ChatManager
 import server.bukkit.gameplay.friend.FriendManager
 import server.bukkit.gameplay.inventory.InventoryManager
-import server.bukkit.gameplay.item.ItemManager
-import server.bukkit.gameplay.misc.ResourcePack
+import server.bukkit.gameplay.reward.RewardManager
 import server.bukkit.gameplay.offline.OfflineManager
 import server.bukkit.gameplay.skin.SkinManager
 import server.bukkit.gameplay.teleport.TeleportManager
@@ -20,7 +18,6 @@ import server.bukkit.time.TimeManager
 import server.common.service.PlayerDataService
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.reflect.KProperty1
 
 /**
  * 表示一个玩家，所有 api 都应该由主线程去调用，异步要考虑线程安全问题
@@ -41,7 +38,7 @@ class GamePlayer(
     val inventory = InventoryManager(this)
     val friend = FriendManager(this)
     val chat = ChatManager(this)
-    val item = ItemManager(this)
+    val item = RewardManager(this)
     val skin = SkinManager(this)
     val teleport = TeleportManager(this)
 

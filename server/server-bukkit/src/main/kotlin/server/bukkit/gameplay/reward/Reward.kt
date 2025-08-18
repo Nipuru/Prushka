@@ -1,6 +1,6 @@
-package server.bukkit.gameplay.item
+package server.bukkit.gameplay.reward
 
-import server.bukkit.constant.Items
+import server.bukkit.constant.REWARD_POOL
 import server.common.sheet.Sheet
 import server.common.sheet.getStRewardPools
 import server.common.sheet.getStRewards
@@ -20,7 +20,7 @@ fun getRewards(rewardId: Int) : List<RewardInfo> {
     val cfgs = Sheet.getStRewards(rewardId)
     val rewards = mutableListOf<RewardInfo>()
     for (cfg in cfgs) {
-        if (cfg.type == Items.ITEM_POOL) {
+        if (cfg.type == REWARD_POOL) {
             for (i in 1..cfg.amount) {
                 rewards.add(getRewardByPool(cfg.rewardId))
             }

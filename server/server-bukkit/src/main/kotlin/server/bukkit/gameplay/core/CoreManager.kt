@@ -1,7 +1,9 @@
 package server.bukkit.gameplay.core
 
 import net.afyer.afybroker.client.Broker
-import server.bukkit.constant.Items
+import server.bukkit.constant.REWARD_PROPERTY
+import server.bukkit.constant.PROPERTY_COIN
+import server.bukkit.constant.PROPERTY_POINTS
 import server.bukkit.gameplay.player.*
 import server.bukkit.logger.LogServer
 import server.common.logger.logger
@@ -154,7 +156,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
             return false
         }
         coin -= amount
-        LogServer.logAddItem(player.playerId, Items.ITEM_PROPERTY, Items.PROPERTY_COIN, amount, way)
+        LogServer.logSubtractReward(player.playerId, REWARD_PROPERTY, PROPERTY_COIN, amount, way)
         return true
     }
 
@@ -165,7 +167,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
             return false
         }
         coin += amount
-        LogServer.logAddItem(player.playerId, Items.ITEM_PROPERTY, Items.PROPERTY_COIN, amount, way)
+        LogServer.logAddReward(player.playerId, REWARD_PROPERTY, PROPERTY_COIN, amount, way)
         return true
     }
 
@@ -176,7 +178,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
             return false
         }
         points -= amount
-        LogServer.logAddItem(player.playerId, Items.ITEM_PROPERTY, Items.PROPERTY_POINTS, amount, way)
+        LogServer.logSubtractReward(player.playerId, REWARD_PROPERTY, PROPERTY_POINTS, amount, way)
         return true
     }
 
@@ -187,7 +189,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
             return false
         }
         points += amount
-        LogServer.logAddItem(player.playerId, Items.ITEM_PROPERTY, Items.PROPERTY_POINTS, amount, way)
+        LogServer.logAddReward(player.playerId, REWARD_PROPERTY, PROPERTY_POINTS, amount, way)
         return true
     }
 
