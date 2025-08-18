@@ -35,9 +35,14 @@ class SkinManager(player: GamePlayer) : BaseManager(player) {
         dataInfo.pack(data)
     }
 
+    fun setSkin(skin: PlayerSkin) {
+        texture = arrayOf(skin.value, skin.signature)
+        applySkin()
+    }
+
     fun applySkin() {
         if (texture.size == 2) {
-            val property =  ProfileProperty("textures", texture[0], texture[1])
+            val property = ProfileProperty("textures", texture[0], texture[1])
             submit {
                 val request = PlayerProfilePropertyMessage()
                     .setUniqueId(player.uniqueId)

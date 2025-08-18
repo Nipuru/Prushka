@@ -1,8 +1,9 @@
-package server.bukkit.util
+package server.bukkit.gameplay.player
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import net.kyori.adventure.resource.ResourcePackInfo
+import server.bukkit.util.gson
 import java.io.IOException
 import java.net.URI
 import java.net.http.HttpClient

@@ -1,17 +1,14 @@
 package server.bukkit.gameplay.player
 
 import net.afyer.afybroker.client.Broker
-import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.resource.ResourcePackRequest
 import org.bukkit.Bukkit
 import server.bukkit.MessageType
 import server.bukkit.constant.DAY
-import server.bukkit.constant.Items
 import server.bukkit.gameplay.chat.ChatManager
 import server.bukkit.gameplay.friend.FriendManager
 import server.bukkit.gameplay.inventory.InventoryManager
 import server.bukkit.gameplay.item.ItemManager
-import server.bukkit.gameplay.item.RewardInfo
 import server.bukkit.gameplay.offline.OfflineManager
 import server.bukkit.gameplay.skin.SkinManager
 import server.bukkit.gameplay.teleport.TeleportManager
@@ -19,7 +16,6 @@ import server.bukkit.logger.LogServer
 import server.common.logger.logger
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
-import server.bukkit.util.ResourcePack
 import server.common.service.PlayerDataService
 import java.util.*
 import java.util.regex.Pattern
@@ -161,7 +157,6 @@ class GamePlayer(
      */
     fun onQuit() {
         logger.info("GamePlayer: {} has quit.", name)
-
         teleport.onQuit()
         inventory.onQuit()
         core.onQuit()

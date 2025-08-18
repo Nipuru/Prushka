@@ -1,6 +1,5 @@
 package server.bukkit.command
 
-import com.google.gson.JsonObject
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
@@ -11,20 +10,16 @@ import io.papermc.paper.command.brigadier.Commands.literal
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import org.bukkit.World
 import server.bukkit.MessageType
+import server.bukkit.command.argument.GamePlayerArgument
 import server.bukkit.command.argument.PlayerInfoArgument
 import server.bukkit.config.Config
+import server.bukkit.gameplay.player.GamePlayer
+import server.bukkit.gameplay.player.ResourcePack
+import server.bukkit.gameplay.skin.PlayerSkin
 import server.bukkit.plugin
-import server.bukkit.util.ResourcePack
-import server.bukkit.util.component
-import server.bukkit.util.gson
-import server.bukkit.util.submit
+import server.bukkit.util.*
 import server.common.message.PlayerInfoMessage
 import server.common.message.TeleportType
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.util.concurrent.CompletableFuture
 
 
 /**
@@ -55,6 +50,10 @@ object PrushkaCommand {
                     .executes(::tpahere)))
             .then(literal("resourcepack")
                 .executes(::resourcepack))
+            .then(literal("skin")
+                .then(argument("player_name", GamePlayerArgument)
+                    .then(argument("skin", StringArgumentType.string())
+                        .executes(::skin))))
             .build())
     }
 
@@ -138,6 +137,21 @@ object PrushkaCommand {
         }
 
         MessageType.INFO.sendMessage(context.source.sender, "正在获取资源包信息...")
+        return Command.SINGLE_SUCCESS
+    }
+
+    fun skin(context: CommandContext<CommandSourceStack>): Int {
+        val player = context.getArgument<GamePlayer>("player_name")
+        ArgumentTypes.playerProfiles()
+        val skin = context.getArgument<String>("skin")
+        PlayerSkin.create(skin).thenAccept {
+            if (it == null) {
+                MessageType.FAILED.sendMessage(context.source.sender, "皮肤信息不存在或获取皮肤信息时发生错误")
+                return@thenAccept
+            }
+            player.skin.setSkin(it)
+            MessageType.INFO.sendMessage(context.source.sender, "玩家 ${player.name} 的皮肤已更新")
+        }
         return Command.SINGLE_SUCCESS
     }
 }
