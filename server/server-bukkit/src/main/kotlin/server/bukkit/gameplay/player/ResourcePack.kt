@@ -3,6 +3,7 @@ package server.bukkit.gameplay.player
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import net.kyori.adventure.resource.ResourcePackInfo
+import server.bukkit.config.Config
 import server.bukkit.util.gson
 import java.io.IOException
 import java.net.URI
@@ -10,6 +11,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.util.UUID
+import java.util.concurrent.CompletableFuture
 
 
 /**
@@ -75,32 +77,37 @@ class ResourcePack(
          * @param serverAddress 资源包服务器地址
          * @return 资源包列表
          */
-        fun listPacks(serverAddress: String): List<ResourcePack> {
-            val url = "$serverAddress/api/packs"
-            val response = getData(url)
-            val packs = mutableListOf<ResourcePack>()
-            if (response.get("success").asBoolean) {
-                response.getAsJsonArray("data").forEach {
-                    packs.add(parseResourcePack(serverAddress, it))
+        fun listPacks(): CompletableFuture<List<ResourcePack>> {
+            return CompletableFuture.supplyAsync {
+                val serverAddress = Config.RESOURCEPACK_URL.string()
+                val url = "$serverAddress/api/packs"
+                val response = getData(url)
+                val packs = mutableListOf<ResourcePack>()
+                if (response.get("success").asBoolean) {
+                    response.getAsJsonArray("data").forEach {
+                        packs.add(parseResourcePack(serverAddress, it))
+                    }
                 }
+                packs
             }
-            return packs
         }
 
         /**
-         * 获取指定名称的资源包信息
+         * 获取服务器资源包信息
          *
-         * @param serverAddress 资源包服务器地址
-         * @param packName 资源包名称
          * @return 资源包信息
          */
-        fun getPack(serverAddress: String, packName: String): ResourcePack? {
-            val url = "$serverAddress/api/packs/$packName"
-            val response = getData(url)
-            if (response.get("success").asBoolean) {
-                return parseResourcePack(serverAddress, response.get("data"))
+        fun getServerPack(): CompletableFuture<ResourcePack?> {
+            return CompletableFuture.supplyAsync {
+                val serverAddress = Config.RESOURCEPACK_URL.string()
+                val packName = Config.RESOURCEPACK_PACK.string()
+                val url = "$serverAddress/api/packs/$packName"
+                val response = getData(url)
+                if (response.get("success").asBoolean) {
+                    parseResourcePack(serverAddress, response.get("data"))
+                }
+                null
             }
-            return null
         }
 
         private fun getData(url: String): JsonObject {

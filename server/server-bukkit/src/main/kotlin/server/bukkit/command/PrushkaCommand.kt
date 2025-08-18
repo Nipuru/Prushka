@@ -12,7 +12,6 @@ import org.bukkit.World
 import server.bukkit.MessageType
 import server.bukkit.command.argument.GamePlayerArgument
 import server.bukkit.command.argument.PlayerInfoArgument
-import server.bukkit.config.Config
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.ResourcePack
 import server.bukkit.gameplay.skin.PlayerSkin
@@ -123,19 +122,14 @@ object PrushkaCommand {
      */
     fun resourcepack(context: CommandContext<CommandSourceStack>): Int {
         val player = context.source.gamePlayer
-        // 异步获取资源包信息
-        submit {
-            try {
-                val serverAddress = Config.RESOURCEPACK_URL.string()
-                val packName = Config.RESOURCEPACK_PACK.string()
-                val pack = ResourcePack.getPack(serverAddress, packName)!!
-                player.setResourcePack(pack)
-                MessageType.INFO.sendMessage(context.source.sender, "资源包已发送")
-            } catch (e: Exception) {
-                MessageType.WARNING.sendMessage(context.source.sender, "获取资源包信息时发生错误: ${e.message}")
+        ResourcePack.getServerPack().thenAccept {
+            if (it == null) {
+                MessageType.FAILED.sendMessage(context.source.sender, "资源包不存在或获取资源包信息时发生错误")
+                return@thenAccept
             }
+            player.setResourcePack(it)
+            MessageType.INFO.sendMessage(context.source.sender, "资源包已发送")
         }
-
         MessageType.INFO.sendMessage(context.source.sender, "正在获取资源包信息...")
         return Command.SINGLE_SUCCESS
     }
@@ -152,6 +146,7 @@ object PrushkaCommand {
             player.skin.setSkin(it)
             MessageType.INFO.sendMessage(context.source.sender, "玩家 ${player.name} 的皮肤已更新")
         }
+        MessageType.INFO.sendMessage(context.source.sender, "正在获取皮肤信息...")
         return Command.SINGLE_SUCCESS
     }
 }
