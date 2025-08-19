@@ -2,6 +2,7 @@ package server.bukkit.util.font.resolver;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.Context;
@@ -53,7 +54,7 @@ public class BitmapResolver {
             sb.append(bitmap.getChar());
         }
         // 强制防止变粗体 bitmap 不应该有粗体
-        Style style = Style.style().decoration(TextDecoration.BOLD, false).font(Key.key(bitmap.getFont())).build();
+        Style style = Style.style().color(NamedTextColor.WHITE).decoration(TextDecoration.BOLD, false).font(Key.key(bitmap.getFont())).build();
         return new LengthyComponent(Component.text(sb.toString(), style), bitmap.getWidth());
     }
 

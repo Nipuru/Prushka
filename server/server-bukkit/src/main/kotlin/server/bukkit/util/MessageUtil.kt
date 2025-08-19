@@ -41,8 +41,6 @@ import server.common.sheet.getAllStBitmap
 
 val miniMessage = initMiniMessage()
 
-fun String.bitmapTag() = "<white><bitmap:$this/></white>"
-
 fun String.component() : TextComponent {
     return Component.text().let {
         it.append(miniMessage.deserialize(this))

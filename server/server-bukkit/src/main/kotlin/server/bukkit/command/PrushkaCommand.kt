@@ -18,6 +18,7 @@ import server.bukkit.gameplay.misc.setResourcePack
 import server.bukkit.gameplay.skin.PlayerSkin
 import server.bukkit.plugin
 import server.bukkit.util.*
+import server.common.logger.logger
 import server.common.message.PlayerInfoMessage
 import server.common.message.TeleportType
 
@@ -123,12 +124,15 @@ object PrushkaCommand {
      */
     fun resourcepack(context: CommandContext<CommandSourceStack>): Int {
         val player = context.source.gamePlayer
-        ResourcePack.getServerPack().thenAccept {
-            if (it == null) {
-                MessageType.FAILED.sendMessage(context.source.sender, "资源包不存在或获取资源包信息时发生错误")
-                return@thenAccept
+        ResourcePack.getServerPack().whenComplete { pack, throwable ->
+            if (throwable != null) {
+                logger.error(throwable.message, throwable)
             }
-            player.setResourcePack(it)
+            if (pack == null) {
+                MessageType.FAILED.sendMessage(context.source.sender, "资源包不存在或获取资源包信息时发生错误")
+                return@whenComplete
+            }
+            player.setResourcePack(pack)
             MessageType.INFO.sendMessage(context.source.sender, "资源包已发送")
         }
         MessageType.INFO.sendMessage(context.source.sender, "正在获取资源包信息...")
@@ -138,13 +142,16 @@ object PrushkaCommand {
     fun skin(context: CommandContext<CommandSourceStack>): Int {
         val player = context.getArgument<GamePlayer>("player_name")
         ArgumentTypes.playerProfiles()
-        val skin = context.getArgument<String>("skin")
-        PlayerSkin.create(skin).thenAccept {
-            if (it == null) {
-                MessageType.FAILED.sendMessage(context.source.sender, "皮肤信息不存在或获取皮肤信息时发生错误")
-                return@thenAccept
+        val skinName = context.getArgument<String>("skin")
+        PlayerSkin.create(skinName).whenComplete { skin, throwable ->
+            if (throwable != null) {
+                logger.error(throwable.message, throwable)
             }
-            player.skin.setSkin(it)
+            if (skin == null) {
+                MessageType.FAILED.sendMessage(context.source.sender, "皮肤信息不存在或获取皮肤信息时发生错误")
+                return@whenComplete
+            }
+            player.skin.setSkin(skin)
             MessageType.INFO.sendMessage(context.source.sender, "玩家 ${player.name} 的皮肤已更新")
         }
         MessageType.INFO.sendMessage(context.source.sender, "正在获取皮肤信息...")
