@@ -15,11 +15,11 @@ class OfflineManager(player: GamePlayer) : BaseManager(player) {
         request.preload<OfflineData>()
     }
 
-    fun unpack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
+    fun unpack(dataInfo: DataInfo) {
         dataInfo.unpackList<OfflineData>().forEach(offlineDataList::add)
     }
 
-    fun pack(dataInfo: server.bukkit.gameplay.player.DataInfo) {
+    fun pack(dataInfo: DataInfo) {
         offlineDataList.forEach(dataInfo::pack)
     }
 
