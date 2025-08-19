@@ -1,5 +1,9 @@
 package server.bukkit.nms
 
+import com.destroystokyo.paper.profile.CraftPlayerProfile
+import com.destroystokyo.paper.profile.PlayerProfile
+import com.mojang.authlib.GameProfile
+import com.mojang.authlib.ProfileLookupCallback
 import com.mojang.brigadier.Message
 import io.papermc.paper.adventure.AdventureComponent
 import io.papermc.paper.text.PaperComponents
@@ -18,6 +22,7 @@ import server.bukkit.util.component
 import sun.misc.Unsafe
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.util.concurrent.CompletableFuture
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
@@ -93,6 +98,28 @@ fun Component.message(): Message {
 
 fun String.message(): Message {
     return component().message()
+}
+
+/**
+ * 获取一个在线玩家的游戏信息 用于获取皮肤等
+ */
+fun createPlayerProfile(name: String): CompletableFuture<PlayerProfile> {
+    val future = CompletableFuture<PlayerProfile>()
+    CompletableFuture.runAsync {
+        MinecraftServer.getServer().profileRepository.findProfilesByNames(arrayOf(name), object :
+            ProfileLookupCallback {
+            override fun onProfileLookupSucceeded(profile: GameProfile) {
+                val playerProfile = CraftPlayerProfile.asBukkitMirror(profile)
+                playerProfile.complete(true,  true)
+                future.complete(playerProfile)
+            }
+
+            override fun onProfileLookupFailed(profileName: String, exception: Exception) {
+                future.completeExceptionally(Exception("Failed to lookup profile $profileName", exception))
+            }
+        })
+    }
+    return future
 }
 
 private object UnsafeHolder {

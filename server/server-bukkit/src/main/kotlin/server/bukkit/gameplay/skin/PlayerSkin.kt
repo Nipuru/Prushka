@@ -2,6 +2,7 @@ package server.bukkit.gameplay.skin
 
 import com.destroystokyo.paper.profile.PlayerProfile
 import org.bukkit.Bukkit
+import server.bukkit.nms.createPlayerProfile
 import java.net.URL
 import java.util.concurrent.CompletableFuture
 
@@ -34,9 +35,7 @@ class PlayerSkin(
          * @return 玩家皮肤
          */
         fun create(name: String): CompletableFuture<PlayerSkin?> {
-            return CompletableFuture.supplyAsync {
-                val profile = Bukkit.createProfile(name)
-                profile.complete(true, true)
+            return createPlayerProfile(name).thenApply { profile ->
                 read(profile)
             }
         }
