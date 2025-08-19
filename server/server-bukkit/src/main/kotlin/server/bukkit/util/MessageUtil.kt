@@ -38,12 +38,9 @@ import server.common.sheet.getAllStBitmap
  * <fixed_width:left:100>1234</fixed_width>         往左对齐
  * <fixed_width:center:100>1234</fixed_width>       居中对齐
  */
-
-val miniMessage = initMiniMessage()
-
 fun String.component() : TextComponent {
     return Component.text().let {
-        it.append(miniMessage.deserialize(this))
+        it.append(MiniMessageHolder.miniMessage.deserialize(this))
         it.style(Style.style()
             .decoration(TextDecoration.ITALIC, false)
             .build())
@@ -51,87 +48,99 @@ fun String.component() : TextComponent {
     }
 }
 
+/**
+ * 追加字符串
+ */
 fun Component.append(str: String): Component {
     return this.append(str.component())
 }
 
+/**
+ * 追加 HoverEvent
+ */
 fun Component.hoverEvent(str: String): Component {
     return this.hoverEvent(str.component())
 }
 
-private fun initMiniMessage(): MiniMessage {
-    val bitmaps = bitmaps()
-    val bitmap = BitmapResolver(bitmaps)
-    val split = split(bitmap)
-    val font = font(bitmaps)
-    val fixedWidth = FixedWidthResolver(split, font)
-    return MiniMessage.builder().tags(TagResolver.resolver(
-        StandardTags.defaults(),
-        split.resolver(),
-        bitmap.resolver(),
-        fixedWidth.resolver()
-    )).build()
-}
+private object MiniMessageHolder {
 
-private fun font(bitmaps: Map<String, Bitmap>): FontRepository {
-    val repository = FontRepository()
-    // 初始化默认字体
-    val fonts = sequenceOf("prushka_font")
-    val bytes = plugin.getResource("glyph_sizes.bin")!!.readAllBytes()
-    for (font in fonts) {
-        // 起始 unicode
-        var unicode = 0x0000
-        for (byte in bytes) {
-            // 高位 (高 4 位)
-            val start = (byte.toInt() shr 4) and 0x0F
-            // 低位 (低 4 位)
-            val end = byte.toInt() and 0x0F
-            val width = end - start + 2
-            repository.register(Font.slim(font, unicode.toChar(), width.toFloat()))
-            unicode += 1
-        }
-    }
-    // 覆写 bitmap
-    for (bitmap in bitmaps.values) {
-        val width = bitmap.width.toFloat()
-        repository.register(*Font.fonts(bitmap, width, width))
-    }
-    return repository
-}
+    val miniMessage = initMiniMessage()
 
-private fun bitmaps(): Map<String, Bitmap> {
-    // 这里要确保和 python 工具使用一样的算法 /tool/export_bitmap.py
-    val bitmaps = mutableMapOf<String, Bitmap>()
-    var unicode = 0x1000
-    for (cfg in Sheet.getAllStBitmap().values) {
-        val chars = mutableListOf<String>()
-        for (i in 0 until cfg.row) {
-            val builder = StringBuilder()
-            for (j in 0 until cfg.column) {
-                builder.append(unicode.toChar())
+    fun initMiniMessage(): MiniMessage {
+        val bitmaps = bitmaps()
+        val bitmap = BitmapResolver(bitmaps)
+        val split = split(bitmap)
+        val font = font(bitmaps)
+        val fixedWidth = FixedWidthResolver(split, font)
+        return MiniMessage.builder().tags(TagResolver.resolver(
+            StandardTags.defaults(),
+            split.resolver(),
+            bitmap.resolver(),
+            fixedWidth.resolver()
+        )).build()
+    }
+
+    fun font(bitmaps: Map<String, Bitmap>): FontRepository {
+        val repository = FontRepository()
+        // 初始化默认字体
+        val fonts = sequenceOf("prushka_font")
+        val bytes = plugin.getResource("glyph_sizes.bin")!!.readAllBytes()
+        for (font in fonts) {
+            // 起始 unicode
+            var unicode = 0x0000
+            for (byte in bytes) {
+                // 高位 (高 4 位)
+                val start = (byte.toInt() shr 4) and 0x0F
+                // 低位 (低 4 位)
+                val end = byte.toInt() and 0x0F
+                val width = end - start + 2
+                repository.register(Font.slim(font, unicode.toChar(), width.toFloat()))
                 unicode += 1
             }
-            chars.add(builder.toString())
         }
-        val width = (cfg.imgWidth * cfg.height * cfg.row) / (cfg.imgHeight * cfg.column) +
-                ((cfg.height shr  31) and  1)  + 1
-        val bitmap = Bitmap(
-            cfg.configId,
-            cfg.font,
-            width,
-            *chars.toTypedArray()
-        )
-        bitmaps[cfg.configId] = bitmap
+        // 覆写 bitmap
+        for (bitmap in bitmaps.values) {
+            val width = bitmap.width.toFloat()
+            repository.register(*Font.fonts(bitmap, width, width))
+        }
+        return repository
     }
-    return bitmaps
+
+    fun bitmaps(): Map<String, Bitmap> {
+        // 这里要确保和 python 工具使用一样的算法 /tool/export_bitmap.py
+        val bitmaps = mutableMapOf<String, Bitmap>()
+        var unicode = 0x1000
+        for (cfg in Sheet.getAllStBitmap().values) {
+            val chars = mutableListOf<String>()
+            for (i in 0 until cfg.row) {
+                val builder = StringBuilder()
+                for (j in 0 until cfg.column) {
+                    builder.append(unicode.toChar())
+                    unicode += 1
+                }
+                chars.add(builder.toString())
+            }
+            val width = (cfg.imgWidth * cfg.height * cfg.row) / (cfg.imgHeight * cfg.column) +
+                    ((cfg.height shr  31) and  1)  + 1
+            val bitmap = Bitmap(
+                cfg.configId,
+                cfg.font,
+                width,
+                *chars.toTypedArray()
+            )
+            bitmaps[cfg.configId] = bitmap
+        }
+        return bitmaps
+    }
+
+    fun split(bitmap: BitmapResolver): SplitResolver {
+        val splits = listOf(
+            "split_pos_1", "split_pos_2", "split_pos_4", "split_pos_8",
+            "split_pos_16", "split_pos_32", "split_pos_64", "split_pos_128",
+            "split_neg_1", "split_neg_2", "split_neg_4", "split_neg_8",
+            "split_neg_16", "split_neg_32", "split_neg_64", "split_neg_128"
+        ).map { bitmap.resolve(it) }
+        return SplitResolver(splits)
+    }
 }
 
-private fun split(bitmap: BitmapResolver): SplitResolver {
-    val splits = listOf(
-        "split_pos_1", "split_pos_2", "split_pos_4", "split_pos_8",
-        "split_pos_16", "split_pos_32", "split_pos_64", "split_pos_128",
-        "split_neg_1", "split_neg_2", "split_neg_4", "split_neg_8",
-        "split_neg_16", "split_neg_32", "split_neg_64", "split_neg_128"
-    ).map { bitmap.resolve(it) }
-    return SplitResolver(splits)
-}
