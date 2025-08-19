@@ -13,9 +13,9 @@ class TableInfos : Serializable {
 
 class DataInfo(val tables: MutableMap<String, MutableList<List<FieldMessage>>>) {
 
-    inline fun <reified T : Data> unpack(): T? = DataConvertor.unpack(tables)
+    inline fun <reified T : Data> unpack(): T? = DataConvertor.unpack(tables, T::class.java)
 
-    inline fun <reified T : Data> unpackList(): List<T> = DataConvertor.unpackList(tables)
+    inline fun <reified T : Data> unpackList(): List<T> = DataConvertor.unpackList(tables, T::class.java)
 
     fun <T: Data> pack(data: T) = DataConvertor.pack(this.tables, data)
 }
@@ -38,5 +38,4 @@ annotation class Table(
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Unique
 
-
-inline fun <reified T> TableInfos.preload() = DataConvertor.preload<T>(this)
+inline fun <reified T> TableInfos.preload() = DataConvertor.preload(this, T::class.java)

@@ -7,12 +7,13 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import kotlin.reflect.KProperty1
 
-object DataConvertor {
+@PublishedApi
+internal object DataConvertor {
 
     private val cache = mutableMapOf<Class<*>, DataClassCache>()
 
-    inline fun <reified T> preload(request: TableInfos) {
-        val dataClassCache = getOrCache(T::class.java)
+    fun preload(request: TableInfos, dataClass: Class<*>) {
+        val dataClassCache = getOrCache(dataClass)
         if (dataClassCache.isCache) return
         val fields = mutableMapOf<String, Class<*>>()
         dataClassCache.tableFields.forEach{ fields[it.key] = it.value.type }
@@ -25,15 +26,16 @@ object DataConvertor {
         request.tables.add(tableInfo)
     }
 
-    inline fun <reified T> unpack(tables: Map<String, List<List<FieldMessage>>>): T? {
-        val dataClassCache = getOrCache(T::class.java)
+    @Suppress("UNCHECKED_CAST")
+    fun <T> unpack(tables: Map<String, List<List<FieldMessage>>>, dataClass: Class<T>): T? {
+        val dataClassCache = getOrCache(dataClass)
         val instance = dataClassCache.constructor.newInstance() as T
         val fieldMessagesList = tables[dataClassCache.tableName]
         if (fieldMessagesList.isNullOrEmpty()) {
             return null
         }
         if (fieldMessagesList.size > 1) {
-            throw IOException("Too many results for " + T::class.java.name)
+            throw IOException("Too many results for " + dataClass.name)
         }
         for (fieldMessage in fieldMessagesList[0]) {
             val field = dataClassCache.fields[fieldMessage.name] ?: continue
@@ -42,8 +44,9 @@ object DataConvertor {
         return instance
     }
 
-    inline fun <reified T> unpackList(tables: Map<String, List<List<FieldMessage>>>): List<T> {
-        val dataClassCache = getOrCache(T::class.java)
+    @Suppress("UNCHECKED_CAST")
+    fun <T> unpackList(tables: Map<String, List<List<FieldMessage>>>, dataClass: Class<T>): List<T> {
+        val dataClassCache = getOrCache(dataClass)
         val fieldMessagesList = tables[dataClassCache.tableName]
         if (fieldMessagesList.isNullOrEmpty()) {
             return emptyList()

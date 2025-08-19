@@ -2,11 +2,11 @@ package server.bukkit.gameplay.misc
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.resource.ResourcePackRequest
 import server.bukkit.config.Config
 import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.util.gson
 import java.io.IOException
 import java.net.URI
 import java.net.http.HttpClient
@@ -123,7 +123,7 @@ class ResourcePack(
                 it.send(request, HttpResponse.BodyHandlers.ofString())
             }
             if (response.statusCode() == 200) {
-                return gson.fromJson(response.body(), JsonObject::class.java)
+                return JsonParser.parseString(response.body()).asJsonObject
             }
             throw IOException("Failed to get data, url $url, statusCode: ${response.statusCode()}")
         }
