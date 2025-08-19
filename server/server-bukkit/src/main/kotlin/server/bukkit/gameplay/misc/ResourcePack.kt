@@ -119,9 +119,9 @@ class ResourcePack(
         private fun getData(url: String): JsonObject {
             val uri = URI.create(url)
             val request = HttpRequest.newBuilder().uri(uri).GET().build()
-            val response = HttpClient.newHttpClient().use {
-                it.send(request, HttpResponse.BodyHandlers.ofString())
-            }
+            val client = HttpClient.newHttpClient()
+            val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+            client.close()
             if (response.statusCode() == 200) {
                 return JsonParser.parseString(response.body()).asJsonObject
             }
