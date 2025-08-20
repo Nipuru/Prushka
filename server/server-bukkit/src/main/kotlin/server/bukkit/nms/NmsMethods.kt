@@ -6,41 +6,25 @@ import com.mojang.authlib.GameProfile
 import com.mojang.authlib.ProfileLookupCallback
 import com.mojang.brigadier.Message
 import io.papermc.paper.adventure.AdventureComponent
-import io.papermc.paper.text.PaperComponents
 import net.kyori.adventure.text.Component
-import net.minecraft.network.Connection
 import net.minecraft.server.MinecraftServer
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
-import org.bukkit.craftbukkit.util.CraftMagicNumbers
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
 import server.bukkit.util.component
-import sun.misc.Unsafe
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.CompletableFuture
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
-val dataVersion: Int
-    get() = CraftMagicNumbers.INSTANCE.dataVersion
-
 fun Player.hasDisconnected(): Boolean {
     val serverPlayer = (this as CraftPlayer).handle
     return serverPlayer.hasDisconnected()
-}
-
-//停止接受客户端发包
-fun Player.freeze() {
-    val craftPlayer = this as CraftPlayer
-
-    val serverPlayer = craftPlayer.handle
-    val connection = serverPlayer.connection.connection
-    UnsafeHolder.setStopReadPacket(connection)
 }
 
 fun Player.placeBackInInventory(itemStack: ItemStack) {
@@ -49,15 +33,10 @@ fun Player.placeBackInInventory(itemStack: ItemStack) {
 }
 
 fun Player.quit() {
+    val serverPlayer = (this as CraftPlayer).handle
+    serverPlayer.connection.processedDisconnect = true
     val playerList = MinecraftServer.getServer().playerList
-    playerList.remove((this as CraftPlayer).handle)
-}
-
-fun Player.isFreezing(): Boolean {
-    val craftPlayer = this as CraftPlayer
-    val serverPlayer = craftPlayer.handle
-    val connection = serverPlayer.connection.connection
-    return UnsafeHolder.isStopReadPacket(connection)
+    playerList.remove(serverPlayer)
 }
 
 fun Collection<PotionEffect>.serialize(): ByteArray {
@@ -120,30 +99,4 @@ fun createPlayerProfile(name: String): CompletableFuture<PlayerProfile> {
         })
     }
     return future
-}
-
-private object UnsafeHolder {
-    private val unsafe: Unsafe
-    private val stopReadPacketOffset: Long
-
-    fun setStopReadPacket(connection: Connection?) {
-        unsafe.putObject(connection, stopReadPacketOffset, true)
-    }
-
-    fun isStopReadPacket(connection: Connection?): Boolean {
-        return unsafe.getBoolean(connection, stopReadPacketOffset)
-    }
-
-    init {
-        try {
-            val unsafeField = Unsafe::class.java.getDeclaredField("theUnsafe")
-            unsafeField.isAccessible = true
-            unsafe = unsafeField[null] as Unsafe
-            stopReadPacketOffset = unsafe.objectFieldOffset(
-                Connection::class.java.getDeclaredField("stopReadingPackets")
-            )
-        } catch (e: Exception) {
-            throw ExceptionInInitializerError(e)
-        }
-    }
 }
