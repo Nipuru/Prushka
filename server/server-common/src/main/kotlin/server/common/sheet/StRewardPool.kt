@@ -18,10 +18,12 @@ data class StRewardPool(
 )
 
 fun Sheet.getStRewardPool(poolId: Int, index: Int, locale: Locale? = null): List<StRewardPool> {
+    check()
     return holderStRewardPool[locale].stRewardPoolAMap[poolId] ?: emptyList()
 }
 
 fun Sheet.getStRewardPools(poolId: Int, locale: Locale? = null): List<StRewardPool> {
+    check()
     return holderStRewardPool[locale].stRewardPoolAMap[poolId] ?: emptyList()
 }
 

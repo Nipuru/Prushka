@@ -24,10 +24,12 @@ data class StBitmap(
 )
 
 fun Sheet.getAllStBitmap(locale: Locale? = null): Map<String, StBitmap> {
+    check()
     return holderStBitmap[locale].stBitmapMap
 }
 
 fun Sheet.getStBitmap(configId: String, locale: Locale? = null): StBitmap? {
+    check()
     return holderStBitmap[locale].stBitmapMap[configId]
 }
 

@@ -13,7 +13,6 @@ import server.bukkit.command.AfkCommand
 import server.bukkit.command.FriendCommand
 import server.bukkit.command.PrushkaCommand
 import server.bukkit.command.WhereAmICommand
-import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.listener.*
 import server.bukkit.processor.*
@@ -26,7 +25,6 @@ import server.common.ClientTag
 import server.common.logger.Logger
 import server.common.sheet.Sheet
 import java.io.File
-import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -88,6 +86,7 @@ object BukkitPlugin : JavaPlugin() {
 
     fun reload() {
         saveDefaultConfig()
+        reloadConfig()
         Sheet.load(File(dataFolder, "jsons").absolutePath)
     }
 

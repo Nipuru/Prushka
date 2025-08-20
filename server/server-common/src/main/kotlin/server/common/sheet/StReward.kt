@@ -16,10 +16,12 @@ data class StReward(
 )
 
 fun Sheet.getStReward(rewardId: Int, index: Int, locale: Locale? = null): List<StReward> {
+    check()
     return holderStReward[locale].stRewardAMap[rewardId] ?: emptyList()
 }
 
 fun Sheet.getStRewards(rewardId: Int, locale: Locale? = null): List<StReward> {
+    check()
     return holderStReward[locale].stRewardAMap[rewardId] ?: emptyList()
 }
 

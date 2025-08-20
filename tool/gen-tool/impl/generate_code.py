@@ -26,8 +26,16 @@ import java.io.File
 import java.util.*
 
 object Sheet {
+    var isLoad = false
+        private set
+        
     fun load(tablePath: String) {
 <sheets>
+        isLoad = true
+    }
+    
+    fun check() {
+        if (!isLoad) throw IllegalStateException("Sheet not loaded")
     }
 }
 
@@ -150,19 +158,19 @@ def generate_code():
         extentions = []
         if key:
             maps.append(f"val {field_name}Map = mutableMapOf<{key[1]}, {class_name}>()")
-            extentions.append(f"fun Sheet.getAll{class_name}(locale: Locale? = null): Map<{key[1]}, {class_name}> {{\n    return holder{class_name}[locale].{field_name}Map\n}}")
-            extentions.append(f"fun Sheet.get{class_name}({key[0]}: {key[1]}, locale: Locale? = null): {class_name}? {{\n    return holder{class_name}[locale].{field_name}Map[{key[0]}]\n}}")
+            extentions.append(f"fun Sheet.getAll{class_name}(locale: Locale? = null): Map<{key[1]}, {class_name}> {{\n    check()\n    return holder{class_name}[locale].{field_name}Map\n}}")
+            extentions.append(f"fun Sheet.get{class_name}({key[0]}: {key[1]}, locale: Locale? = null): {class_name}? {{\n    check()\n    return holder{class_name}[locale].{field_name}Map[{key[0]}]\n}}")
         if vkey:
             maps.append(f"val {field_name}VMap= mutableMapOf<{vkey[1]}, {class_name}>()")
-            extentions.append(f"fun Sheet.get{class_name}ById({vkey[0]}: {vkey[1]}, locale: Locale? = null): {class_name}? {{\n    return holder{class_name}[locale].{field_name}Map[{vkey[0]}]\n}}")
+            extentions.append(f"fun Sheet.get{class_name}ById({vkey[0]}: {vkey[1]}, locale: Locale? = null): {class_name}? {{\n    check()\n    return holder{class_name}[locale].{field_name}Map[{vkey[0]}]\n}}")
         if akey:
             if subkey:
                 maps.append(f"val {field_name}AMap = mutableMapOf<Pair<{akey[1]}, {subkey[1]}>, {class_name}>()")
-                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, {subkey[0]}: {subkey[1]}, locale: Locale? = null): {class_name}? {{\n    return holder{class_name}[locale].{field_name}AMap[{akey[0]} to {subkey[0]}]\n}}")
+                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, {subkey[0]}: {subkey[1]}, locale: Locale? = null): {class_name}? {{\n    check()\n    return holder{class_name}[locale].{field_name}AMap[{akey[0]} to {subkey[0]}]\n}}")
             else:
                 maps.append(f"val {field_name}AMap = mutableMapOf<{akey[1]}, MutableList<{class_name}>>()")
-                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, index: Int, locale: Locale? = null): List<{class_name}> {{\n    return holder{class_name}[locale].{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
-                extentions.append(f"fun Sheet.get{class_name}s({akey[0]}: {akey[1]}, locale: Locale? = null): List<{class_name}> {{\n    return holder{class_name}[locale].{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
+                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, index: Int, locale: Locale? = null): List<{class_name}> {{\n    check()\n    return holder{class_name}[locale].{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
+                extentions.append(f"fun Sheet.get{class_name}s({akey[0]}: {akey[1]}, locale: Locale? = null): List<{class_name}> {{\n    check()\n    return holder{class_name}[locale].{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
             
         fields = []
         for i in range( len(labels) ):

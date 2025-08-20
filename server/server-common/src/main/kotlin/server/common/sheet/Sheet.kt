@@ -9,6 +9,9 @@ import java.io.File
 import java.util.*
 
 object Sheet {
+    var isLoad = false
+        private set
+        
     fun load(tablePath: String) {
         loadStBitmap(tablePath)
         loadStBitmap(tablePath)
@@ -18,6 +21,11 @@ object Sheet {
         loadStRank(tablePath)
         loadStReward(tablePath)
         loadStRewardPool(tablePath)
+        isLoad = true
+    }
+    
+    fun check() {
+        if (!isLoad) throw IllegalStateException("Sheet not loaded")
     }
 }
 

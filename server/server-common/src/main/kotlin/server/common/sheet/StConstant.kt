@@ -12,10 +12,12 @@ data class StConstant(
 )
 
 fun Sheet.getAllStConstant(locale: Locale? = null): Map<String, StConstant> {
+    check()
     return holderStConstant[locale].stConstantMap
 }
 
 fun Sheet.getStConstant(key: String, locale: Locale? = null): StConstant? {
+    check()
     return holderStConstant[locale].stConstantMap[key]
 }
 

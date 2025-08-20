@@ -12,10 +12,12 @@ data class StMessage(
 )
 
 fun Sheet.getAllStMessage(locale: Locale? = null): Map<String, StMessage> {
+    check()
     return holderStMessage[locale].stMessageMap
 }
 
 fun Sheet.getStMessage(key: String, locale: Locale? = null): StMessage? {
+    check()
     return holderStMessage[locale].stMessageMap[key]
 }
 

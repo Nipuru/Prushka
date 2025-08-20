@@ -16,10 +16,12 @@ data class StRank(
 )
 
 fun Sheet.getAllStRank(locale: Locale? = null): Map<Int, StRank> {
+    check()
     return holderStRank[locale].stRankMap
 }
 
 fun Sheet.getStRank(configId: Int, locale: Locale? = null): StRank? {
+    check()
     return holderStRank[locale].stRankMap[configId]
 }
 

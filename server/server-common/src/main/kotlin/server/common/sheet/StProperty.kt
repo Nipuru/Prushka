@@ -12,10 +12,12 @@ data class StProperty(
 )
 
 fun Sheet.getAllStProperty(locale: Locale? = null): Map<Int, StProperty> {
+    check()
     return holderStProperty[locale].stPropertyMap
 }
 
 fun Sheet.getStProperty(configId: Int, locale: Locale? = null): StProperty? {
+    check()
     return holderStProperty[locale].stPropertyMap[configId]
 }
 
