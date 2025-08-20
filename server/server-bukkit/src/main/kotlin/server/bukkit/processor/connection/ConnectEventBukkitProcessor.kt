@@ -3,10 +3,10 @@ package server.bukkit.processor.connection
 import com.alipay.remoting.Connection
 import com.alipay.remoting.ConnectionEventProcessor
 import net.afyer.afybroker.client.Broker
+import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.GamePlayerManager
-import server.common.logger.logger
+import server.common.logger.Logger
 import server.bukkit.time.TimeManager
-import server.bukkit.util.submit
 import server.common.message.GetTimeRequest
 
 
@@ -18,10 +18,10 @@ class ConnectEventBukkitProcessor : ConnectionEventProcessor {
     override fun onEvent(s: String, connection: Connection) {
         // 初始化定时器
         TimeManager.apply {
-            logger.info("Get time from shared server...")
+            Logger.info("Get time from shared server...")
             debugTime = Broker.invokeSync(GetTimeRequest())
             newDayFunc = {
-                submit(async = false) {
+                BukkitPlugin.submit(async = false) {
                     GamePlayerManager.onNewDay(it)
                 }
             }

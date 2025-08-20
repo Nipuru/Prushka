@@ -1,8 +1,8 @@
 package server.bukkit.scheduler
 
 import org.bukkit.Bukkit
+import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.GamePlayerManager
-import server.bukkit.plugin
 
 /**
  * 主线程调度 每 1-tick 执行一次
@@ -10,7 +10,7 @@ import server.bukkit.plugin
 
 class ServerTickTask : Runnable {
     fun schedule() {
-        Bukkit.getScheduler().runTaskTimer(plugin, this, 1L, 1L)
+        Bukkit.getScheduler().runTaskTimer(BukkitPlugin, this, 1L, 1L)
     }
     override fun run() {
         GamePlayerManager.tick()

@@ -5,7 +5,7 @@ import server.bukkit.constant.PROPERTY_COIN
 import server.bukkit.constant.PROPERTY_POINTS
 import server.bukkit.gameplay.player.*
 import server.bukkit.logger.LogServer
-import server.common.logger.logger
+import server.common.logger.Logger
 
 
 class RewardManager(player: GamePlayer) : BaseManager(player) {
@@ -82,7 +82,7 @@ class RewardManager(player: GamePlayer) : BaseManager(player) {
     fun addReward(type: Int, id: Int, amount: Long, way: Int): Boolean {
         if (amount == 0L) return true
         if (amount < 0L) {
-            logger.error("add invalid reward amount: {}", amount)
+            Logger.error("add invalid reward amount: {}", amount)
             return false
         }
         val reward = getReward(type, id)
@@ -95,7 +95,7 @@ class RewardManager(player: GamePlayer) : BaseManager(player) {
     fun subtractReward(type: Int, id: Int, amount: Long, way: Int): Boolean {
         if (amount == 0L) return true
         if (amount < 0L) {
-            logger.error("subtract invalid reward amount: {}", amount)
+            Logger.error("subtract invalid reward amount: {}", amount)
             return false
         }
         val reward = getReward(type, id)

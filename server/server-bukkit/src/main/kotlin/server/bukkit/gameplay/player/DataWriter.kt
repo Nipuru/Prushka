@@ -1,10 +1,10 @@
 package server.bukkit.gameplay.player
 
 import org.bukkit.Bukkit
+import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.DataConvertor.getOrCache
-import server.bukkit.plugin
-import server.bukkit.util.submit
-import server.common.logger.logger
+
+import server.common.logger.Logger
 import server.common.message.FieldMessage
 import server.common.message.PlayerDataTransactionMessage
 import java.util.*
@@ -49,7 +49,7 @@ class DataWriter(private val player: GamePlayer) {
                 val old = map.remove(dataAction.data)
                 if (old!!.type == DataActionType.DELETE || dataAction.type == DataActionType.INSERT) {
                     // 通常是代码写的有问题 对象删除之后就不能操作了 在新增前不能有任何操作
-                    logger.error(
+                    Logger.error(
                         "Invalid player data operation {} before {}, dataClass: {}",
                         old.type,
                         dataAction.type,
@@ -77,7 +77,7 @@ class DataWriter(private val player: GamePlayer) {
             }
             map[dataAction.data] = dataAction
         }
-        submit {
+        BukkitPlugin.submit {
             try {
                 val transaction = PlayerDataTransactionMessage(player.playerId)
                 for (dataAction in map.values) {
@@ -114,7 +114,7 @@ class DataWriter(private val player: GamePlayer) {
                 }
                 player.dataService.transaction(transaction)
             } catch (e: Exception) {
-                logger.error("Failed to write database for player {}", player.playerId, e)
+                Logger.error("Failed to write database for player {}", player.playerId, e)
                 kickPlayerIfPossible(player)
             }
         }
@@ -123,6 +123,6 @@ class DataWriter(private val player: GamePlayer) {
     private fun kickPlayerIfPossible(player: GamePlayer) {
         val bukkitPlayer = Bukkit.getPlayer(player.uniqueId) ?: return
         if (Bukkit.isPrimaryThread()) bukkitPlayer.kick()
-        else Bukkit.getScheduler().runTask(plugin, Runnable { bukkitPlayer.kick() })
+        else Bukkit.getScheduler().runTask(BukkitPlugin, Runnable { bukkitPlayer.kick() })
     }
 }

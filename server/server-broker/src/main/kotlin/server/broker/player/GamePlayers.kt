@@ -1,6 +1,6 @@
 package server.broker.player
 
-import server.common.logger.logger
+import server.common.logger.Logger
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -8,7 +8,7 @@ object GamePlayers {
     private val byName = ConcurrentHashMap<String, GamePlayer>()
 
     fun registerPlayer(player: GamePlayer) {
-        logger.info("Register GamePlayer: {}", player.name)
+        Logger.info("Register GamePlayer: {}", player.name)
         byName[player.name] = player
     }
 
@@ -19,7 +19,7 @@ object GamePlayers {
         get() = Collections.unmodifiableCollection(byName.values)
 
     fun removePlayer(player: GamePlayer) {
-        logger.info("Remove GamePlayer: {}", player.name)
+        Logger.info("Remove GamePlayer: {}", player.name)
         byName.remove(player.name)
     }
 }

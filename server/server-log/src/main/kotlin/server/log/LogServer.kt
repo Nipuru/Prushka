@@ -5,7 +5,7 @@ import com.alipay.remoting.LifeCycleException
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
-import server.common.logger.logger
+import server.common.logger.Logger
 import server.common.service.LogService
 import server.log.LogServer.shutdown
 import server.log.LogServer.startup
@@ -63,10 +63,10 @@ internal object LogServer {
             brokerClient.startup()
             brokerClient.ping()
         } catch (e: LifeCycleException) {
-            logger.error("Broker client startup failed!")
+            Logger.error("Broker client startup failed!")
             throw e
         } catch (e: Exception) {
-            logger.error("Ping to the broker server failed!")
+            Logger.error("Ping to the broker server failed!")
             throw e
         }
     }

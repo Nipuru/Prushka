@@ -7,10 +7,10 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
+import server.bukkit.BukkitPlugin
 import server.bukkit.MessageType
 import server.bukkit.gameplay.player.*
 import server.bukkit.time.TimeManager
-import server.bukkit.util.submit
 import server.common.message.FragmentMessage
 import server.common.message.PlayerChatMessage
 import server.common.message.PlayerPrivateChatMessage
@@ -110,7 +110,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         val fragments = MessageFormat.parse(player, message)
         val request = PlayerChatMessage(player.core.playerInfo, fragments)
 
-        submit {
+        BukkitPlugin.submit {
             val result = Broker.invokeSync<Int>(request)
             when (result) {
                 PlayerChatMessage.SUCCESS -> {
@@ -130,7 +130,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         val fragments: Array<FragmentMessage> = MessageFormat.parse(player, message)
         val request = PlayerPrivateChatMessage(player.core.playerInfo, fragments, receiver)
 
-        submit {
+        BukkitPlugin.submit {
             val result = Broker.invokeSync<Int>(request)
             when (result) {
                 PlayerPrivateChatMessage.SUCCESS -> {

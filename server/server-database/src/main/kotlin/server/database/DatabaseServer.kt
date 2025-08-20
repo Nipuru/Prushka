@@ -6,7 +6,7 @@ import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import server.common.ClientType
-import server.common.logger.logger
+import server.common.logger.Logger
 import server.common.service.FileService
 import server.common.service.OfflineDataService
 import server.common.service.PlayerDataService
@@ -73,10 +73,10 @@ internal object DatabaseServer {
             brokerClient.startup()
             brokerClient.ping()
         } catch (e: LifeCycleException) {
-            logger.error("Broker client startup failed!")
+            Logger.error("Broker client startup failed!")
             throw e
         } catch (e: Exception) {
-            logger.error("Ping to the broker server failed!")
+            Logger.error("Ping to the broker server failed!")
             throw e
         }
     }

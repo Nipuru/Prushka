@@ -1,6 +1,6 @@
 package server.bukkit.config
 
-import server.bukkit.plugin
+import server.bukkit.BukkitPlugin
 
 
 /**
@@ -29,14 +29,14 @@ enum class Config(val path: String) {
 
 
     fun int(def: Int = 0): Int {
-        return plugin.config.getInt(path, def)
+        return BukkitPlugin.config.getInt(path, def)
     }
 
     fun boolean(def: Boolean = false): Boolean {
-        return plugin.config.getBoolean(path, def)
+        return BukkitPlugin.config.getBoolean(path, def)
     }
 
     fun string(def: String = ""): String {
-        return plugin.config.getString(path, def)!!
+        return BukkitPlugin.config.getString(path, def)!!
     }
 }

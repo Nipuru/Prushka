@@ -9,6 +9,7 @@ import io.papermc.paper.command.brigadier.Commands.argument
 import io.papermc.paper.command.brigadier.Commands.literal
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import org.bukkit.World
+import server.bukkit.BukkitPlugin
 import server.bukkit.MessageType
 import server.bukkit.command.argument.GamePlayerArgument
 import server.bukkit.command.argument.PlayerInfoArgument
@@ -16,9 +17,8 @@ import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.misc.ResourcePack
 import server.bukkit.gameplay.misc.setResourcePack
 import server.bukkit.gameplay.skin.PlayerSkin
-import server.bukkit.plugin
 import server.bukkit.util.*
-import server.common.logger.logger
+import server.common.logger.Logger
 import server.common.message.PlayerInfoMessage
 import server.common.message.TeleportType
 
@@ -76,7 +76,7 @@ object PrushkaCommand {
     private fun reload(context: CommandContext<CommandSourceStack>): Int {
         val sender = context.source.sender
         MessageType.INFO.sendMessage(sender, "正在重载配置文件...")
-        plugin.reload()
+        BukkitPlugin.reload()
         MessageType.INFO.sendMessage(sender, "重载完成")
         return Command.SINGLE_SUCCESS
     }
@@ -126,7 +126,7 @@ object PrushkaCommand {
         val player = context.source.gamePlayer
         ResourcePack.getServerPack().whenComplete { pack, throwable ->
             if (throwable != null) {
-                logger.error(throwable.message, throwable)
+                Logger.error(throwable.message, throwable)
             }
             if (pack == null) {
                 MessageType.FAILED.sendMessage(context.source.sender, "资源包不存在或获取资源包信息时发生错误")
@@ -145,7 +145,7 @@ object PrushkaCommand {
         val skinName = context.getArgument<String>("skin")
         PlayerSkin.create(skinName).whenComplete { skin, throwable ->
             if (throwable != null) {
-                logger.error(throwable.message, throwable)
+                Logger.error(throwable.message, throwable)
             }
             if (skin == null) {
                 MessageType.FAILED.sendMessage(context.source.sender, "皮肤信息不存在或获取皮肤信息时发生错误")

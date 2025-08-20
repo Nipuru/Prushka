@@ -1,7 +1,7 @@
 package server.bukkit.time
 
 import server.bukkit.constant.DAY
-import server.common.logger.logger
+import server.common.logger.Logger
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.ZoneId
@@ -42,16 +42,16 @@ object TimeManager {
                 now += 1
                 debugTime = now
                 if (now >= nextDay) {
-                    logger.info("set dayZero: $nextDay")
+                    Logger.info("set dayZero: $nextDay")
                     dayZero = nextDay
                     val instant = Instant.ofEpochMilli(now)
                     val dateTime = instant.atZone(ZoneId.systemDefault())
                     if (dateTime.dayOfWeek == DayOfWeek.MONDAY) {
-                        logger.info("set weekZero: $nextDay")
+                        Logger.info("set weekZero: $nextDay")
                         weekZero = nextDay
                     }
                     if (dateTime.dayOfMonth == 1) {
-                        logger.info("set monthZero: $nextDay")
+                        Logger.info("set monthZero: $nextDay")
                         monthZero = nextDay
                     }
                     newDayFunc.invoke(nextDay)
@@ -97,7 +97,7 @@ object TimeManager {
         weekZero = newWeekZero
         monthZero = newMonthZero
 
-        logger.info("Server time changed to ${DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(dateTime)}")
+        Logger.info("Server time changed to ${DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(dateTime)}")
     }
 
 }

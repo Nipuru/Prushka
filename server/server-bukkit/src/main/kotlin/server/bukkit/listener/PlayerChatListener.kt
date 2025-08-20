@@ -6,10 +6,9 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import server.bukkit.gameplay.player.GamePlayerManager
+import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.gamePlayer
-import server.common.logger.logger
-import server.bukkit.plugin
+import server.common.logger.Logger
 
 
 class PlayerChatListener : Listener {
@@ -20,13 +19,13 @@ class PlayerChatListener : Listener {
         try {
             handleChat(event.player, message)
         } catch (e: Exception) {
-            logger.error(e.message, e)
+            Logger.error(e.message, e)
         }
     }
 
     private fun handleChat(bukkitPlayer: Player, message: String) {
         val player = bukkitPlayer.gamePlayer
-        Bukkit.getScheduler().runTask(plugin, Runnable {
+        Bukkit.getScheduler().runTask(BukkitPlugin, Runnable {
             player.core.afk = false
             if (player.chat.isMuted) {
                 return@Runnable

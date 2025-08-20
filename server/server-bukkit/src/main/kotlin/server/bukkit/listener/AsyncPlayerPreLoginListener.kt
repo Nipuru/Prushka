@@ -6,10 +6,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
-import server.bukkit.enableLatch
+import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.DataReader
 import server.bukkit.gameplay.player.GamePlayer
-import server.common.logger.logger
+import server.common.logger.Logger
 import java.util.*
 
 class AsyncPlayerPreLoginListener(private val pendingPlayers: MutableMap<UUID, GamePlayer>) : Listener {
@@ -19,13 +19,13 @@ class AsyncPlayerPreLoginListener(private val pendingPlayers: MutableMap<UUID, G
 
         try {
             // 防止在插件启用之前玩家加入进来
-            enableLatch.await()
+            BukkitPlugin.enableLatch.await()
             val player = DataReader.read(event.name, event.uniqueId, event.address)
             pendingPlayers[event.uniqueId] = player
         } catch (e: Exception) {
             val message = Component.text("登录失败！请重试").color(NamedTextColor.RED)
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, message)
-            logger.error(e.message, e)
+            Logger.error(e.message, e)
         }
     }
 }

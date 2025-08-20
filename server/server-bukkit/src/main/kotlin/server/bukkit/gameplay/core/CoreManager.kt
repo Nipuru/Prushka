@@ -1,14 +1,14 @@
 package server.bukkit.gameplay.core
 
 import net.afyer.afybroker.client.Broker
+import server.bukkit.BukkitPlugin
 import server.bukkit.constant.REWARD_PROPERTY
 import server.bukkit.constant.PROPERTY_COIN
 import server.bukkit.constant.PROPERTY_POINTS
 import server.bukkit.gameplay.player.*
 import server.bukkit.logger.LogServer
-import server.common.logger.logger
+import server.common.logger.Logger
 import server.bukkit.time.TimeManager
-import server.bukkit.util.submit
 import server.common.message.PlayerInfoMessage
 import server.common.service.PlayerInfoService
 
@@ -152,7 +152,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     fun subtractCoin(amount: Long, way: Int): Boolean {
         if (amount == 0L) return true
         if (amount < 0L) {
-            logger.error("subtract invalid coin amount: {}", amount)
+            Logger.error("subtract invalid coin amount: {}", amount)
             return false
         }
         coin -= amount
@@ -163,7 +163,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     fun addCoin(amount: Long, way: Int): Boolean {
         if (amount == 0L) return true
         if (amount < 0L) {
-            logger.error("add invalid coin amount: {}", amount)
+            Logger.error("add invalid coin amount: {}", amount)
             return false
         }
         coin += amount
@@ -174,7 +174,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     fun subtractPoints(amount: Long, way: Int): Boolean {
         if (amount == 0L) return true
         if (amount < 0L) {
-            logger.error("subtract invalid points amount: {}", amount)
+            Logger.error("subtract invalid points amount: {}", amount)
             return false
         }
         points -= amount
@@ -185,7 +185,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     fun addPoints(amount: Long, way: Int): Boolean {
         if (amount == 0L) return true
         if (amount < 0L) {
-            logger.error("add invalid coin points: {}", amount)
+            Logger.error("add invalid coin points: {}", amount)
             return false
         }
         points += amount
@@ -214,7 +214,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         if (!updateShared) return
         updateShared = false
         val playerInfoService = Broker.getService(PlayerInfoService::class.java)
-        submit {
+        BukkitPlugin.submit {
             playerInfoService.insertOrUpdate(playerInfo)
         }
     }

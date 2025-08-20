@@ -2,9 +2,11 @@ package server.bukkit
 
 import com.alipay.remoting.ConnectionEventType
 import com.google.common.cache.CacheBuilder
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClientBuilder
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.plugin.java.JavaPlugin
 import server.bukkit.command.AfkCommand
@@ -19,32 +21,36 @@ import server.bukkit.processor.connection.CloseEventBukkitProcessor
 import server.bukkit.processor.connection.ConnectEventBukkitProcessor
 import server.bukkit.scheduler.ServerTickTask
 import server.bukkit.time.TimeManager
-import server.bukkit.util.bizThread
 import server.bukkit.util.register
 import server.common.ClientTag
+import server.common.logger.Logger
 import server.common.sheet.Sheet
 import java.io.File
 import java.util.*
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 /**
+ * Bukkit 插件主类
+ *
  * @author Nipuru
  * @since 2024/9/16 0:17
  */
-val enableLatch = CountDownLatch(1)
-
-lateinit var plugin: BukkitPlugin
-    private set
-
-class BukkitPlugin : JavaPlugin() {
+object BukkitPlugin : JavaPlugin() {
     private val pendingPlayers = mutableMapOf<UUID, GamePlayer>()
     private val spawnLocations = CacheBuilder.newBuilder()
         .expireAfterAccess(1, TimeUnit.MINUTES)
         .build<String, Location>()
+    val enableLatch = CountDownLatch(1)
+    val bizThread: ExecutorService = Executors.newCachedThreadPool(
+        ThreadFactoryBuilder()
+            .setDaemon(false)
+            .setNameFormat("Prushka-bizThread-%d")
+            .build())
 
     override fun onLoad() {
-        plugin = this
         Broker.buildAction(this::buildBrokerClient)
     }
 
@@ -85,6 +91,24 @@ class BukkitPlugin : JavaPlugin() {
         Sheet.load(File(dataFolder, "jsons").absolutePath)
     }
 
+    fun submit(async: Boolean = true, block: () -> Unit) {
+        val runnable = Runnable {
+            try {
+                block.invoke()
+            } catch (e: Exception) {
+                Logger.error(e.message, e)
+            }
+        }
+        val primaryThread = Bukkit.isPrimaryThread()
+        if (async && primaryThread) {
+            bizThread.submit(runnable)
+        } else if (!primaryThread) {
+            Bukkit.getScheduler().runTask(BukkitPlugin, runnable)
+        } else {
+            runnable.run()
+        }
+    }
+
     private fun registerTasks() {
         ServerTickTask().schedule()
     }
@@ -111,3 +135,5 @@ class BukkitPlugin : JavaPlugin() {
         }
     }
 }
+
+

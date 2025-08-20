@@ -1,8 +1,8 @@
 package server.bukkit.gameplay.offline
 
 import net.afyer.afybroker.client.Broker
+import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.*
-import server.bukkit.util.submit
 import server.common.message.PlayerOfflineDataMessage
 import java.util.*
 
@@ -58,6 +58,6 @@ class OfflineManager(player: GamePlayer) : BaseManager(player) {
         if (offlineDataMessageQueue.isEmpty()) return
         val messages = offlineDataMessageQueue.toList()
         offlineDataMessageQueue.clear()
-        submit { messages.forEach(Broker::oneway) }
+        BukkitPlugin.submit { messages.forEach(Broker::oneway) }
     }
 }

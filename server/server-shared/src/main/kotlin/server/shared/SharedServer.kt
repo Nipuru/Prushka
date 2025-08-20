@@ -6,7 +6,7 @@ import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
-import server.common.logger.logger
+import server.common.logger.Logger
 import server.common.service.PlayerInfoService
 import server.shared.SharedServer.shutdown
 import server.shared.SharedServer.startup
@@ -70,10 +70,10 @@ internal object SharedServer {
             brokerClient.startup()
             brokerClient.ping()
         } catch (e: LifeCycleException) {
-            logger.error("Broker client startup failed!")
+            Logger.error("Broker client startup failed!")
             throw e
         } catch (e: Exception) {
-            logger.error("Ping to the broker server failed!")
+            Logger.error("Ping to the broker server failed!")
             throw e
         }
     }

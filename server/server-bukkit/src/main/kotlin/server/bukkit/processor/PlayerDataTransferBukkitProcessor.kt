@@ -4,17 +4,17 @@ import com.alipay.remoting.AsyncContext
 import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
 import org.bukkit.Bukkit
+import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.DataInfo
 import server.bukkit.gameplay.player.gamePlayer
 import server.bukkit.nms.quit
-import server.bukkit.util.submit
 import server.common.message.PlayerDataMessage
 import server.common.message.PlayerDataTransferRequest
 
 class PlayerDataTransferBukkitProcessor : AsyncUserProcessor<PlayerDataTransferRequest>() {
 
     override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: PlayerDataTransferRequest) {
-        submit(async = false) {
+        BukkitPlugin.submit(async = false) {
             asyncCtx.sendResponse(handle(request))
         }
     }

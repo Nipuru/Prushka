@@ -5,7 +5,7 @@ import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
 import net.afyer.afybroker.core.util.AbstractInvokeCallback
 import net.afyer.afybroker.server.Broker
-import server.common.logger.logger
+import server.common.logger.Logger
 import server.common.ClientTag
 import server.common.message.PlayerDataTransferRequest
 
@@ -26,7 +26,7 @@ class PlayerDataTransferBrokerProcessor : AsyncUserProcessor<PlayerDataTransferR
             }
 
             override fun onException(e: Throwable) {
-                logger.error(e.message, e)
+                Logger.error(e.message, e)
                 asyncCtx.sendException(e)
             }
         })

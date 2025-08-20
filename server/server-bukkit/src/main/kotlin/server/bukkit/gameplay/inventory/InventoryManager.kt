@@ -4,7 +4,7 @@ import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import server.bukkit.gameplay.player.*
-import server.common.logger.logger
+import server.common.logger.Logger
 import server.bukkit.nms.*
 
 class InventoryManager(player: GamePlayer) : BaseManager(player) {
@@ -104,7 +104,7 @@ class InventoryManager(player: GamePlayer) : BaseManager(player) {
         bukkitPlayer.health = data.health
         bukkitPlayer.healthScale = data.healthScale
         bukkitPlayer.isHealthScaled = data.healthScaled
-        logger.info("InventoryData has applied for GamePlayer: {}", player.name)
+        Logger.info("InventoryData has applied for GamePlayer: {}", player.name)
     }
 
     private fun savePlayer(bukkitPlayer: Player, data: InventoryData) {
@@ -126,6 +126,6 @@ class InventoryManager(player: GamePlayer) : BaseManager(player) {
         data.bukkitValues = bukkitPlayer.persistentDataContainer.serializeToBytes()
         data.fireTicks = bukkitPlayer.fireTicks
         data.freezeTicks = bukkitPlayer.freezeTicks
-        logger.info("Saving InventoryData for GamePlayer: {}", player.name)
+        Logger.info("Saving InventoryData for GamePlayer: {}", player.name)
     }
 }

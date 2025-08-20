@@ -1,8 +1,8 @@
 package server.bukkit.logger
 
 import net.afyer.afybroker.client.Broker
+import server.bukkit.BukkitPlugin
 import server.bukkit.time.TimeManager
-import server.bukkit.util.submit
 import server.common.service.LogService
 
 object LogServer {
@@ -11,7 +11,7 @@ object LogServer {
     private val service = Broker.getService(LogService::class.java)
 
     fun reportError(error: Throwable) {
-        submit {
+        BukkitPlugin.submit {
             service.reportError(
                 serverType = Broker.getClientInfo().type,
                 serverName = Broker.getClientInfo().name,
@@ -65,6 +65,6 @@ object LogServer {
     }
 
     private fun sendLog(tableName: String, fields: Map<String, Any>) {
-        submit { service.log(tableName, fields) }
+        BukkitPlugin.submit { service.log(tableName, fields) }
     }
 }

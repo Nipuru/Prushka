@@ -12,7 +12,7 @@ import server.bukkit.gameplay.offline.OfflineManager
 import server.bukkit.gameplay.skin.SkinManager
 import server.bukkit.gameplay.teleport.TeleportManager
 import server.bukkit.logger.LogServer
-import server.common.logger.logger
+import server.common.logger.Logger
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
 import server.common.service.PlayerDataService
@@ -85,7 +85,7 @@ class GamePlayer(
     }
 
     fun init() {
-        logger.info("Init GamePlayer: {}", name)
+        Logger.info("Init GamePlayer: {}", name)
         friend.init()
     }
 
@@ -93,7 +93,7 @@ class GamePlayer(
      * 新玩家初始化
      */
     fun initNew() {
-        logger.info("Init new GamePlayer: {}", name)
+        Logger.info("Init new GamePlayer: {}", name)
 
         LogServer.logRegister(playerId)
     }
@@ -102,7 +102,7 @@ class GamePlayer(
      * 玩家登录执行
      */
     fun onLogin() {
-        logger.info("GamePlayer: {} has logged in.", name)
+        Logger.info("GamePlayer: {} has logged in.", name)
         core.isOnline = true
         if (core.resetTime < TimeManager.dayZero) {
             var lastResetTime: Long = core.resetTime
@@ -129,7 +129,7 @@ class GamePlayer(
      * 玩家离线执行
      */
     fun onLogout() {
-        logger.info("GamePlayer: {} has logged out.", name)
+        Logger.info("GamePlayer: {} has logged out.", name)
 
         LogServer.logLogout(playerId, bukkitPlayer.address.address.hostAddress)
     }
@@ -138,7 +138,7 @@ class GamePlayer(
      * 玩家加入服务器执行
      */
     fun onJoin() {
-        logger.info("GamePlayer: {} has joined", name)
+        Logger.info("GamePlayer: {} has joined", name)
 
         // 玩家登录
         if (!core.isOnline) {
@@ -154,7 +154,7 @@ class GamePlayer(
      * 玩家退出服务器执行
      */
     fun onQuit() {
-        logger.info("GamePlayer: {} has quit.", name)
+        Logger.info("GamePlayer: {} has quit.", name)
         teleport.onQuit()
         inventory.onQuit()
         core.onQuit()
@@ -170,12 +170,12 @@ class GamePlayer(
     }
 
     fun enterAfk() {
-        logger.info("GamePlayer: {} enter afk.", name)
+        Logger.info("GamePlayer: {} enter afk.", name)
         MessageType.INFO.sendMessage(bukkitPlayer, "你进入了挂机模式")
     }
 
     fun exitAfk() {
-        logger.info("GamePlayer: {} quit afk.", name)
+        Logger.info("GamePlayer: {} quit afk.", name)
         MessageType.INFO.sendMessage(bukkitPlayer, "你离开了挂机模式")
     }
 

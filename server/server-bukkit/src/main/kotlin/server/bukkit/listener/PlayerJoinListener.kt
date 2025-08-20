@@ -8,7 +8,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.GamePlayerManager
-import server.common.logger.logger
+import server.common.logger.Logger
 import java.util.*
 
 class PlayerJoinListener(private val pendingPlayers: MutableMap<UUID, GamePlayer>) : Listener {
@@ -28,7 +28,7 @@ class PlayerJoinListener(private val pendingPlayers: MutableMap<UUID, GamePlayer
         } catch (e: Exception) {
             val message = Component.text("加入游戏失败！请重试").color(NamedTextColor.RED)
             event.player.kick(message)
-            logger.error(e.message, e)
+            Logger.error(e.message, e)
         }
     }
 }

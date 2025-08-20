@@ -7,7 +7,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
-import server.bukkit.plugin
+import server.bukkit.BukkitPlugin
 import server.bukkit.util.font.Bitmap
 import server.bukkit.util.font.Font
 import server.bukkit.util.font.FontRepository
@@ -84,7 +84,7 @@ private object MiniMessageHolder {
         val repository = FontRepository()
         // 初始化默认字体
         val fonts = sequenceOf("prushka_font")
-        val bytes = plugin.getResource("glyph_sizes.bin")!!.readAllBytes()
+        val bytes = BukkitPlugin.getResource("glyph_sizes.bin")!!.readAllBytes()
         for (font in fonts) {
             // 起始 unicode
             var unicode = 0x0000

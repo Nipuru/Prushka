@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.statements.StatementContext
 import org.jetbrains.exposed.sql.statements.expandArgs
 import org.jetbrains.exposed.sql.transactions.transaction
 import server.common.message.FieldMessage
-import server.common.logger.logger
+import server.common.logger.Logger
 import server.common.message.PlayerDataTransactionMessage
 import server.common.message.TableInfo
 import server.common.service.PlayerDataService
@@ -20,7 +20,7 @@ class PlayerDataServiceImpl : PlayerDataService {
 
     private val sqlLogger = object : SqlLogger {
         override fun log(context: StatementContext, transaction: ETransaction) {
-            logger.info("SQL: ${context.expandArgs(transaction)}")
+            Logger.info("SQL: ${context.expandArgs(transaction)}")
         }
     }
 
