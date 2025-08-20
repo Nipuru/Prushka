@@ -11,6 +11,7 @@ val Player.gamePlayer: GamePlayer get() = GamePlayerManager.getPlayer(uniqueId)
 object GamePlayerManager {
     private val byUniqueId: MutableMap<UUID, GamePlayer> = ConcurrentHashMap()
     private val byPlayerId: MutableMap<Int, GamePlayer> = ConcurrentHashMap()
+    private val pendingPlayers = mutableMapOf<UUID, GamePlayer>()
 
     // 插件启用时调用
     fun loadAll() {
@@ -70,6 +71,14 @@ object GamePlayerManager {
         val gamePlayer = byPlayerId[playerId]
             ?: throw NullPointerException("Player with playerId $playerId is not exist")
         return gamePlayer
+    }
+
+    fun addPendingPlayer(player: GamePlayer) {
+        pendingPlayers[player.uniqueId] = player
+    }
+
+    fun removePendingPlayer(uniqueId: UUID): GamePlayer? {
+        return pendingPlayers.remove(uniqueId)
     }
 
     /**

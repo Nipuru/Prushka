@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit
  * @since 2024/9/16 0:17
  */
 object BukkitPlugin : JavaPlugin() {
-    private val pendingPlayers = mutableMapOf<UUID, GamePlayer>()
+
     private val spawnLocations = CacheBuilder.newBuilder()
         .expireAfterAccess(1, TimeUnit.MINUTES)
         .build<String, Location>()
@@ -114,8 +114,8 @@ object BukkitPlugin : JavaPlugin() {
     }
 
     private fun registerListeners() {
-        AsyncPlayerPreLoginListener(pendingPlayers).register(this)
-        PlayerJoinListener(pendingPlayers).register(this)
+        AsyncPlayerPreLoginListener().register(this)
+        PlayerJoinListener().register(this)
         PlayerQuitListener().register(this)
         PlayerChatListener().register(this)
         PlayerCommandListener().register(this)
