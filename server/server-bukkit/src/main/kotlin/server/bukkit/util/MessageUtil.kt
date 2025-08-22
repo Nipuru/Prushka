@@ -23,15 +23,15 @@ import server.common.sheet.getAllStBitmap
  * 全部默认标签：（略）
  *
  * bitmap: 获取名为 name 的字符
- * <bitmap:name/>               第一个字符
- * <bitmap:name;index/>         下标为 index 的字符
- * <bitmap:name;from-to/>       下标 from 到 to 前闭后开一连串字符
- * <bitmap:name;row;col/>       row 行 col 列的字符
- * <bitmap:name;row;from-to/>   row 行 from 到 to 列前闭后开一连串字符
+ * <bitmap:name>               第一个字符
+ * <bitmap:name:index>         下标为 index 的字符
+ * <bitmap:name:from-to>       下标 from 到 to 前闭后开一连串字符
+ * <bitmap:name:row:col>       row 行 col 列的字符
+ * <bitmap:name:row:from-to>   row 行 from 到 to 列前闭后开一连串字符
  *
  * split: 像素分隔符
- * <split:10/>                  右移动 10 像素
- * <split:-200/>                回退 -200 像素
+ * <split:10>                  右移动 10 像素
+ * <split:-200>                回退 -200 像素
  *
  * fixed_width: 固定像素
  * <fixed_width:right:100>1234</fixed_width>        往右对齐

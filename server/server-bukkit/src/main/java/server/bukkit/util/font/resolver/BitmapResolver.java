@@ -12,8 +12,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import server.bukkit.util.font.Bitmap;
 import server.bukkit.util.font.LengthyComponent;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @SuppressWarnings("UnstableApiUsage")
 public class BitmapResolver {
@@ -30,21 +29,24 @@ public class BitmapResolver {
         return TagResolver.resolver(BITMAP, this::create);
     }
 
-    public LengthyComponent resolve(String code) {
-        String[] args = code.split(";");
-        if (args.length == 0) throw new NullPointerException("bitmap name");
-        Bitmap bitmap = Objects.requireNonNull(bitmaps.get(args[0]));
+    public LengthyComponent resolve(String args) {
+        return resolve(Arrays.asList(args.split(":")));
+    }
+
+    public LengthyComponent resolve(List<String> args) {
+        if (args.isEmpty()) throw new NullPointerException("bitmap name");
+        Bitmap bitmap = Objects.requireNonNull(bitmaps.get(args.get(0)));
         StringBuilder sb = new StringBuilder();
-        if (args.length == 3) {
-            int row = parseInt(args[1]);
-            int[] nums = splitToInt(args[2]);
+        if (args.size() == 3) {
+            int row = parseInt(args.get(1));
+            int[] nums = splitToInt(args.get(2));
             if (nums.length >= 2) {
                 sb.append(bitmap.getRange(row, nums[0], nums[1]));
             } else {
                 sb.append(bitmap.getChar(row, nums[0]));
             }
-        } else if (args.length == 2) {
-            int[] nums = splitToInt(args[1]);
+        } else if (args.size() == 2) {
+            int[] nums = splitToInt(args.get(1));
             if (nums.length >= 2) {
                 sb.append(bitmap.getRange(nums[0], nums[1]));
             } else {
@@ -73,8 +75,11 @@ public class BitmapResolver {
     }
 
     private Tag create(ArgumentQueue arguments, Context context) {
-        String code = arguments.popOr("Expected to find a bitmap code").value();
-        return Tag.selfClosingInserting(resolve(code).getSymbol());
+        List<String> args = new ArrayList<>();
+        while (arguments.hasNext()) {
+            args.add(arguments.pop().value());
+        }
+        return Tag.selfClosingInserting(resolve(args).getSymbol());
     }
 
 }
