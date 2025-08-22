@@ -4,7 +4,7 @@ import net.afyer.afybroker.server.plugin.Plugin
 import server.broker.listener.PlayerListener
 import server.broker.processor.*
 
-class BrokerPlugin : Plugin() {
+object BrokerPlugin : Plugin() {
     override fun onEnable() {
         server.pluginManager.registerListener(this, PlayerListener())
         server.registerUserProcessor(PlayerDataTransferBrokerProcessor())
