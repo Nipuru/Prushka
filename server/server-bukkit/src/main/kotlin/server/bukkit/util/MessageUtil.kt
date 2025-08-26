@@ -1,19 +1,21 @@
 package server.bukkit.util
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.key.Keyed
+import net.kyori.adventure.text.*
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import server.bukkit.BukkitPlugin
-import server.bukkit.util.font.Bitmap
-import server.bukkit.util.font.Font
-import server.bukkit.util.font.FontRepository
-import server.bukkit.util.font.resolver.BitmapResolver
-import server.bukkit.util.font.resolver.FixedWidthResolver
-import server.bukkit.util.font.resolver.SplitResolver
+import server.bukkit.util.text.Bitmap
+import server.bukkit.util.text.Font
+import server.bukkit.util.text.FontRepository
+import server.bukkit.util.text.BitmapResolver
+import server.bukkit.util.text.FixedWidthResolver
+import server.bukkit.util.text.FixedWidthResolver.Position
+import server.bukkit.util.text.SplitResolver
 import server.common.sheet.Sheet
 import server.common.sheet.getAllStBitmap
 
@@ -40,7 +42,7 @@ import server.common.sheet.getAllStBitmap
  */
 fun String.component() : TextComponent {
     return Component.text().let {
-        it.append(MiniMessageHolder.miniMessage.deserialize(this))
+        it.append(MessageHolder.miniMessage.deserialize(this))
         it.style(Style.style()
             .decoration(TextDecoration.ITALIC, false)
             .build())
@@ -62,28 +64,42 @@ fun Component.hoverEvent(str: String): Component {
     return this.hoverEvent(str.component())
 }
 
-private object MiniMessageHolder {
+fun <C : BuildableComponent<C, B>, B : ComponentBuilder<C, B>> ComponentBuilder<C, B>.split(pixel: Int) : ComponentBuilder<C, B> {
+    return this.append("<split:$pixel>".component())
+}
 
-    val miniMessage = initMiniMessage()
+fun <C : BuildableComponent<C, B>, B : ComponentBuilder<C, B>> ComponentBuilder<C, B>.bitmap(name: String, row: Int = 0, column: Int = 0): ComponentBuilder<C, B> {
+    return this.append("<bitmap:$name:$row:$column>".component())
+}
 
-    fun initMiniMessage(): MiniMessage {
-        val bitmaps = bitmaps()
-        val bitmap = BitmapResolver(bitmaps)
-        val split = split(bitmap)
-        val font = font(bitmaps)
-        val fixedWidth = FixedWidthResolver(split, font)
-        return MiniMessage.builder().tags(TagResolver.resolver(
+fun <C : BuildableComponent<C, B>, B : ComponentBuilder<C, B>> ComponentBuilder<C, B>.fixedWidth(text: String, width: Int, position: Position = Position.LEFT): ComponentBuilder<C, B> {
+    return this.append("<fixed_width:$position:$width>${text}</fixed_width>".component())
+}
+
+fun ComponentLike.getWidth(bold: Boolean = false, font: Keyed = Font.DEFAULT): Float {
+    return MessageHolder.font.getTotalWidth(asComponent(), bold, font)
+}
+
+private object MessageHolder {
+
+    val bitmaps = bitmaps()
+    val bitmap = BitmapResolver(bitmaps)
+    val split = split(bitmap)
+    val font = font(bitmaps)
+    val fixedWidth = FixedWidthResolver(split, font)
+    val miniMessage = MiniMessage.builder().tags(
+        TagResolver.resolver(
             StandardTags.defaults(),
             split.resolver(),
             bitmap.resolver(),
             fixedWidth.resolver()
-        )).build()
-    }
+        )
+    ).build()
 
     fun font(bitmaps: Map<String, Bitmap>): FontRepository {
         val repository = FontRepository()
         // 初始化默认字体
-        val fonts = sequenceOf("prushka_font")
+        val fonts = sequenceOf<Keyed>(Font.DEFAULT) //todo
         val bytes = BukkitPlugin.getResource("glyph_sizes.bin")!!.readAllBytes()
         for (font in fonts) {
             // 起始 unicode
@@ -101,7 +117,9 @@ private object MiniMessageHolder {
         // 覆写 bitmap
         for (bitmap in bitmaps.values) {
             val width = bitmap.width.toFloat()
-            repository.register(*Font.fonts(bitmap, width, width))
+            Font.fonts(bitmap, width, width).forEach{
+                repository.register(it)
+            }
         }
         return repository
     }
@@ -121,10 +139,10 @@ private object MiniMessageHolder {
                 chars.add(builder.toString())
             }
             val width = (cfg.imgWidth * cfg.height * cfg.row) / (cfg.imgHeight * cfg.column) +
-                    ((cfg.height shr  31) and  1)  + 1
+                    ((cfg.height shr 31) and 1) + 1
             val bitmap = Bitmap(
                 cfg.configId,
-                cfg.font,
+                Key.key("prushka:bitmap"),
                 width,
                 *chars.toTypedArray()
             )
@@ -143,4 +161,3 @@ private object MiniMessageHolder {
         return SplitResolver(splits)
     }
 }
-
