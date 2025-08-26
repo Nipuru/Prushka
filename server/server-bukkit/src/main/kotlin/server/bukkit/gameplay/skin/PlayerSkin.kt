@@ -1,8 +1,7 @@
 package server.bukkit.gameplay.skin
 
 import com.destroystokyo.paper.profile.PlayerProfile
-import org.bukkit.Bukkit
-import server.bukkit.nms.createPlayerProfile
+import server.bukkit.nms.PlayerProfiles
 import java.net.URL
 import java.util.concurrent.CompletableFuture
 
@@ -24,10 +23,13 @@ class PlayerSkin(
      * 皮肤图片
      * IO操作 需要异步调用
      */
-    val image: ByteArray by lazy { url.readBytes() }
+    val image: CompletableFuture<ByteArray> get() {
+        return CompletableFuture.supplyAsync {
+            url.readBytes()
+        }
+    }
 
     companion object {
-
         /**
          * 联网获取一个玩家皮肤
          *
@@ -35,7 +37,7 @@ class PlayerSkin(
          * @return 玩家皮肤
          */
         fun create(name: String): CompletableFuture<PlayerSkin?> {
-            return createPlayerProfile(name).thenApply { profile ->
+            return PlayerProfiles.completeOnline(name).thenApply { profile ->
                 read(profile)
             }
         }

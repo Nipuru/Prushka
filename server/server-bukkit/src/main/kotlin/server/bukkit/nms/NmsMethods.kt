@@ -79,24 +79,3 @@ fun String.message(): Message {
     return component().message()
 }
 
-/**
- * 获取一个在线玩家的游戏信息 用于获取皮肤等
- */
-fun createPlayerProfile(name: String): CompletableFuture<PlayerProfile> {
-    val future = CompletableFuture<PlayerProfile>()
-    CompletableFuture.runAsync {
-        MinecraftServer.getServer().profileRepository.findProfilesByNames(arrayOf(name), object :
-            ProfileLookupCallback {
-            override fun onProfileLookupSucceeded(profile: GameProfile) {
-                val playerProfile = CraftPlayerProfile.asBukkitMirror(profile)
-                playerProfile.complete(true,  true)
-                future.complete(playerProfile)
-            }
-
-            override fun onProfileLookupFailed(profileName: String, exception: Exception) {
-                future.completeExceptionally(Exception("Failed to lookup profile $profileName", exception))
-            }
-        })
-    }
-    return future
-}
