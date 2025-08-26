@@ -5,7 +5,6 @@ import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
 import com.alipay.remoting.rpc.protocol.SyncUserProcessor
 import org.bukkit.Bukkit
-import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.gameplay.player.gamePlayer
 import server.common.message.PlayerChatMessage

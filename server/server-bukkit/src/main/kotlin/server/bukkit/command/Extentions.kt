@@ -10,7 +10,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.entity.Player
 import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.gameplay.player.gamePlayer
 import server.bukkit.nms.message
 import java.util.concurrent.CompletableFuture

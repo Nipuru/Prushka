@@ -13,11 +13,11 @@ import server.bukkit.BukkitPlugin
 import server.bukkit.MessageType
 import server.bukkit.command.argument.GamePlayerArgument
 import server.bukkit.command.argument.PlayerInfoArgument
-import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.misc.ResourcePack
 import server.bukkit.gameplay.misc.setResourcePack
+import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.skin.PlayerSkin
-import server.bukkit.util.*
+import server.bukkit.util.component
 import server.common.logger.Logger
 import server.common.message.PlayerInfoMessage
 import server.common.message.TeleportType

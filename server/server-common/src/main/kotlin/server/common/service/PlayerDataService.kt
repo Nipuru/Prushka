@@ -3,7 +3,6 @@ package server.common.service
 import server.common.message.FieldMessage
 import server.common.message.PlayerDataTransactionMessage
 import server.common.message.TableInfo
-import java.io.Serializable
 
 
 /**

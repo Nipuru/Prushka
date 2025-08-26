@@ -4,8 +4,10 @@ import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import server.bukkit.gameplay.player.*
+import server.bukkit.nms.deserializePotionEffects
+import server.bukkit.nms.placeBackInInventory
+import server.bukkit.nms.serialize
 import server.common.logger.Logger
-import server.bukkit.nms.*
 
 class InventoryManager(player: GamePlayer) : BaseManager(player) {
     private var data: InventoryData? = null

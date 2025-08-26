@@ -1,9 +1,8 @@
 package server.bukkit.gameplay.player
 
 import net.afyer.afybroker.client.Broker
-import server.common.message.PlayerDataTransferRequest
 import server.common.message.PlayerDataMessage
-import server.common.service.PlayerDataService
+import server.common.message.PlayerDataTransferRequest
 import server.common.service.PlayerService
 import java.net.InetAddress
 import java.util.*

@@ -1,9 +1,5 @@
 package server.bukkit.nms
 
-import com.destroystokyo.paper.profile.CraftPlayerProfile
-import com.destroystokyo.paper.profile.PlayerProfile
-import com.mojang.authlib.GameProfile
-import com.mojang.authlib.ProfileLookupCallback
 import com.mojang.brigadier.Message
 import io.papermc.paper.adventure.AdventureComponent
 import net.kyori.adventure.text.Component
@@ -18,7 +14,6 @@ import org.bukkit.util.io.BukkitObjectOutputStream
 import server.bukkit.util.component
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.util.concurrent.CompletableFuture
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 

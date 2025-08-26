@@ -1,7 +1,7 @@
 package server.common.message
 
 import java.io.Serializable
-import java.util.UUID
+import java.util.*
 
 class PlayerInfoMessage : Serializable {
     /** 玩家id  */

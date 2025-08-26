@@ -4,7 +4,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
-import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.gameplay.player.gamePlayer
 
 

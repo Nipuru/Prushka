@@ -1,9 +1,7 @@
 package server.auth.schema
 
-import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Sequence
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.transactions.transaction
 
 
 /**

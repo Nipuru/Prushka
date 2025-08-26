@@ -1,8 +1,8 @@
 package server.bukkit.gameplay.reward
 
-import server.bukkit.constant.REWARD_PROPERTY
 import server.bukkit.constant.PROPERTY_COIN
 import server.bukkit.constant.PROPERTY_POINTS
+import server.bukkit.constant.REWARD_PROPERTY
 import server.bukkit.gameplay.player.*
 import server.bukkit.logger.LogServer
 import server.common.logger.Logger
