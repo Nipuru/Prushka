@@ -1,7 +1,7 @@
 package server.database.config
 
 import org.yaml.snakeyaml.Yaml
-import server.common.util.ResourceUtil
+import server.common.util.getResourceOrExtract
 import java.io.InputStreamReader
 
 
@@ -29,7 +29,7 @@ class Config {
 
     companion object {
         fun load(): Config {
-            ResourceUtil.getResourceOrExtract("config.yml").use { inputStream ->
+            getResourceOrExtract("config.yml").use { inputStream ->
                 InputStreamReader(inputStream).use { reader ->
                     val yaml = Yaml()
                     return yaml.loadAs(reader, Config::class.java)
