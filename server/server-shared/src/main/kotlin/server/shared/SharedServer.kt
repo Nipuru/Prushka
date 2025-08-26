@@ -11,7 +11,6 @@ import server.common.service.PlayerInfoService
 import server.shared.SharedServer.shutdown
 import server.shared.SharedServer.startup
 import server.shared.config.Config
-import server.shared.config.loadConfig
 import server.shared.database.DatabaseFactory
 import server.shared.processor.GetTimeSharedProcessor
 import server.shared.processor.connection.CloseEventSharedProcessor
@@ -27,7 +26,7 @@ internal object SharedServer {
     private lateinit var brokerClient: BrokerClient
 
     fun startup() {
-        val config = loadConfig()
+        val config = Config.load()
 
         initDataSource(config)
         initBrokerClient(config)
@@ -48,18 +47,18 @@ internal object SharedServer {
     }
 
     private fun initDataSource(config: Config) {
-        val datasource = config.datasource!!
+        val datasource = config.datasource
         DatabaseFactory.init(
-            datasource.host!!, datasource.port!!,
-            datasource.database!!, datasource.username!!, datasource.password!!
+            datasource.host, datasource.port,
+            datasource.database, datasource.username, datasource.password
         )
     }
 
     private fun initBrokerClient(config: Config) {
         try {
             val builder = BrokerClient.newBuilder()
-            builder.host(config.broker!!.host!!)
-            builder.port(config.broker!!.port!!)
+            builder.host(config.broker.host)
+            builder.port(config.broker.port)
             builder.name(server.common.ClientType.SHARED)
             builder.type(server.common.ClientType.SHARED)
             this.buildBrokerClient(builder)

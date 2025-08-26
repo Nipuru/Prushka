@@ -10,7 +10,6 @@ import server.common.service.LogService
 import server.log.LogServer.shutdown
 import server.log.LogServer.startup
 import server.log.config.Config
-import server.log.config.loadConfig
 import server.log.database.DatabaseFactory
 import server.log.processor.connection.CloseEventDBProcessor
 import server.log.service.LogServiceImpl
@@ -25,7 +24,7 @@ internal object LogServer {
     private lateinit var brokerClient: BrokerClient
 
     fun startup() {
-        val config = loadConfig()
+        val config = Config.load()
 
         initDataSource(config)
         initBrokerClient(config)
@@ -42,18 +41,18 @@ internal object LogServer {
     }
 
     private fun initDataSource(config: Config) {
-        val datasource = config.datasource!!
+        val datasource = config.datasource
         DatabaseFactory.init(
-            datasource.host!!, datasource.port!!,
-            datasource.database!!, datasource.username!!, datasource.password!!
+            datasource.host, datasource.port,
+            datasource.database, datasource.username, datasource.password
         )
     }
 
     private fun initBrokerClient(config: Config) {
         try {
             val builder = BrokerClient.newBuilder()
-            builder.host(config.broker!!.host!!)
-            builder.port(config.broker!!.port!!)
+            builder.host(config.broker.host)
+            builder.port(config.broker.port)
             builder.name(String.format("%s", server.common.ClientType.LOG))
             builder.type(server.common.ClientType.LOG)
             buildBrokerClient(builder)

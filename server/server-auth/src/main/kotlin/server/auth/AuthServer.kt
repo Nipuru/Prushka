@@ -19,7 +19,6 @@ import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
 import org.slf4j.event.Level
 import server.auth.config.Config
-import server.auth.config.loadConfig
 import server.auth.database.DatabaseFactory
 import server.auth.http.rootRouting
 import server.auth.logger.logger
@@ -71,18 +70,18 @@ object AuthServer {
     }
 
     private fun initDataSource(config: Config) {
-        val datasource = config.datasource!!
+        val datasource = config.datasource
         DatabaseFactory.init(
-            datasource.host!!, datasource.port!!,
-            datasource.database!!, datasource.username!!, datasource.password!!
+            datasource.host, datasource.port,
+            datasource.database, datasource.username, datasource.password
         )
     }
 
     private fun initBrokerClient(config: Config) {
         try {
             val builder = BrokerClient.newBuilder()
-            builder.host(config.broker!!.host!!)
-            builder.port(config.broker!!.port!!)
+            builder.host(config.broker.host)
+            builder.port(config.broker.port)
             builder.name(ClientType.AUTH)
             builder.type(ClientType.AUTH)
             buildBrokerClient(builder)
@@ -102,7 +101,7 @@ object AuthServer {
     }
 
     fun startup() {
-        val config = loadConfig()
+        val config = Config.load()
 
         initDataSource(config)
         initBrokerClient(config)

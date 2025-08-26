@@ -13,7 +13,6 @@ import server.common.service.PlayerDataService
 import server.database.DatabaseServer.shutdown
 import server.database.DatabaseServer.startup
 import server.database.config.Config
-import server.database.config.loadConfig
 import server.database.database.DatabaseFactory
 import server.database.processor.PlayerOfflineDataDBProcessor
 import server.database.processor.connection.CloseEventDBProcessor
@@ -31,7 +30,7 @@ internal object DatabaseServer {
     private lateinit var brokerClient: BrokerClient
 
     fun startup() {
-        val config = loadConfig()
+        val config = Config.load()
 
         initDataSource(config)
         initBrokerClient(config)
@@ -52,18 +51,18 @@ internal object DatabaseServer {
     }
 
     private fun initDataSource(config: Config) {
-        val datasource = config.datasource!!
+        val datasource = config.datasource
         DatabaseFactory.init(
-            datasource.host!!, datasource.port!!,
-            datasource.database!!, datasource.username!!, datasource.password!!
+            datasource.host, datasource.port,
+            datasource.database, datasource.username, datasource.password
         )
     }
 
     private fun initBrokerClient(config: Config) {
         try {
             val builder = BrokerClient.newBuilder()
-            builder.host(config.broker!!.host!!)
-            builder.port(config.broker!!.port!!)
+            builder.host(config.broker.host)
+            builder.port(config.broker.port)
             builder.name(String.format("%s-%d", ClientType.DB, config.dbId))
             builder.type(ClientType.DB)
             buildBrokerClient(builder, config)
