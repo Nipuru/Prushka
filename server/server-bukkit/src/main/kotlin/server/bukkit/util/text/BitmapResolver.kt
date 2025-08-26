@@ -6,7 +6,6 @@ import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import java.util.*
 
 class BitmapResolver(private val bitmaps: Map<String, Bitmap>) {
     companion object {
@@ -15,11 +14,11 @@ class BitmapResolver(private val bitmaps: Map<String, Bitmap>) {
 
     fun resolver(): TagResolver {
         return TagResolver.resolver(BITMAP) { arguments, _ ->
-            val args: MutableList<String> = ArrayList()
+            val args = mutableListOf<String>()
             while (arguments.hasNext()) {
                 args.add(arguments.pop().value())
             }
-            Tag.selfClosingInserting(resolve(args).symbol)
+            Tag.selfClosingInserting(resolve(args))
         }
     }
 

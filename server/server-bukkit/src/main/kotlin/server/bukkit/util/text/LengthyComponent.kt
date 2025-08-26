@@ -1,10 +1,15 @@
 package server.bukkit.util.text
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.TextDecoration
 
 
-class LengthyComponent(val symbol: Component, val length: Int) {
+class LengthyComponent(val symbol: Component, val length: Int) : ComponentLike {
+    companion object {
+        val EMPTY = LengthyComponent(Component.empty(), 0)
+    }
+
 
     init {
         require(isEmpty() || isBoldSet()) { "invalid bold state" }
@@ -18,7 +23,7 @@ class LengthyComponent(val symbol: Component, val length: Int) {
         return symbol.style().decoration(TextDecoration.BOLD) != TextDecoration.State.NOT_SET
     }
 
-    companion object {
-        val EMPTY = LengthyComponent(Component.empty(), 0)
+    override fun asComponent(): Component {
+        return symbol
     }
 }

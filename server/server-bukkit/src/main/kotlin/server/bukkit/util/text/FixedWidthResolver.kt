@@ -59,7 +59,7 @@ class FixedWidthResolver(private val splitResolver: SplitResolver, private val f
                 left = splitResolver.resolve(leftWidth)
                 right = splitResolver.resolve(rightWidth)
             }
-            return Component.empty().append(left).append(current).append(right)
+            return Component.text().append(left).append(current).append(right).build()
         }
     }
 }
