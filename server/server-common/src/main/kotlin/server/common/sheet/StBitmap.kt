@@ -7,8 +7,6 @@ import java.util.Locale
 data class StBitmap(
     /** 配置id */
     val configId: String,
-    /** 字体 */
-    val font: String,
     /** 行数 */
     val row: Int,
     /** 列数 */
@@ -41,7 +39,7 @@ private lateinit var holderStBitmap: SheetHolder<StBitmapFile>
 
 internal fun loadStBitmap(tablePath: String) {
     val holder = SheetHolder<StBitmapFile>()
-    holder.load<StBitmap>(tablePath, "st_rank") { elements ->
+    holder.load<StBitmap>(tablePath, "st_bitmap") { elements ->
         StBitmapFile().apply {
             elements.forEach {
                 stBitmapMap[it.configId] = it

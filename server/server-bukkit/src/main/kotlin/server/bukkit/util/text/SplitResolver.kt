@@ -6,31 +6,31 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 
-class SplitResolver(initials: List<LengthyComponent>) {
+class SplitResolver(initials: List<WidthComponent>) {
     companion object {
         private const val SPLIT = "split"
     }
 
-    private val splits = arrayOfNulls<LengthyComponent>(513)
+    private val splits = arrayOfNulls<WidthComponent>(513)
 
     init {
-        val sorted = initials.sortedBy { it.length }
-        for (i in -256..256) {
-            push(answer(sorted, i))
+        val sorted = initials.sortedBy { it.width }
+        for (width in -256..256) {
+            push(answer(sorted, width))
         }
     }
 
     fun resolver(): TagResolver {
         return TagResolver.resolver(SPLIT) { arguments, _ ->
-            val length = arguments.popOr("Expected to find a split length").value().toInt()
-            Tag.selfClosingInserting(resolve(length))
+            val width = arguments.popOr("Expected to find a split width").value().toInt()
+            Tag.selfClosingInserting(resolve(width))
         }
     }
 
-    fun resolve(length: Int): Component {
-        if (length < -256 || length > 256) {
+    fun resolve(width: Int): Component {
+        if (width < -256 || width > 256) {
             val builder = Component.text()
-            var left = length
+            var left = width
             while (left != 0) {
                 if (left > 256) {
                     builder.append(resolve(256))
@@ -45,39 +45,39 @@ class SplitResolver(initials: List<LengthyComponent>) {
             }
             return builder.build()
         } else {
-            return splits[index(length)]!!.symbol
+            return splits[index(width)]!!.symbol
         }
     }
 
-    private fun index(length: Int): Int {
-        return length + 256
+    private fun index(width: Int): Int {
+        return width + 256
     }
 
-    private fun answer(sorted: List<LengthyComponent>, length: Int): LengthyComponent {
-        if (length == 0) {
-            return LengthyComponent.EMPTY
+    private fun answer(sorted: List<WidthComponent>, split: Int): WidthComponent {
+        if (split == 0) {
+            return WidthComponent.EMPTY
         }
-        val reverse = length > 0
+        val reverse = split > 0
         var i = if (reverse) sorted.size - 1 else 0
-        var left = length
+        var left = split
         val builder = Component.text()
         // 强制防止变粗体 split 不应该有粗体
         builder.style(Style.style().decoration(TextDecoration.BOLD, false).build())
         while (left != 0) {
             val sp = sorted[i]
-            while (reverse && sp.length <= left || !reverse && sp.length >= left) {
-                left -= sp.length
+            while (reverse && sp.width <= left || !reverse && sp.width >= left) {
+                left -= sp.width
                 builder.append(sp.symbol)
             }
             i += (if (reverse) -1 else 1)
         }
 
-        return LengthyComponent(builder.build(), length)
+        return WidthComponent(builder.build(), split)
     }
 
-    private fun push(split: LengthyComponent) {
-        if (split.length <= 256 && split.length >= -256) {
-            splits[index(split.length)] = split
+    private fun push(component: WidthComponent) {
+        if (component.width <= 255 && component.width >= -258) {
+            splits[index(component.width)] = component
         }
     }
 }

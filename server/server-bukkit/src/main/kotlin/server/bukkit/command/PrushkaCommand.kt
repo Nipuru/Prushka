@@ -18,6 +18,7 @@ import server.bukkit.gameplay.misc.setResourcePack
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.skin.PlayerSkin
 import server.bukkit.util.component
+import server.bukkit.util.getWidth
 import server.common.logger.Logger
 import server.common.message.PlayerInfoMessage
 import server.common.message.TeleportType
@@ -65,6 +66,7 @@ object PrushkaCommand {
     private fun text(context: CommandContext<CommandSourceStack>): Int {
         val sender = context.source.sender
         val message = StringArgumentType.getString(context, "args").component()
+        sender.sendMessage("文本宽度: ${message.getWidth()}")
         sender.sendMessage(message)
         return Command.SINGLE_SUCCESS
     }

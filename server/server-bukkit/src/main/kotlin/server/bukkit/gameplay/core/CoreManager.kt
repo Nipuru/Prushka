@@ -118,6 +118,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         get() = PlayerInfoMessage().also {
             it.playerId = player.playerId
             it.name = player.name
+            it.uniqueId = player.uniqueId
             it.dbId = player.dbId
             it.coin = playerData.coin
             it.rankId = playerData.rankId

@@ -11,6 +11,7 @@ import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import server.bukkit.BukkitPlugin
 import server.bukkit.util.text.*
 import server.bukkit.util.text.FixedWidthResolver.Position
+import server.common.logger.Logger
 import server.common.sheet.Sheet
 import server.common.sheet.getAllStBitmap
 
@@ -71,8 +72,8 @@ fun <C : BuildableComponent<C, B>, B : ComponentBuilder<C, B>> ComponentBuilder<
     return this.append("<fixed_width:$position:$width>${text}</fixed_width>".component())
 }
 
-fun ComponentLike.getWidth(bold: Boolean = false, font: Keyed = Font.DEFAULT): Float {
-    return MessageHolder.font.getTotalWidth(asComponent(), bold, font)
+fun ComponentLike.getWidth(parentBold: Boolean = false, parentItalic: Boolean = false, font: Keyed = Font.DEFAULT): Float {
+    return MessageHolder.font.getTotalWidth(asComponent(), parentBold, parentItalic, font)
 }
 
 private object MessageHolder {
@@ -92,27 +93,12 @@ private object MessageHolder {
     ).build()
 
     fun font(bitmaps: Map<String, Bitmap>): FontRepository {
-        val repository = FontRepository()
-        // 初始化默认字体
-        val fonts = sequenceOf<Keyed>(Font.DEFAULT) //todo
-        val bytes = BukkitPlugin.getResource("glyph_sizes.bin")!!.readAllBytes()
-        for (font in fonts) {
-            // 起始 unicode
-            var unicode = 0x0000
-            for (byte in bytes) {
-                // 高位 (高 4 位)
-                val start = (byte.toInt() shr 4) and 0x0F
-                // 低位 (低 4 位)
-                val end = byte.toInt() and 0x0F
-                val width = end - start + 2
-                repository.register(Font.slim(font, unicode.toChar(), width.toFloat()))
-                unicode += 1
-            }
+        val repository = FontRepository { fileName: String ->
+            BukkitPlugin.getResource("font/$fileName")
         }
-        // 覆写 bitmap
+        // 注册 bitmap
         for (bitmap in bitmaps.values) {
-            val width = bitmap.width.toFloat()
-            Font.fonts(bitmap, width, width).forEach{
+            Font.fonts(bitmap, bitmap.width).forEach{
                 repository.register(it)
             }
         }

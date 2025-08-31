@@ -29,7 +29,7 @@ private lateinit var holderStConstant: SheetHolder<StConstantFile>
 
 internal fun loadStConstant(tablePath: String) {
     val holder = SheetHolder<StConstantFile>()
-    holder.load<StConstant>(tablePath, "st_rank") { elements ->
+    holder.load<StConstant>(tablePath, "st_constant") { elements ->
         StConstantFile().apply {
             elements.forEach {
                 stConstantMap[it.key] = it

@@ -29,7 +29,7 @@ private lateinit var holderStMessage: SheetHolder<StMessageFile>
 
 internal fun loadStMessage(tablePath: String) {
     val holder = SheetHolder<StMessageFile>()
-    holder.load<StMessage>(tablePath, "st_rank") { elements ->
+    holder.load<StMessage>(tablePath, "st_message") { elements ->
         StMessageFile().apply {
             elements.forEach {
                 stMessageMap[it.key] = it

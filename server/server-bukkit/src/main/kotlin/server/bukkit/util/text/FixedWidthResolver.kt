@@ -2,7 +2,6 @@ package server.bukkit.util.text
 
 import net.kyori.adventure.key.Keyed
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.internal.serializer.Emitable
 import net.kyori.adventure.text.minimessage.tag.Modifying
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tree.Node
@@ -23,30 +22,28 @@ class FixedWidthResolver(private val splitResolver: SplitResolver, private val f
         }
     }
 
-    private fun emit(component: Component): Emitable? {
-        return null
-    }
-
     enum class Position {
         LEFT, CENTER, RIGHT
     }
 
     private inner class FixedWidthTag(private val position: Position, private val fixedWidth: Float) : Modifying {
         val rootNode: Int = 0
-        private var font: Keyed? = null
+        private var font = Font.DEFAULT
         private var bold = false
+        private var italic = false
 
         override fun visit(current: Node, depth: Int) {
             if (depth != rootNode) return
             // 找到 样式节点 获取根节点样式类型
-            font = current.getFont()
-            bold = current.isBold()
+            font = current.getFont(font)
+            bold = current.isBold(bold)
+            italic = current.isItalic(italic)
         }
 
         override fun apply(current: Component, depth: Int): Component {
             if (depth != rootNode) return Component.empty()
             // 运用宽度并返回组件
-            val textWidth = fontRepository.getTotalWidth(current, bold, font!!)
+            val textWidth = fontRepository.getTotalWidth(current, bold, italic, font)
             var left: Component = Component.empty()
             var right: Component = Component.empty()
             if (position == Position.LEFT) {

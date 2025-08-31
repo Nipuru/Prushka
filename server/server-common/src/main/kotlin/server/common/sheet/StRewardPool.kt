@@ -35,7 +35,7 @@ private lateinit var holderStRewardPool: SheetHolder<StRewardPoolFile>
 
 internal fun loadStRewardPool(tablePath: String) {
     val holder = SheetHolder<StRewardPoolFile>()
-    holder.load<StRewardPool>(tablePath, "st_rank") { elements ->
+    holder.load<StRewardPool>(tablePath, "st_reward_pool") { elements ->
         StRewardPoolFile().apply {
             elements.forEach {
                 stRewardPoolAMap.getOrPut(it.poolId) { mutableListOf() }.add(it)

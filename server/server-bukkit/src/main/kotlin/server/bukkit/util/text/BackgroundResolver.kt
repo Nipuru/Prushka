@@ -13,9 +13,9 @@ class BackgroundResolver(
     private val tag: String,
     private val splitResolver: SplitResolver,
     private val fontRepository: FontRepository,
-    private val prefix: LengthyComponent,
-    private val suffix: LengthyComponent,
-    middle: List<LengthyComponent>,
+    private val prefix: WidthComponent,
+    private val suffix: WidthComponent,
+    middle: List<WidthComponent>,
     private val centre: Boolean,
     private val covered: Boolean,
     private val style: Style
@@ -25,7 +25,7 @@ class BackgroundResolver(
         private val OFFSET = TextColor.fromHexString("#fffefd")!!
     }
 
-    private val middle: List<LengthyComponent> = middle.sortedBy { it.length }
+    private val middle: List<WidthComponent> = middle.sortedBy { it.width }
 
     fun resolver(): TagResolver {
         return TagResolver.resolver(tag, ExtensionBGTag())
@@ -33,15 +33,17 @@ class BackgroundResolver(
 
     private inner class ExtensionBGTag : Modifying {
         private val rootNode = 0
-        private var font: Keyed? = null
+        private var font = Font.DEFAULT
         private var bold = false
+        private var italic = false
 
 
         override fun visit(current: Node, depth: Int) {
             if (depth != rootNode) return
             // 找到 样式节点 获取根节点样式类型
-            font = current.getFont()
-            bold = current.isBold()
+            font = current.getFont(font)
+            bold = current.isBold(bold)
+            italic = current.isItalic(italic)
         }
 
         override fun apply(current: Component, depth: Int): Component {
@@ -50,8 +52,8 @@ class BackgroundResolver(
             val bg = Component.text()
             bg.style(style)
 
-            val sw = suffix.length.toFloat()
-            val width = fontRepository.getTotalWidth(current, bold, font!!)
+            val sw = suffix.width.toFloat()
+            val width = fontRepository.getTotalWidth(current, bold, italic, font)
 
             val split_0 = splitResolver.resolve(-1)
 
@@ -59,9 +61,9 @@ class BackgroundResolver(
             var mid: Component = Component.empty()
             for (text in middle) {
                 val lw = width - fw
-                val c = (lw / text.length).toInt()
+                val c = (lw / text.width).toInt()
                 if (c == 0) continue
-                fw += (c * text.length).toFloat()
+                fw += (c * text.width).toFloat()
                 for (i in 0 until c) {
                     mid = mid.append(text.symbol)
                         .append(split_0)
@@ -69,7 +71,7 @@ class BackgroundResolver(
             }
             if (fw < width && !covered) {
                 val text = middle[middle.size - 1]
-                fw += text.length.toFloat()
+                fw += text.width.toFloat()
                 mid = mid.append(text.symbol)
                     .append(split_0)
             }

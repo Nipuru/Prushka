@@ -33,7 +33,7 @@ private lateinit var holderStReward: SheetHolder<StRewardFile>
 
 internal fun loadStReward(tablePath: String) {
     val holder = SheetHolder<StRewardFile>()
-    holder.load<StReward>(tablePath, "st_rank") { elements ->
+    holder.load<StReward>(tablePath, "st_reward") { elements ->
         StRewardFile().apply {
             elements.forEach {
                 stRewardAMap.getOrPut(it.rewardId) { mutableListOf() }.add(it)

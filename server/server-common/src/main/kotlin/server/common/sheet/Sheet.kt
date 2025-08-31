@@ -14,7 +14,6 @@ object Sheet {
         
     fun load(tablePath: String) {
         loadStBitmap(tablePath)
-        loadStBitmap(tablePath)
         loadStConstant(tablePath)
         loadStMessage(tablePath)
         loadStProperty(tablePath)

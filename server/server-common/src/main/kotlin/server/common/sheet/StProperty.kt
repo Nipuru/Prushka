@@ -29,7 +29,7 @@ private lateinit var holderStProperty: SheetHolder<StPropertyFile>
 
 internal fun loadStProperty(tablePath: String) {
     val holder = SheetHolder<StPropertyFile>()
-    holder.load<StProperty>(tablePath, "st_rank") { elements ->
+    holder.load<StProperty>(tablePath, "st_property") { elements ->
         StPropertyFile().apply {
             elements.forEach {
                 stPropertyMap[it.configId] = it

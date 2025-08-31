@@ -99,7 +99,7 @@ private lateinit var holder<name>: SheetHolder<<name>File>
 
 internal fun load<name>(tablePath: String) {
     val holder = SheetHolder<<name>File>()
-    holder.load<<name>>(tablePath, "st_rank") { elements ->
+    holder.load<<name>>(tablePath, "<table_name>") { elements ->
         <name>File().apply {
             elements.forEach {
                 <mapping>
@@ -112,7 +112,6 @@ internal fun load<name>(tablePath: String) {
 
 def generate_code():
     sheets = []
-    sheets.append("st_bitmap")
     
     for table_name in Table.tables:
         print('正在生成 %s' % (table_name))

@@ -22,11 +22,11 @@ class BitmapResolver(private val bitmaps: Map<String, Bitmap>) {
         }
     }
 
-    fun resolve(args: String): LengthyComponent {
+    fun resolve(args: String): WidthComponent {
         return resolve(args.split(":"))
     }
 
-    fun resolve(args: List<String>): LengthyComponent {
+    fun resolve(args: List<String>): WidthComponent {
         if (args.isEmpty()) throw NullPointerException("bitmap name")
         val bitmap = bitmaps[args[0]]!!
         val sb = StringBuilder()
@@ -52,7 +52,7 @@ class BitmapResolver(private val bitmaps: Map<String, Bitmap>) {
         val style =
             Style.style().color(NamedTextColor.WHITE).decoration(TextDecoration.BOLD, false).font(bitmap.font.key())
                 .build()
-        return LengthyComponent(Component.text(sb.toString(), style), bitmap.width)
+        return WidthComponent(Component.text(sb.toString(), style), bitmap.width)
     }
 
     private fun parseInt(s: String): Int {

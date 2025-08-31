@@ -87,7 +87,9 @@ object BukkitPlugin : JavaPlugin() {
     fun reload() {
         saveDefaultConfig()
         reloadConfig()
-        Sheet.load(File(dataFolder, "jsons").absolutePath)
+        // 加载配置表
+        val serverFolder = File(dataFolder.absolutePath).parentFile.parentFile
+        Sheet.load(File(serverFolder.parentFile, "sheet").absolutePath)
     }
 
     fun submit(async: Boolean = true, block: () -> Unit) {
