@@ -10,8 +10,8 @@ import server.common.message.FieldMessage
 import server.common.message.PlayerDataTransactionMessage
 import server.common.message.TableInfo
 import server.common.service.PlayerDataService
+import server.common.util.database.initSchema
 import server.database.schema.PlayerDataTable
-import server.database.schema.initSchema
 import java.util.concurrent.ConcurrentHashMap
 import org.jetbrains.exposed.sql.Transaction as ETransaction
 

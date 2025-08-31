@@ -1,6 +1,7 @@
 package server.auth.schema
 
 import org.jetbrains.exposed.sql.Table
+import server.common.util.database.initSchema
 
 
 /**

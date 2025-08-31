@@ -19,7 +19,7 @@ import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
 import org.slf4j.event.Level
 import server.auth.config.Config
-import server.auth.database.DatabaseFactory
+import server.common.util.database.DatabaseFactory
 import server.auth.http.rootRouting
 import server.auth.logger.logger
 import server.auth.processor.connection.CloseEventAuthProcessor

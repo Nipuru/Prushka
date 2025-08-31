@@ -7,10 +7,10 @@ import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
 import server.common.logger.Logger
 import server.common.service.LogService
+import server.common.util.database.DatabaseFactory
 import server.log.LogServer.shutdown
 import server.log.LogServer.startup
 import server.log.config.Config
-import server.log.database.DatabaseFactory
 import server.log.processor.connection.CloseEventDBProcessor
 import server.log.service.LogServiceImpl
 

@@ -1,6 +1,7 @@
 package server.log.schema
 
 import org.jetbrains.exposed.sql.Table
+import server.common.util.database.initSchema
 
 
 /**

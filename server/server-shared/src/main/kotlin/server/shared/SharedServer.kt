@@ -8,10 +8,10 @@ import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
 import server.common.logger.Logger
 import server.common.service.PlayerInfoService
+import server.common.util.database.DatabaseFactory
 import server.shared.SharedServer.shutdown
 import server.shared.SharedServer.startup
 import server.shared.config.Config
-import server.shared.database.DatabaseFactory
 import server.shared.processor.GetTimeSharedProcessor
 import server.shared.processor.connection.CloseEventSharedProcessor
 import server.shared.processor.connection.ConnectEventSharedProcessor

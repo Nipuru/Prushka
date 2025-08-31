@@ -3,9 +3,9 @@ package server.log.service
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import server.common.service.LogService
+import server.common.util.database.initSchema
 import server.log.schema.LogTable
 import server.log.schema.ServerErrorTable
-import server.log.schema.initSchema
 import java.util.concurrent.ConcurrentHashMap
 
 class LogServiceImpl : LogService {

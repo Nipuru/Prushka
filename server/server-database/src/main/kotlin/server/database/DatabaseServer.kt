@@ -10,10 +10,10 @@ import server.common.logger.Logger
 import server.common.service.FileService
 import server.common.service.OfflineDataService
 import server.common.service.PlayerDataService
+import server.common.util.database.DatabaseFactory
 import server.database.DatabaseServer.shutdown
 import server.database.DatabaseServer.startup
 import server.database.config.Config
-import server.database.database.DatabaseFactory
 import server.database.processor.PlayerOfflineDataDBProcessor
 import server.database.processor.connection.CloseEventDBProcessor
 import server.database.service.FileServiceImpl
