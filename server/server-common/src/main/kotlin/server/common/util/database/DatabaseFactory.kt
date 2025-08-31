@@ -21,9 +21,11 @@ object DatabaseFactory {
         config.username = username
         config.password = password
         config.maximumPoolSize = 10
-        config.minimumIdle = 10
-        config.maxLifetime = 1800000
+        config.minimumIdle = 5
+        config.idleTimeout = 10000
+        config.maxLifetime = 60000
         config.connectionTimeout = 5000
+        config.connectionTestQuery = "SELECT 1"
         this.hikari = HikariDataSource(config)
 
         Database.connect(hikari)
