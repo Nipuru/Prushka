@@ -52,10 +52,10 @@ class FontRepository(private val resourceResolver: (fileName: String) -> InputSt
         var bold = style.parseDecoration(TextDecoration.BOLD, parentBold)
         val italic = style.parseDecoration(TextDecoration.ITALIC, parentItalic)
         var width = 0f
-        if (bold) width += 1
-        if (italic) width += 1
         for (c in text.toCharArray()) {
             val f = getFont(font, c.code) ?: continue
+            if (bold) width += 1
+            if (italic) width += 1
             width += f.width
         }
         if (component.children().isNotEmpty()) {

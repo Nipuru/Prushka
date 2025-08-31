@@ -1,6 +1,5 @@
 package server.bukkit.util.text
 
-import net.kyori.adventure.key.Keyed
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.Modifying
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
