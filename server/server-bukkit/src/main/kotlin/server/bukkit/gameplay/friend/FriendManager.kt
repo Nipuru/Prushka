@@ -4,8 +4,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import server.bukkit.gameplay.player.*
 import server.bukkit.time.TimeManager
-import server.bukkit.util.fromJson
-import server.bukkit.util.toJson
+import server.common.util.fromJson
+import server.common.util.toJson
 
 
 class FriendManager(player: GamePlayer) : BaseManager(player) {

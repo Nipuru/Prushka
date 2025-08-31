@@ -1,6 +1,7 @@
 package server.auth.config
 
 import org.yaml.snakeyaml.Yaml
+import server.common.util.fromYaml
 import server.common.util.getResourceOrExtract
 import java.io.InputStreamReader
 
@@ -28,12 +29,9 @@ class Config {
 
     companion object {
         fun load(): Config {
-            getResourceOrExtract("config.yml").use { inputStream ->
-                InputStreamReader(inputStream).use { reader ->
-                    val yaml = Yaml()
-                    return yaml.loadAs(reader, Config::class.java)
-                }
-            }
+            return javaClass.getResourceOrExtract("config.yml").bufferedReader().use { reader ->
+                reader.readText()
+            }.fromYaml<Config>()
         }
     }
 }
