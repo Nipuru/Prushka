@@ -2,13 +2,14 @@ package server.bukkit.command
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.Commands.literal
 import net.afyer.afybroker.client.Broker
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
+import server.bukkit.util.CommandTree
 
 
 /**
@@ -19,12 +20,11 @@ import org.bukkit.entity.Player
  * @since 2024/11/13 15:25
  */
 @Suppress("UnstableApiUsage")
-object WhereAmICommand {
-    fun register(registrar: Commands) {
-        registrar.register(literal("whereami")
-            .executes(::whereami)
-            .build())
-    }
+class WhereAmICommand : CommandTree {
+
+    override val root: LiteralCommandNode<CommandSourceStack> = literal("whereami")
+        .executes(::whereami)
+        .build()
 
     private fun whereami(ctx: CommandContext<CommandSourceStack>): Int {
         val sender = ctx.source.sender
@@ -42,4 +42,6 @@ object WhereAmICommand {
         }
         return Command.SINGLE_SUCCESS
     }
+
+
 }

@@ -1,12 +1,11 @@
+@file:Suppress("UnstableApiUsage")
+
 package server.bukkit
 
 import com.alipay.remoting.ConnectionEventType
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.afyer.afybroker.client.Broker
-import net.afyer.afybroker.client.BrokerClientBuilder
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.plugin.java.JavaPlugin
 import server.bukkit.command.AfkCommand
@@ -21,9 +20,7 @@ import server.bukkit.processor.connection.ConnectEventBukkitProcessor
 import server.bukkit.scheduler.ServerTickTask
 import server.bukkit.time.TimeManager
 import server.bukkit.util.register
-import server.bukkit.util.schedule
 import server.common.ClientTag
-import server.common.logger.Logger
 import server.common.sheet.Sheet
 import java.io.File
 import java.util.concurrent.CountDownLatch
@@ -47,34 +44,34 @@ object BukkitPlugin : JavaPlugin() {
         ThreadFactoryBuilder()
             .setDaemon(false)
             .setNameFormat("Prushka-bizThread-%d")
-            .build())
+            .build()
+    )
 
     override fun onLoad() {
-        Broker.buildAction(this::buildBrokerClient)
-    }
+        Broker.buildAction { builder ->
+            builder.addConnectionEventProcessor(ConnectionEventType.CONNECT, ConnectEventBukkitProcessor())
+            builder.addConnectionEventProcessor(
+                ConnectionEventType.CLOSE,
+                CloseEventBukkitProcessor()
+            )
 
-    private fun buildBrokerClient(builder: BrokerClientBuilder) {
-        builder.addConnectionEventProcessor(ConnectionEventType.CONNECT, ConnectEventBukkitProcessor())
-        builder.addConnectionEventProcessor(ConnectionEventType.CLOSE,
-            CloseEventBukkitProcessor()
-        )
-
-        builder.addTag(ClientTag.GAME)
-        builder.registerUserProcessor(PlayerDataTransferBukkitProcessor())
-        builder.registerUserProcessor(PlayerOfflineDataBukkitProcessor())
-        builder.registerUserProcessor(PlayerChatServerProcessor())
-        builder.registerUserProcessor(PlayerPrivateChatServerProcessor())
-        builder.registerUserProcessor(DebugTimeGameProcessor())
-        builder.registerUserProcessor(GetPlayerLocationBukkitProcessor())
-        builder.registerUserProcessor(TeleportOrSpawnBukkitProcessor(spawnLocations.asMap()))
+            builder.addTag(ClientTag.GAME)
+            builder.registerUserProcessor(PlayerDataTransferBukkitProcessor())
+            builder.registerUserProcessor(PlayerOfflineDataBukkitProcessor())
+            builder.registerUserProcessor(PlayerChatServerProcessor())
+            builder.registerUserProcessor(PlayerPrivateChatServerProcessor())
+            builder.registerUserProcessor(DebugTimeGameProcessor())
+            builder.registerUserProcessor(GetPlayerLocationBukkitProcessor())
+            builder.registerUserProcessor(TeleportOrSpawnBukkitProcessor(spawnLocations.asMap()))
+        }
     }
 
     override fun onEnable() {
         reload()
         GamePlayerManager.loadAll()
-        registerTasks()
-        registerListeners()
-        registerCommands()
+        newScheduleTasks().forEach { it.schedule(this) }
+        newListeners().forEach { it.register(this) }
+        newCommands().forEach { it.register(this) }
         enableLatch.countDown()
     }
 
@@ -93,31 +90,29 @@ object BukkitPlugin : JavaPlugin() {
         Sheet.load(File(serverFolder.parentFile, "sheet").absolutePath)
     }
 
-    private fun registerTasks() {
-        schedule(delay = 1L, period = 1L) { GamePlayerManager.tick() }
-    }
+    private fun newScheduleTasks() = sequenceOf(
+        ServerTickTask()
+    )
 
-    private fun registerListeners() {
-        AsyncPlayerPreLoginListener().register(this)
-        PlayerJoinListener().register(this)
-        PlayerQuitListener().register(this)
-        PlayerChatListener().register(this)
-        PlayerCommandListener().register(this)
-        PlayerMoveListener().register(this)
-        PlayerSpawnLocationListener(spawnLocations.asMap()).register(this)
-        ServerExceptionListener().register(this)
-    }
+    // 在这里添加监听器
+    private fun newListeners() = sequenceOf(
+        AsyncPlayerPreLoginListener(),
+        PlayerJoinListener(),
+        PlayerQuitListener(),
+        PlayerChatListener(),
+        PlayerCommandListener(),
+        PlayerMoveListener(),
+        PlayerSpawnLocationListener(spawnLocations.asMap()),
+        ServerExceptionListener()
+    )
 
-    private fun registerCommands() {
-        @Suppress("UnstableApiUsage")
-        lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commands ->
-            val registrar = commands.registrar()
-            WhereAmICommand.register(registrar)
-            PrushkaCommand.register(registrar)
-            AfkCommand.register(registrar)
-            FriendCommand.register(registrar)
-        }
-    }
+    // 在这里添加命令
+    private fun newCommands() = sequenceOf(
+        WhereAmICommand(),
+        PrushkaCommand(),
+        AfkCommand(),
+        FriendCommand()
+    )
 }
 
 

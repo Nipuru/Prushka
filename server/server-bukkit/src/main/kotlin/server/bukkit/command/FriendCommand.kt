@@ -2,12 +2,13 @@ package server.bukkit.command
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.Commands.argument
 import io.papermc.paper.command.brigadier.Commands.literal
 import server.bukkit.MessageType
 import server.bukkit.command.argument.PlayerInfoArgument
+import server.bukkit.util.CommandTree
 import server.common.message.PlayerInfoMessage
 
 
@@ -16,24 +17,22 @@ import server.common.message.PlayerInfoMessage
  * @since 2024/11/20 09:52
  */
 @Suppress("UnstableApiUsage")
-object FriendCommand {
+class FriendCommand : CommandTree {
 
-    fun register(registrar: Commands) {
-        registrar.register(literal("friend")
-            .then(literal("add")
-                .then(argument("player_name", PlayerInfoArgument)
-                    .executes(::add)))
-            .then(literal("remove")
-                .then(argument("player_name", PlayerInfoArgument)
-                    .executes(::remove)))
-            .then(literal("accept")
-                .then(argument("player_name", PlayerInfoArgument)
-                    .executes(::accept)))
-            .then(literal("reject")
-                .then(argument("player_name", PlayerInfoArgument)
-                    .executes(::reject)))
-            .build())
-    }
+    override val root: LiteralCommandNode<CommandSourceStack> = literal("friend")
+        .then(literal("add")
+            .then(argument("player_name", PlayerInfoArgument)
+                .executes(::add)))
+        .then(literal("remove")
+            .then(argument("player_name", PlayerInfoArgument)
+                .executes(::remove)))
+        .then(literal("accept")
+            .then(argument("player_name", PlayerInfoArgument)
+                .executes(::accept)))
+        .then(literal("reject")
+            .then(argument("player_name", PlayerInfoArgument)
+                .executes(::reject)))
+        .build()
 
     private fun add(context: CommandContext<CommandSourceStack>): Int {
         val player = context.source.gamePlayer
@@ -86,7 +85,7 @@ object FriendCommand {
         MessageType.ALLOW.sendMessage(player, "你拒绝了来自玩家 ${target.name} 的好友请求")
         return Command.SINGLE_SUCCESS
     }
-    
+
 }
 
 

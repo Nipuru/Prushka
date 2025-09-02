@@ -3,8 +3,8 @@ package server.bukkit.command
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.Commands.argument
 import io.papermc.paper.command.brigadier.Commands.literal
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
@@ -17,6 +17,7 @@ import server.bukkit.gameplay.misc.ResourcePack
 import server.bukkit.gameplay.misc.setResourcePack
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.skin.PlayerSkin
+import server.bukkit.util.CommandTree
 import server.bukkit.util.component
 import server.bukkit.util.getWidth
 import server.common.logger.Logger
@@ -32,32 +33,31 @@ import server.common.message.TeleportType
  * @since 2024/11/19 15:11
  */
 @Suppress("UnstableApiUsage")
-object PrushkaCommand {
-    fun register(registrar: Commands) {
-        registrar.register(literal("prushka")
-            .requireOperator()
-            .then(literal("text")
-                .then(argument("args", StringArgumentType.greedyString())
-                    .executes(::text)))
-            .then(literal("reload")
-                .executes(::reload))
-            .then(literal("world")
-                .then(argument("world_name", ArgumentTypes.world())
-                    .executes(::world)))
-            .then(literal("tpa")
-                .then(argument("player_name", PlayerInfoArgument)
-                    .executes(::tpa)))
-            .then(literal("tpahere")
-                .then(argument("player_name", PlayerInfoArgument)
-                    .executes(::tpahere)))
-            .then(literal("resourcepack")
-                .executes(::resourcepack))
-            .then(literal("skin")
-                .then(argument("player_name", GamePlayerArgument)
-                    .then(argument("skin", StringArgumentType.string())
-                        .executes(::skin))))
-            .build())
-    }
+class PrushkaCommand : CommandTree {
+
+    override val root: LiteralCommandNode<CommandSourceStack> = literal("prushka")
+        .requireOperator()
+        .then(literal("text")
+            .then(argument("args", StringArgumentType.greedyString())
+                .executes(::text)))
+        .then(literal("reload")
+            .executes(::reload))
+        .then(literal("world")
+            .then(argument("world_name", ArgumentTypes.world())
+                .executes(::world)))
+        .then(literal("tpa")
+            .then(argument("player_name", PlayerInfoArgument)
+                .executes(::tpa)))
+        .then(literal("tpahere")
+            .then(argument("player_name", PlayerInfoArgument)
+                .executes(::tpahere)))
+        .then(literal("resourcepack")
+            .executes(::resourcepack))
+        .then(literal("skin")
+            .then(argument("player_name", GamePlayerArgument)
+                .then(argument("skin", StringArgumentType.string())
+                    .executes(::skin))))
+        .build()
 
     /**
      * 发送文本消息
