@@ -1,6 +1,5 @@
 package server.bukkit.util.text
 
-import net.kyori.adventure.key.Keyed
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor

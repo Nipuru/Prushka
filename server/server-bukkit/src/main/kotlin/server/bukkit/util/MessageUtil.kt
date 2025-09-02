@@ -11,7 +11,6 @@ import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
 import server.bukkit.BukkitPlugin
 import server.bukkit.util.text.*
 import server.bukkit.util.text.FixedWidthResolver.Position
-import server.common.logger.Logger
 import server.common.sheet.Sheet
 import server.common.sheet.getAllStBitmap
 

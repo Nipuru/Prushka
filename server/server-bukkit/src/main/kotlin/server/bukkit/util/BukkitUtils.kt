@@ -16,7 +16,7 @@ fun Listener.register(plugin: Plugin) {
 /**
  * 获取物品栏空格子数
  */
-fun Inventory.emptySlot(): Int {
+fun Inventory.getEmptySlot(): Int {
     return storageContents.count { itemStack ->
         itemStack == null || itemStack.isEmpty
     }

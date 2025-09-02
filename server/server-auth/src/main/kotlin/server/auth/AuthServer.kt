@@ -19,7 +19,6 @@ import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
 import org.slf4j.event.Level
 import server.auth.config.Config
-import server.common.util.database.DatabaseFactory
 import server.auth.http.rootRouting
 import server.auth.logger.logger
 import server.auth.processor.connection.CloseEventAuthProcessor
@@ -28,6 +27,7 @@ import server.auth.util.JWTUtil
 import server.auth.util.overdue
 import server.common.ClientType
 import server.common.service.PlayerService
+import server.common.util.database.DatabaseFactory
 
 object AuthServer {
     private lateinit var brokerClient: BrokerClient

@@ -1,9 +1,7 @@
 package server.auth.config
 
-import org.yaml.snakeyaml.Yaml
 import server.common.util.fromYaml
 import server.common.util.getResourceOrExtract
-import java.io.InputStreamReader
 
 
 /**
