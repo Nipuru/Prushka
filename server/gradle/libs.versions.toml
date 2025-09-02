@@ -1,6 +1,6 @@
 [versions]
 exposed = "0.57.0"
-afybroker = "347da33845"
+afybroker = "d7f637c091"
 paper = "1.21.4-R0.1-SNAPSHOT"
 ktor = "3.0.2"
 

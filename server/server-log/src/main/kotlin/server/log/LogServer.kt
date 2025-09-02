@@ -1,6 +1,5 @@
 package server.log
 
-import com.alipay.remoting.ConnectionEventType
 import com.alipay.remoting.LifeCycleException
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
@@ -37,7 +36,7 @@ internal object LogServer {
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         builder.registerService(LogService::class.java, LogServiceImpl())
-        builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventDBProcessor())
+        builder.addConnectionEventProcessor(CloseEventDBProcessor())
     }
 
     private fun initDataSource(config: Config) {

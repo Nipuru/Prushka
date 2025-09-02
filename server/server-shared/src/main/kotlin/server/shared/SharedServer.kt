@@ -1,6 +1,5 @@
 package server.shared
 
-import com.alipay.remoting.ConnectionEventType
 import com.alipay.remoting.LifeCycleException
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
@@ -38,8 +37,8 @@ internal object SharedServer {
     }
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
-        builder.addConnectionEventProcessor(ConnectionEventType.CONNECT, ConnectEventSharedProcessor())
-        builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventSharedProcessor())
+        builder.addConnectionEventProcessor(ConnectEventSharedProcessor())
+        builder.addConnectionEventProcessor(CloseEventSharedProcessor())
 
         builder.registerService(PlayerInfoService::class.java, PlayerInfoServiceImpl())
 

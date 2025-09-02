@@ -1,6 +1,5 @@
 package server.database
 
-import com.alipay.remoting.ConnectionEventType
 import com.alipay.remoting.LifeCycleException
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
@@ -47,7 +46,7 @@ internal object DatabaseServer {
         builder.registerService(PlayerDataService::class.java, PlayerDataServiceImpl(), dbId)
         builder.registerService(OfflineDataService::class.java, OfflineDataServiceImpl, dbId)
         builder.registerUserProcessor(PlayerOfflineDataDBProcessor())
-        builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventDBProcessor())
+        builder.addConnectionEventProcessor(CloseEventDBProcessor())
     }
 
     private fun initDataSource(config: Config) {

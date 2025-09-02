@@ -1,6 +1,5 @@
 package server.auth
 
-import com.alipay.remoting.ConnectionEventType
 import com.alipay.remoting.LifeCycleException
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -35,7 +34,7 @@ object AuthServer {
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         builder.registerService(PlayerService::class.java, PlayerServiceImpl())
-        builder.addConnectionEventProcessor(ConnectionEventType.CLOSE, CloseEventAuthProcessor())
+        builder.addConnectionEventProcessor(CloseEventAuthProcessor())
     }
 
     private fun initHttpServer() {

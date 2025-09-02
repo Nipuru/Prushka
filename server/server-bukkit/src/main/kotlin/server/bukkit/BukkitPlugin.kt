@@ -2,7 +2,6 @@
 
 package server.bukkit
 
-import com.alipay.remoting.ConnectionEventType
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import net.afyer.afybroker.client.Broker
@@ -49,11 +48,8 @@ object BukkitPlugin : JavaPlugin() {
 
     override fun onLoad() {
         Broker.buildAction { builder ->
-            builder.addConnectionEventProcessor(ConnectionEventType.CONNECT, ConnectEventBukkitProcessor())
-            builder.addConnectionEventProcessor(
-                ConnectionEventType.CLOSE,
-                CloseEventBukkitProcessor()
-            )
+            builder.addConnectionEventProcessor(ConnectEventBukkitProcessor())
+            builder.addConnectionEventProcessor(CloseEventBukkitProcessor())
 
             builder.addTag(ClientTag.GAME)
             builder.registerUserProcessor(PlayerDataTransferBukkitProcessor())
