@@ -8,6 +8,7 @@ import server.bukkit.constant.REWARD_PROPERTY
 import server.bukkit.gameplay.player.*
 import server.bukkit.logger.LogServer
 import server.bukkit.time.TimeManager
+import server.bukkit.util.schedule
 import server.common.logger.Logger
 import server.common.message.PlayerInfoMessage
 import server.common.service.PlayerInfoService
@@ -215,7 +216,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         if (!updateShared) return
         updateShared = false
         val playerInfoService = Broker.getService(PlayerInfoService::class.java)
-        BukkitPlugin.submit {
+        BukkitPlugin.bizThread.submit {
             playerInfoService.insertOrUpdate(playerInfo)
         }
     }

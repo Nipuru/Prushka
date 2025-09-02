@@ -11,6 +11,7 @@ import server.bukkit.BukkitPlugin
 import server.bukkit.MessageType
 import server.bukkit.gameplay.player.*
 import server.bukkit.time.TimeManager
+import server.bukkit.util.schedule
 import server.common.message.FragmentMessage
 import server.common.message.PlayerChatMessage
 import server.common.message.PlayerInfoMessage
@@ -110,7 +111,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         val fragments = MessageFormat.parse(player, message)
         val request = PlayerChatMessage(player.core.playerInfo, fragments)
 
-        BukkitPlugin.submit {
+        BukkitPlugin.bizThread.submit {
             val result = Broker.invokeSync<Int>(request)
             when (result) {
                 PlayerChatMessage.SUCCESS -> {
@@ -130,7 +131,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         val fragments: Array<FragmentMessage> = MessageFormat.parse(player, message)
         val request = PlayerPrivateChatMessage(player.core.playerInfo, fragments, receiver)
 
-        BukkitPlugin.submit {
+        BukkitPlugin.bizThread.submit {
             val result = Broker.invokeSync<Int>(request)
             when (result) {
                 PlayerPrivateChatMessage.SUCCESS -> {

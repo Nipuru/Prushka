@@ -8,13 +8,14 @@ import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.DataInfo
 import server.bukkit.gameplay.player.gamePlayer
 import server.bukkit.nms.quit
+import server.bukkit.util.schedule
 import server.common.message.PlayerDataMessage
 import server.common.message.PlayerDataTransferRequest
 
 class PlayerDataTransferBukkitProcessor : AsyncUserProcessor<PlayerDataTransferRequest>() {
 
     override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: PlayerDataTransferRequest) {
-        BukkitPlugin.submit(async = false) {
+        BukkitPlugin.schedule {
             asyncCtx.sendResponse(handle(request))
         }
     }

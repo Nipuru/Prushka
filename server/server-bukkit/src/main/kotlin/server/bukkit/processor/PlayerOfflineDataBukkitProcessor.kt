@@ -5,12 +5,13 @@ import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.GamePlayerManager
+import server.bukkit.util.schedule
 import server.common.message.PlayerOfflineDataMessage
 
 class PlayerOfflineDataBukkitProcessor : AsyncUserProcessor<PlayerOfflineDataMessage>() {
 
     override fun handleRequest(bizContext: BizContext, asyncContext: AsyncContext, request: PlayerOfflineDataMessage) {
-        BukkitPlugin.submit(async = false) {
+        BukkitPlugin.schedule {
             asyncContext.sendResponse(handle(request))
         }
     }

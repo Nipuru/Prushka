@@ -6,6 +6,7 @@ import net.afyer.afybroker.client.Broker
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.time.TimeManager
+import server.bukkit.util.schedule
 import server.common.logger.Logger
 import server.common.message.GetTimeRequest
 
@@ -20,9 +21,9 @@ class ConnectEventBukkitProcessor : ConnectionEventProcessor {
         TimeManager.apply {
             Logger.info("Get time from shared server...")
             debugTime = Broker.invokeSync(GetTimeRequest())
-            newDayFunc = {
-                BukkitPlugin.submit(async = false) {
-                    GamePlayerManager.onNewDay(it)
+            newDayFunc = { time ->
+                BukkitPlugin.schedule {
+                    GamePlayerManager.onNewDay(time)
                 }
             }
             init()

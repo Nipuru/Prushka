@@ -7,6 +7,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.gamePlayer
+import server.bukkit.util.schedule
 import server.common.message.GetPlayerLocationRequest
 import server.common.message.LocationMessage
 import server.common.message.TeleportOrSpawnRequest
@@ -18,7 +19,7 @@ import server.common.message.TeleportOrSpawnRequest
  */
 class GetPlayerLocationBukkitProcessor : AsyncUserProcessor<GetPlayerLocationRequest>() {
     override fun handleRequest(context: BizContext, asyncContext: AsyncContext, message: GetPlayerLocationRequest) {
-        BukkitPlugin.submit(async = false) {
+        BukkitPlugin.schedule {
             asyncContext.sendResponse(handle(message))
         }
     }
@@ -38,7 +39,7 @@ class GetPlayerLocationBukkitProcessor : AsyncUserProcessor<GetPlayerLocationReq
 
 class TeleportOrSpawnBukkitProcessor(private val spawnLocations: MutableMap<String, Location>) : AsyncUserProcessor<TeleportOrSpawnRequest>() {
     override fun handleRequest(context: BizContext, asyncContext: AsyncContext, message: TeleportOrSpawnRequest) {
-        BukkitPlugin.submit(async = false) {
+        BukkitPlugin.schedule {
             handle(message)
         }
     }

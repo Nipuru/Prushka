@@ -6,6 +6,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.*
+import server.bukkit.util.schedule
 import server.common.message.TeleportInvokeRequest
 import server.common.message.TeleportType
 
@@ -44,7 +45,7 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
             TeleportType.TPA -> TeleportInvokeRequest(player.name, playerName)
             TeleportType.TPAHERE -> TeleportInvokeRequest(playerName, player.name)
         }
-        BukkitPlugin.submit {
+        BukkitPlugin.bizThread.submit {
             Broker.oneway(message)
         }
     }

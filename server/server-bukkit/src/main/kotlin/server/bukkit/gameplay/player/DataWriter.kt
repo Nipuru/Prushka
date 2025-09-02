@@ -3,6 +3,7 @@ package server.bukkit.gameplay.player
 import org.bukkit.Bukkit
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.DataConvertor.getOrCache
+import server.bukkit.util.schedule
 
 import server.common.logger.Logger
 import server.common.message.FieldMessage
@@ -77,7 +78,7 @@ class DataWriter(private val player: GamePlayer) {
             }
             map[dataAction.data] = dataAction
         }
-        BukkitPlugin.submit {
+        BukkitPlugin.bizThread.submit {
             try {
                 val transaction = PlayerDataTransactionMessage(player.playerId)
                 for (dataAction in map.values) {

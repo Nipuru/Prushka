@@ -21,6 +21,7 @@ import server.bukkit.processor.connection.ConnectEventBukkitProcessor
 import server.bukkit.scheduler.ServerTickTask
 import server.bukkit.time.TimeManager
 import server.bukkit.util.register
+import server.bukkit.util.schedule
 import server.common.ClientTag
 import server.common.logger.Logger
 import server.common.sheet.Sheet
@@ -92,26 +93,8 @@ object BukkitPlugin : JavaPlugin() {
         Sheet.load(File(serverFolder.parentFile, "sheet").absolutePath)
     }
 
-    fun submit(async: Boolean = true, block: () -> Unit) {
-        val runnable = Runnable {
-            try {
-                block.invoke()
-            } catch (e: Exception) {
-                Logger.error(e.message, e)
-            }
-        }
-        val primaryThread = Bukkit.isPrimaryThread()
-        if (async && primaryThread) {
-            bizThread.submit(runnable)
-        } else if (!primaryThread) {
-            Bukkit.getScheduler().runTask(BukkitPlugin, runnable)
-        } else {
-            runnable.run()
-        }
-    }
-
     private fun registerTasks() {
-        ServerTickTask().schedule()
+        schedule(delay = 1L, period = 1L) { GamePlayerManager.tick() }
     }
 
     private fun registerListeners() {
