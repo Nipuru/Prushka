@@ -48,17 +48,9 @@ object BukkitPlugin : JavaPlugin() {
 
     override fun onLoad() {
         Broker.buildAction { builder ->
-            builder.addConnectionEventProcessor(ConnectEventBukkitProcessor())
-            builder.addConnectionEventProcessor(CloseEventBukkitProcessor())
-
             builder.addTag(ClientTag.GAME)
-            builder.registerUserProcessor(PlayerDataTransferBukkitProcessor())
-            builder.registerUserProcessor(PlayerOfflineDataBukkitProcessor())
-            builder.registerUserProcessor(PlayerChatServerProcessor())
-            builder.registerUserProcessor(PlayerPrivateChatServerProcessor())
-            builder.registerUserProcessor(DebugTimeGameProcessor())
-            builder.registerUserProcessor(GetPlayerLocationBukkitProcessor())
-            builder.registerUserProcessor(TeleportOrSpawnBukkitProcessor(spawnLocations.asMap()))
+            sequenceOf(ConnectEventBukkitProcessor(), CloseEventBukkitProcessor()).forEach { builder.addConnectionEventProcessor(it) }
+            newProcessors().forEach { builder.registerUserProcessor(it) }
         }
     }
 
@@ -100,6 +92,17 @@ object BukkitPlugin : JavaPlugin() {
         PlayerMoveListener(),
         PlayerSpawnLocationListener(spawnLocations.asMap()),
         ServerExceptionListener()
+    )
+
+    // 在这里添加网络处理器
+    private fun newProcessors() = sequenceOf(
+        PlayerDataTransferBukkitProcessor(),
+        PlayerOfflineDataBukkitProcessor(),
+        PlayerChatServerProcessor(),
+        PlayerPrivateChatServerProcessor(),
+        DebugTimeGameProcessor(),
+        GetPlayerLocationBukkitProcessor(),
+        TeleportOrSpawnBukkitProcessor(spawnLocations.asMap())
     )
 
     // 在这里添加命令
