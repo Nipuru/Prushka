@@ -2,10 +2,13 @@
 
 package server.bukkit
 
+import com.alipay.remoting.rpc.protocol.UserProcessor
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import net.afyer.afybroker.client.Broker
+import net.afyer.afybroker.core.util.ConnectionEventTypeProcessor
 import org.bukkit.Location
+import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import server.bukkit.command.AfkCommand
 import server.bukkit.command.FriendCommand
@@ -18,6 +21,8 @@ import server.bukkit.processor.connection.CloseEventBukkitProcessor
 import server.bukkit.processor.connection.ConnectEventBukkitProcessor
 import server.bukkit.scheduler.ServerTickTask
 import server.bukkit.time.TimeManager
+import server.bukkit.util.CommandTree
+import server.bukkit.util.ScheduleTask
 import server.bukkit.util.register
 import server.common.ClientTag
 import server.common.sheet.Sheet
@@ -35,21 +40,21 @@ import java.util.concurrent.TimeUnit
  */
 object BukkitPlugin : JavaPlugin() {
 
+    val enableLatch = CountDownLatch(1)
+    val bizThread: ExecutorService = Executors.newCachedThreadPool(ThreadFactoryBuilder()
+        .setDaemon(false)
+        .setNameFormat("Prushka-bizThread-%d")
+        .build())
+
     private val spawnLocations = CacheBuilder.newBuilder()
         .expireAfterAccess(1, TimeUnit.MINUTES)
         .build<String, Location>()
-    val enableLatch = CountDownLatch(1)
-    val bizThread: ExecutorService = Executors.newCachedThreadPool(
-        ThreadFactoryBuilder()
-            .setDaemon(false)
-            .setNameFormat("Prushka-bizThread-%d")
-            .build()
-    )
 
     override fun onLoad() {
+        // 注册 broker-client 信息
         Broker.buildAction { builder ->
             builder.addTag(ClientTag.GAME)
-            sequenceOf(ConnectEventBukkitProcessor(), CloseEventBukkitProcessor()).forEach { builder.addConnectionEventProcessor(it) }
+            newConnectionProcessors().forEach { builder.addConnectionEventProcessor(it) }
             newProcessors().forEach { builder.registerUserProcessor(it) }
         }
     }
@@ -65,12 +70,15 @@ object BukkitPlugin : JavaPlugin() {
 
     override fun onDisable() {
         GamePlayerManager.unloadAll()
+
+        // 关闭并等待事务线程池
         bizThread.shutdown()
         bizThread.awaitTermination(1L, TimeUnit.MINUTES)
         TimeManager.cancel()
     }
 
     fun reload() {
+        // 保存并加载 config.yaml
         saveDefaultConfig()
         reloadConfig()
         // 加载配置表
@@ -78,12 +86,12 @@ object BukkitPlugin : JavaPlugin() {
         Sheet.load(File(serverFolder.parentFile, "sheet").absolutePath)
     }
 
-    private fun newScheduleTasks() = sequenceOf(
+    private fun newScheduleTasks(): Sequence<ScheduleTask> = sequenceOf(
         ServerTickTask()
     )
 
     // 在这里添加监听器
-    private fun newListeners() = sequenceOf(
+    private fun newListeners(): Sequence<Listener> = sequenceOf(
         AsyncPlayerPreLoginListener(),
         PlayerJoinListener(),
         PlayerQuitListener(),
@@ -95,7 +103,11 @@ object BukkitPlugin : JavaPlugin() {
     )
 
     // 在这里添加网络处理器
-    private fun newProcessors() = sequenceOf(
+    private fun newConnectionProcessors(): Sequence<ConnectionEventTypeProcessor> = sequenceOf(
+        ConnectEventBukkitProcessor(), CloseEventBukkitProcessor()
+    )
+
+    private fun newProcessors(): Sequence<UserProcessor<*>> = sequenceOf(
         PlayerDataTransferBukkitProcessor(),
         PlayerOfflineDataBukkitProcessor(),
         PlayerChatServerProcessor(),
@@ -106,7 +118,7 @@ object BukkitPlugin : JavaPlugin() {
     )
 
     // 在这里添加命令
-    private fun newCommands() = sequenceOf(
+    private fun newCommands(): Sequence<CommandTree> = sequenceOf(
         WhereAmICommand(),
         PrushkaCommand(),
         AfkCommand(),
