@@ -2,6 +2,7 @@ package server.bukkit.gameplay.player
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import server.bukkit.time.TimeManager
 import server.common.logger.Logger
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -35,9 +36,8 @@ object GamePlayerManager {
     }
 
     fun tick() {
-        val systemTimeMills = System.currentTimeMillis()
         for (player in byUniqueId.values) {
-            player.tick(systemTimeMills)
+            player.tick()
         }
     }
 

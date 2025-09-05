@@ -166,7 +166,7 @@ class GamePlayer(
         }
 
         // 最后再调用一次 tick 方法
-        tick(System.currentTimeMillis())
+        tick()
     }
 
     fun enterAfk() {
@@ -183,8 +183,8 @@ class GamePlayer(
      * 每 server tick 执行，频率不是固定的
      * 玩家一定在线，玩家退出时会调用一次
      */
-    fun tick(systemTimeMillis: Long) {
-        core.tick(systemTimeMillis)
+    fun tick() {
+        core.tick()
 
         // 最后执行
         offline.tick()

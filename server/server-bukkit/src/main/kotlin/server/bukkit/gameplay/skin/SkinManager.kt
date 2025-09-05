@@ -16,12 +16,11 @@ class SkinManager(player: GamePlayer) : BaseManager(player) {
 
     private lateinit var data: SkinData
 
-    var texture: Array<String>
+    var texture: List<String>
         get() = data.texture
         set(value) {
             data.texture = value
             player.update(data, SkinData::texture)
-            player.core.updateShared = true
         }
 
     fun preload(request: TableInfos) {
@@ -37,7 +36,7 @@ class SkinManager(player: GamePlayer) : BaseManager(player) {
     }
 
     fun setSkin(skin: PlayerSkin) {
-        texture = arrayOf(skin.value, skin.signature)
+        texture = listOf(skin.value, skin.signature)
         applySkin()
     }
 

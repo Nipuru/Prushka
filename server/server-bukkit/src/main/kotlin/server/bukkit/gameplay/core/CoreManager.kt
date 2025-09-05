@@ -1,23 +1,19 @@
 package server.bukkit.gameplay.core
 
-import net.afyer.afybroker.client.Broker
-import server.bukkit.BukkitPlugin
 import server.bukkit.constant.PROPERTY_COIN
 import server.bukkit.constant.PROPERTY_POINTS
 import server.bukkit.constant.REWARD_PROPERTY
 import server.bukkit.gameplay.player.*
 import server.bukkit.logger.LogServer
 import server.bukkit.time.TimeManager
-import server.bukkit.util.schedule
 import server.common.logger.Logger
 import server.common.message.PlayerInfoMessage
-import server.common.service.PlayerInfoService
 
 class CoreManager(player: GamePlayer) : BaseManager(player) {
+    private val playerInfoUploader = PlayerInfoUploader(player)
     private lateinit var playerData: PlayerData
-    private var playedTimeUpdateTime = 0L   // 上次游戏时间更新的系统时间（ms）
+    private var lastplayedTimeUpdate = 0L   // 上次游戏时间更新的系统时间（ms）
     private var idleTime = 0               // 挂机时间（tick）
-    var updateShared = false        // 更新个人信息至公共服务器tick
 
     fun preload(request: TableInfos) {
         request.preload<PlayerData>()
@@ -28,7 +24,6 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
             it.logoutTime = TimeManager.now
             it.createTime = TimeManager.now
             player.insert(it)
-            updateShared = true
         }
     }
 
@@ -37,15 +32,17 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     }
 
     // 更新玩家在线时间
-    fun tick(systemTimeMills: Long) {
-        updatePlayedTime(systemTimeMills, false)
+    fun tick() {
+        updatePlayedTime(System.currentTimeMillis(), false)
         updatePublic()
         updateAfk()
+        playerInfoUploader.upload(false)
     }
 
     fun onQuit() {
         afk = false
         updatePlayedTime(System.currentTimeMillis(), true)
+        playerInfoUploader.upload(true)
     }
 
     /** 货币  */
@@ -54,7 +51,6 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         private set(coin) {         // 通过 addCoin subtractCoin 设置
             playerData.coin = coin
             player.update(playerData, PlayerData::coin)
-            updateShared = true
         }
 
     /** 点券  */
@@ -72,7 +68,6 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         set(rankId) {
             playerData.rankId = rankId
             player.update(playerData, PlayerData::rankId)
-            updateShared = true
         }
 
     /** 创建时间  */
@@ -85,7 +80,6 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         private set(time) {
             playerData.logoutTime = time
             player.update(playerData, PlayerData::logoutTime)
-            updateShared = true
         }
 
     /** 重置时间  */
@@ -102,16 +96,14 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         set(time) {
             playerData.playedTime = time
             player.update(playerData, PlayerData::playedTime)
-            updateShared = true
         }
 
     /** 生日 birthday[0]:月,birthday[1]:日  */
-    var birthday: IntArray
+    var birthday: List<Int>
         get() = playerData.birthday
         set(birthday) {
             playerData.birthday = birthday
             player.update(playerData, PlayerData::birthday)
-            updateShared = true
         }
 
     /** 用于传输 或者显示给其他玩家  */
@@ -125,7 +117,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         createTime = playerData.createTime,
         logoutTime = playerData.logoutTime,
         playedTime = playerData.playedTime,
-        texture = player.skin.texture.toList(),
+        texture = player.skin.texture,
     )
 
     /** 是否在线 */
@@ -197,27 +189,23 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     private fun updatePlayedTime(systemTimeMills: Long, force: Boolean) {
         if (!isOnline) return  // 不在线直接退出
 
-        val updateTime = playedTimeUpdateTime
+        val updateTime = lastplayedTimeUpdate
         var playedTime = playerData.playedTime
         if (updateTime == 0L) {
-            playedTimeUpdateTime = systemTimeMills
+            lastplayedTimeUpdate = systemTimeMills
             return
         }
         val delay = (60 * 1000).toLong() // 满一分钟执行一次
         if (!force && (systemTimeMills - updateTime + playedTime) / delay == playedTime / delay) return
-        playedTimeUpdateTime = systemTimeMills
+        lastplayedTimeUpdate = systemTimeMills
         playedTime += systemTimeMills - updateTime
         this.playedTime = playedTime
     }
 
     // 更新玩家的公共玩家信息
     private fun updatePublic() {
-        if (!updateShared) return
-        updateShared = false
-        val playerInfoService = Broker.getService(PlayerInfoService::class.java)
-        BukkitPlugin.bizThread.submit {
-            playerInfoService.insertOrUpdate(playerInfo)
-        }
+
+
     }
 
     private fun updateAfk() {

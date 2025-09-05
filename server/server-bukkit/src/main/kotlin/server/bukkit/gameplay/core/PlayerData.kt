@@ -27,5 +27,5 @@ class PlayerData : Data {
     var playedTime: Long = 0
 
     /** 生日 birthday[0]:月,birthday[1]:日  */
-    var birthday: IntArray = IntArray(0)
+    var birthday: List<Int> = emptyList()
 }

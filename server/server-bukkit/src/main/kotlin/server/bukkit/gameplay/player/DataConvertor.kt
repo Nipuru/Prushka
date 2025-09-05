@@ -5,18 +5,42 @@ import server.common.message.TableInfo
 import java.io.IOException
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
+import java.lang.reflect.ParameterizedType
+import java.math.BigDecimal
+import java.util.UUID
 import kotlin.reflect.KProperty1
 
 @PublishedApi
 internal object DataConvertor {
 
     private val cache = mutableMapOf<Class<*>, DataClassCache>()
+    // 参考 server-database\src\main\kotlin\server\database\schema\PlayerDataTable.kt
+    private val supportedTypes = listOf(
+        Boolean::class, Byte::class, Short::class, Int::class, Long::class, Float::class, Double::class,
+        String::class, Char::class, ByteArray::class, BigDecimal::class, UUID::class
+    ).map { it.java }
 
     fun preload(request: TableInfos, dataClass: Class<*>) {
+
         val dataClassCache = getOrCache(dataClass)
         if (dataClassCache.isCache) return
-        val fields = mutableMapOf<String, Class<*>>()
-        dataClassCache.tableFields.forEach{ fields[it.key] = it.value.type }
+        val fields = mutableListOf<Triple<String, Class<*>, Boolean>>()
+        dataClassCache.tableFields.forEach{
+            val name = it.key
+            val genericType = it.value.genericType
+            var isArray = false
+            var type = genericType
+            if (genericType is ParameterizedType) {
+                if (genericType.rawType != List::class) error("ParameterizedType field must be of type List<T>")
+                type = genericType.actualTypeArguments[0] as Class<*>
+                isArray = true
+            }
+            if (!supportedTypes.contains(type)) {
+                error("Unsupported type: $type")
+            }
+
+            fields += Triple(name, type as Class<*>, isArray)
+        }
         val tableInfo = TableInfo(
             dataClassCache.tableName,
             dataClassCache.autoCreate,

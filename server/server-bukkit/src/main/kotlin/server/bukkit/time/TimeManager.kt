@@ -1,5 +1,6 @@
 package server.bukkit.time
 
+import org.bukkit.Bukkit
 import server.bukkit.constant.DAY
 import server.common.logger.Logger
 import java.time.DayOfWeek
@@ -27,6 +28,8 @@ object TimeManager {
     var debugTime: Long = 0
     /** 新的一天钩子函数（实在不想用event） */
     var newDayFunc: (Long) -> Unit = {}
+
+    val serverTick: Int get() = Bukkit.getCurrentTick()
 
     private lateinit var timer: Timer
 

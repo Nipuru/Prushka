@@ -33,7 +33,7 @@ class PlayerDataServiceImpl : PlayerDataService {
                 if (table.exists()) {
                     table.selectAll().where(table.playerId eq playerId).forEach {
                         val fields = mutableListOf<FieldMessage>()
-                        for (fieldName in tableInfo.fields.keys) {
+                        for ((fieldName, _, _) in tableInfo.fields) {
                             val field = FieldMessage(fieldName, table.getColumn(it, fieldName))
                             fields.add(field)
                         }

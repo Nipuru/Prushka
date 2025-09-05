@@ -6,7 +6,6 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.*
-import server.bukkit.util.schedule
 import server.common.message.TeleportInvokeRequest
 import server.common.message.TeleportType
 
