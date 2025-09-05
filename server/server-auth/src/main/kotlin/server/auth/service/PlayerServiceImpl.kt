@@ -15,7 +15,7 @@ import java.util.*
  * @since 2024/11/07 17:28
  */
 class PlayerServiceImpl: PlayerService {
-    override fun login(name: String, uniqueId: UUID, lastIp: String): PlayerMessage {
+    override fun load(name: String, uniqueId: UUID, lastIp: String): PlayerMessage {
         return transaction {
             val rs = PlayerTable.selectAll().where(PlayerTable.uniqueId eq uniqueId.toString())
                 .singleOrNull()

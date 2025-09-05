@@ -3,7 +3,7 @@ package server.common.message
 import java.io.Serializable
 
 class FieldMessage(val name: String, val value: Any) : Serializable
-class PlayerDataMessage(val playerId: Int, val dbId: Int, val data: MutableMap<String, MutableList<List<FieldMessage>>>) : Serializable
+data class PlayerDataMessage(val playerId: Int, val dbId: Int, val data: MutableMap<String, MutableList<List<FieldMessage>>>) : Serializable
 
 class TableInfo(val tableName: String, val autoCreate: Boolean, val fields: Map<String, Class<*>>, val uniqueKeys: List<String>) : Serializable
 

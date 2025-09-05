@@ -10,7 +10,7 @@ import java.util.*
  */
 interface PlayerService {
 
-    fun login(name: String, uniqueId: UUID, lastIp: String): PlayerMessage
+    fun load(name: String, uniqueId: UUID, lastIp: String): PlayerMessage
 
 
 }
