@@ -65,7 +65,7 @@ class PlayerInfoServiceImpl : PlayerInfoService {
                 it[createTime] = playerInfo.createTime
                 it[logoutTime] = playerInfo.logoutTime
                 it[playedTime] = playerInfo.playedTime
-                it[texture] = playerInfo.texture.toList()
+                it[texture] = playerInfo.texture
             }
             byId[playerInfo.playerId] = playerInfo
             byName[playerInfo.name] = playerInfo
@@ -83,7 +83,7 @@ class PlayerInfoServiceImpl : PlayerInfoService {
         info.createTime = this[PlayerInfoTable.createTime]
         info.logoutTime = this[PlayerInfoTable.logoutTime]
         info.playedTime = this[PlayerInfoTable.playedTime]
-        info.texture = this[PlayerInfoTable.texture].toTypedArray()
+        info.texture = this[PlayerInfoTable.texture]
         return info
     }
 }

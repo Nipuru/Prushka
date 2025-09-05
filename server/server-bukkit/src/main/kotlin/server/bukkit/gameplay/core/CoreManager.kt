@@ -17,7 +17,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     private lateinit var playerData: PlayerData
     private var playedTimeUpdateTime = 0L   // 上次游戏时间更新的系统时间（ms）
     private var idleTime = 0               // 挂机时间（tick）
-    var updateShared = false        // 更新个人信息至公共服务器标记
+    var updateShared = false        // 更新个人信息至公共服务器tick
 
     fun preload(request: TableInfos) {
         request.preload<PlayerData>()
@@ -115,19 +115,18 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         }
 
     /** 用于传输 或者显示给其他玩家  */
-    val playerInfo: PlayerInfoMessage
-        get() = PlayerInfoMessage().also {
-            it.playerId = player.playerId
-            it.name = player.name
-            it.uniqueId = player.uniqueId
-            it.dbId = player.dbId
-            it.coin = playerData.coin
-            it.rankId = playerData.rankId
-            it.createTime = playerData.createTime
-            it.logoutTime = playerData.logoutTime
-            it.playedTime = playerData.playedTime
-            it.texture = player.skin.texture
-        }
+    val playerInfo: PlayerInfoMessage get() = PlayerInfoMessage(
+        playerId = player.playerId,
+        name = player.name,
+        uniqueId = player.uniqueId,
+        dbId = player.dbId,
+        coin = playerData.coin,
+        rankId = playerData.rankId,
+        createTime = playerData.createTime,
+        logoutTime = playerData.logoutTime,
+        playedTime = playerData.playedTime,
+        texture = player.skin.texture.toList(),
+    )
 
     /** 是否在线 */
     var isOnline: Boolean
