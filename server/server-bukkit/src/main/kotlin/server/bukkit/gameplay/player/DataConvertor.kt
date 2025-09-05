@@ -7,7 +7,7 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.math.BigDecimal
-import java.util.UUID
+import java.util.*
 import kotlin.reflect.KProperty1
 
 @PublishedApi
@@ -18,10 +18,9 @@ internal object DataConvertor {
     private val supportedTypes = listOf(
         Boolean::class, Byte::class, Short::class, Int::class, Long::class, Float::class, Double::class,
         String::class, Char::class, ByteArray::class, BigDecimal::class, UUID::class
-    ).map { it.java }
+    )
 
     fun preload(request: TableInfos, dataClass: Class<*>) {
-
         val dataClassCache = getOrCache(dataClass)
         if (dataClassCache.isCache) return
         val fields = mutableListOf<Triple<String, Class<*>, Boolean>>()
@@ -29,13 +28,13 @@ internal object DataConvertor {
             val name = it.key
             val genericType = it.value.genericType
             var isArray = false
-            var type = genericType
+            var type = it.value.type
             if (genericType is ParameterizedType) {
-                if (genericType.rawType != List::class) error("ParameterizedType field must be of type List<T>")
+                if (genericType.rawType != List::class.java) error("ParameterizedType field must be of type List<T>")
                 type = genericType.actualTypeArguments[0] as Class<*>
                 isArray = true
             }
-            if (!supportedTypes.contains(type)) {
+            if (!supportedTypes.contains(type.kotlin)) {
                 error("Unsupported type: $type")
             }
 
