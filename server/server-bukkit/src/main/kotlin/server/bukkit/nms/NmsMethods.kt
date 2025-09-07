@@ -1,17 +1,25 @@
 package server.bukkit.nms
 
 import com.mojang.brigadier.Message
+import io.netty.channel.ChannelHandler
 import io.papermc.paper.adventure.AdventureComponent
 import net.kyori.adventure.text.Component
+import net.minecraft.network.Connection
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.server.MinecraftServer
+import net.minecraft.server.level.ServerEntity
+import net.minecraft.server.level.ServerLevel
+import org.bukkit.craftbukkit.entity.CraftEntity
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
-import server.bukkit.BukkitPlugin.component
+import server.bukkit.component
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPInputStream
@@ -72,5 +80,41 @@ fun Component.message(): Message {
 
 fun String.message(): Message {
     return component().message()
+}
+
+fun Entity.sendSpawn(players: List<Player>) {
+    this as CraftEntity
+    val serverEntity = ServerEntity(handle.level() as ServerLevel, handle, 0, false, {}, emptySet())
+    val packet = handle.getAddEntityPacket(serverEntity)
+    for (player in players) {
+        (player as CraftPlayer).handle.connection.send(packet)
+    }
+}
+
+fun Entity.sendMetadata(players: List<Player>) {
+    this as CraftEntity
+    val packet = ClientboundSetEntityDataPacket(handle.id, handle.getEntityData().packAll())
+    for (player in players) {
+        (player as CraftPlayer).handle.connection.send(packet)
+    }
+}
+
+fun Entity.sendDestroy(players: List<Player>) {
+    this as CraftEntity
+    val packet = ClientboundRemoveEntitiesPacket(handle.id)
+    for (player in players) {
+        (player as CraftPlayer).handle.connection.send(packet)
+    }
+}
+
+fun Player.addChannelHandler(handler: ChannelHandler) {
+    this as CraftPlayer
+    val pipeline = handle.connection.connection.channel.pipeline()
+    pipeline.toMap().forEach {
+        if (it.value is Connection) {
+            pipeline.addBefore(it.key, handler.javaClass.name, handler)
+            return
+        }
+    }
 }
 
