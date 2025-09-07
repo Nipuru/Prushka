@@ -91,6 +91,8 @@ object BukkitPlugin : JavaPlugin(), TextFactoryProvider {
         val serverFolder = File(dataFolder.absolutePath).parentFile.parentFile
         Sheet.load(File(serverFolder.parentFile, "sheet").absolutePath)
 
+        // 生成 bitmap 字体
+        // 这里要确保和 python 工具使用一样的算法 /tool/export_bitmap.py
         var unicode = 0x1000
         textFactory = TextFactory(this, Sheet.getAllStBitmap().values.map { cfg ->
             val chars = mutableListOf<String>()

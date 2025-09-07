@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.util.text.FixedWidthResolver.Position
 import server.bukkit.util.text.Font
+import server.bukkit.util.text.TextFactory
 import java.awt.Color
 
 /**
@@ -37,6 +38,9 @@ enum class MessageType(val color: Color) {
     }
 }
 
+/**
+ * 字符串转组件 [TextFactory]
+ */
 fun String.component() : TextComponent {
     return Component.text().let {
         it.append(BukkitPlugin.textFactory.miniMessage.deserialize(this))
