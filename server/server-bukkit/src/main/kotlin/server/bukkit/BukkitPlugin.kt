@@ -7,6 +7,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.core.util.ConnectionEventTypeProcessor
+import net.kyori.adventure.key.Key
 import org.bukkit.Location
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -24,8 +25,12 @@ import server.bukkit.time.TimeManager
 import server.bukkit.util.CommandTree
 import server.bukkit.util.ScheduleTask
 import server.bukkit.util.register
+import server.bukkit.util.text.Bitmap
+import server.bukkit.util.text.TextFactory
+import server.bukkit.util.text.TextFactoryProvider
 import server.common.ClientTag
 import server.common.sheet.Sheet
+import server.common.sheet.getAllStBitmap
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorService
@@ -38,13 +43,14 @@ import java.util.concurrent.TimeUnit
  * @author Nipuru
  * @since 2024/9/16 0:17
  */
-object BukkitPlugin : JavaPlugin() {
+object BukkitPlugin : JavaPlugin(), TextFactoryProvider {
 
     val enableLatch = CountDownLatch(1)
     val bizThread: ExecutorService = Executors.newCachedThreadPool(ThreadFactoryBuilder()
         .setDaemon(false)
         .setNameFormat("Prushka-bizThread-%d")
         .build())
+    override lateinit var textFactory: TextFactory
 
     private val spawnLocations = CacheBuilder.newBuilder()
         .expireAfterAccess(1, TimeUnit.MINUTES)
@@ -84,6 +90,22 @@ object BukkitPlugin : JavaPlugin() {
         // 加载配置表
         val serverFolder = File(dataFolder.absolutePath).parentFile.parentFile
         Sheet.load(File(serverFolder.parentFile, "sheet").absolutePath)
+
+        var unicode = 0x1000
+        textFactory = TextFactory(this, Sheet.getAllStBitmap().values.map { cfg ->
+            val chars = mutableListOf<String>()
+            repeat(cfg.row) {
+                val builder = StringBuilder()
+                repeat(cfg.column) {
+                    builder.append(unicode.toChar())
+                    unicode += 1
+                }
+                chars.add(builder.toString())
+            }
+            val width = (cfg.imgWidth * cfg.height * cfg.row) / (cfg.imgHeight * cfg.column) +
+                    ((cfg.height shr 31) and 1) + 1
+            Bitmap(cfg.configId, Key.key("prushka:bitmap"), width, *chars.toTypedArray())
+        })
     }
 
     private fun newScheduleTasks(): Sequence<ScheduleTask> = sequenceOf(

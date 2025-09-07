@@ -45,13 +45,13 @@ class FontRepository(private val resourceResolver: (fileName: String) -> InputSt
         }
     }
 
-    fun getTotalWidth(component: Component, parentBold: Boolean, parentItalic: Boolean, parentFont: Keyed): Float {
+    fun getTotalWidth(component: Component, parentBold: Boolean, parentItalic: Boolean, parentFont: Keyed): Int {
         val text = if (component is TextComponent) component.content() else ""
         val font = component.font() ?: parentFont
         val style = component.style()
         var bold = style.parseDecoration(TextDecoration.BOLD, parentBold)
         val italic = style.parseDecoration(TextDecoration.ITALIC, parentItalic)
-        var width = 0f
+        var width = 0
         for (c in text.toCharArray()) {
             val f = getFont(font, c.code) ?: continue
             if (bold) width += 1
