@@ -27,7 +27,6 @@ import server.bukkit.util.ScheduleTask
 import server.bukkit.util.register
 import server.bukkit.util.text.Bitmap
 import server.bukkit.util.text.TextFactory
-import server.bukkit.util.text.TextFactoryProvider
 import server.common.ClientTag
 import server.common.sheet.Sheet
 import server.common.sheet.getAllStBitmap
@@ -43,14 +42,14 @@ import java.util.concurrent.TimeUnit
  * @author Nipuru
  * @since 2024/9/16 0:17
  */
-object BukkitPlugin : JavaPlugin(), TextFactoryProvider {
+object BukkitPlugin : JavaPlugin() {
 
     val enableLatch = CountDownLatch(1)
     val bizThread: ExecutorService = Executors.newCachedThreadPool(ThreadFactoryBuilder()
         .setDaemon(false)
         .setNameFormat("Prushka-bizThread-%d")
         .build())
-    override lateinit var textFactory: TextFactory
+    lateinit var textFactory: TextFactory
 
     private val spawnLocations = CacheBuilder.newBuilder()
         .expireAfterAccess(1, TimeUnit.MINUTES)
