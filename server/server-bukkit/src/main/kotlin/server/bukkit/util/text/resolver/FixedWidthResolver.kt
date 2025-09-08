@@ -1,9 +1,11 @@
-package server.bukkit.util.text
+package server.bukkit.util.text.resolver
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.Modifying
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tree.Node
+import server.bukkit.util.text.font.Font
+import server.bukkit.util.text.font.FontRepository
 import java.util.*
 
 class FixedWidthResolver(private val splitResolver: SplitResolver, private val fontRepository: FontRepository) {

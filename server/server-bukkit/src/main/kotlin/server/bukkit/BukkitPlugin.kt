@@ -25,7 +25,7 @@ import server.bukkit.time.TimeManager
 import server.bukkit.util.CommandTree
 import server.bukkit.util.ScheduleTask
 import server.bukkit.util.register
-import server.bukkit.util.text.Bitmap
+import server.bukkit.util.text.font.Bitmap
 import server.bukkit.util.text.TextFactory
 import server.common.ClientTag
 import server.common.sheet.Sheet
@@ -49,7 +49,6 @@ object BukkitPlugin : JavaPlugin() {
         .setDaemon(false)
         .setNameFormat("Prushka-bizThread-%d")
         .build())
-    lateinit var textFactory: TextFactory
 
     private val spawnLocations = CacheBuilder.newBuilder()
         .expireAfterAccess(1, TimeUnit.MINUTES)
@@ -92,21 +91,23 @@ object BukkitPlugin : JavaPlugin() {
 
         // 生成 bitmap 字体
         // 这里要确保和 python 工具使用一样的算法 /tool/export_bitmap.py
-        var unicode = 0x1000
-        textFactory = TextFactory(this, Sheet.getAllStBitmap().values.map { cfg ->
-            val chars = mutableListOf<String>()
-            repeat(cfg.row) {
-                val builder = StringBuilder()
-                repeat(cfg.column) {
-                    builder.append(unicode.toChar())
-                    unicode += 1
+        TextFactory.init(this) {
+            var unicode = 0x1000
+            Sheet.getAllStBitmap().values.map { cfg ->
+                val chars = mutableListOf<String>()
+                repeat(cfg.row) {
+                    val builder = StringBuilder()
+                    repeat(cfg.column) {
+                        builder.append(unicode.toChar())
+                        unicode += 1
+                    }
+                    chars.add(builder.toString())
                 }
-                chars.add(builder.toString())
+                val width = (cfg.imgWidth * cfg.height * cfg.row) / (cfg.imgHeight * cfg.column) +
+                        ((cfg.height shr 31) and 1) + 1
+                Bitmap(cfg.configId, Key.key("prushka:bitmap"), width, *chars.toTypedArray())
             }
-            val width = (cfg.imgWidth * cfg.height * cfg.row) / (cfg.imgHeight * cfg.column) +
-                    ((cfg.height shr 31) and 1) + 1
-            Bitmap(cfg.configId, Key.key("prushka:bitmap"), width, *chars.toTypedArray())
-        })
+        }
     }
 
     private fun newScheduleTasks(): Sequence<ScheduleTask> = sequenceOf(

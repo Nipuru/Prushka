@@ -1,4 +1,4 @@
-package server.bukkit.util.text
+package server.bukkit.util.text.resolver
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import server.bukkit.util.text.font.Bitmap
 
 class BitmapResolver(private val bitmaps: Map<String, Bitmap>) {
     companion object {

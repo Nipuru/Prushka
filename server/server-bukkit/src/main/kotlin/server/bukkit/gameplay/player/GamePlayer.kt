@@ -1,8 +1,12 @@
 package server.bukkit.gameplay.player
 
 import net.afyer.afybroker.client.Broker
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.ComponentLike
 import org.bukkit.Bukkit
-import server.bukkit.MessageType
+import org.bukkit.command.CommandSender
+import server.bukkit.util.text.MessageType
 import server.bukkit.constant.DAY
 import server.bukkit.gameplay.chat.ChatManager
 import server.bukkit.gameplay.friend.FriendManager
@@ -27,7 +31,7 @@ class GamePlayer(
     val dbId: Int,
     val name: String,
     val uniqueId: UUID
-) {
+): Audience {
     val namePattern: Pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE)
     val dataService: PlayerDataService = Broker.getService(PlayerDataService::class.java, dbId.toString())
     val bukkitPlayer by lazy { Bukkit.getPlayer(uniqueId)!! }
@@ -199,5 +203,7 @@ class GamePlayer(
         core.resetTime = time
     }
 
-
+    override fun sendMessage(message: Component) {
+        bukkitPlayer.sendMessage(message)
+    }
 }

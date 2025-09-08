@@ -1,4 +1,4 @@
-package server.bukkit.util.text
+package server.bukkit.util.text.font
 
 import net.kyori.adventure.key.Keyed
 import org.bukkit.NamespacedKey

@@ -1,4 +1,4 @@
-package server.bukkit.util.text
+package server.bukkit.util.text.resolver
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike

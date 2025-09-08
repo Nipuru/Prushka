@@ -1,4 +1,4 @@
-package server.bukkit.util.text
+package server.bukkit.util.text.font
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import net.kyori.adventure.key.Keyed
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -49,7 +50,7 @@ class FontRepository(private val resourceResolver: (fileName: String) -> InputSt
         val text = if (component is TextComponent) component.content() else ""
         val font = component.font() ?: parentFont
         val style = component.style()
-        var bold = style.parseDecoration(TextDecoration.BOLD, parentBold)
+        val bold = style.parseDecoration(TextDecoration.BOLD, parentBold)
         val italic = style.parseDecoration(TextDecoration.ITALIC, parentItalic)
         var width = 0
         for (c in text.toCharArray()) {
@@ -111,7 +112,7 @@ class FontRepository(private val resourceResolver: (fileName: String) -> InputSt
                 }
             }
             val width = size / 16
-            var image = BufferedImage(width, 16, BufferedImage.TYPE_INT_ARGB)
+            val image = BufferedImage(width, 16, BufferedImage.TYPE_INT_ARGB)
             for (row in 0..<16) {
                 for (column in 0..<width) {
                     if (buf[column + row * width] == 1.toByte()) image.setRGB(column, row, Color.WHITE.rgb)
@@ -121,5 +122,30 @@ class FontRepository(private val resourceResolver: (fileName: String) -> InputSt
                 register(Font.font(Font.UNIFORM, code, (it.width / 2.0).roundToInt() + 1))
             }
         }
+    }
+
+    private fun BufferedImage.removeEmptyWidth(): BufferedImage? {
+        var widthA = 0
+        var widthB = width
+
+        for (i1 in 0..<width) {
+            for (i2 in 0..<height) {
+                if ((getRGB(i1, i2) and -0x1000000) ushr 24 > 0) {
+                    if (widthA < i1) widthA = i1
+                    if (widthB > i1) widthB = i1
+                }
+            }
+        }
+        val finalWidth = widthA - widthB + 1
+
+        if (finalWidth <= 0) return null
+
+        return getSubimage(widthB, 0, finalWidth, height)
+    }
+
+    private fun Style.parseDecoration(decoration: TextDecoration, default: Boolean): Boolean = when (decoration(decoration)) {
+        TextDecoration.State.NOT_SET -> default
+        TextDecoration.State.FALSE -> false
+        TextDecoration.State.TRUE -> true
     }
 }
