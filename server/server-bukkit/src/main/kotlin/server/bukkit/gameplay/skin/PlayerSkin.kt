@@ -1,7 +1,7 @@
 package server.bukkit.gameplay.skin
 
 import com.destroystokyo.paper.profile.PlayerProfile
-import server.bukkit.nms.PlayerProfiles
+import io.papermc.paper.datacomponent.item.ResolvableProfile
 import java.net.URL
 import java.util.concurrent.CompletableFuture
 
@@ -36,8 +36,10 @@ class PlayerSkin(
          * @param name 玩家名称
          * @return 玩家皮肤
          */
+        @Suppress("UnstableApiUsage")
         fun create(name: String): CompletableFuture<PlayerSkin?> {
-            return PlayerProfiles.completeOnline(name).thenApply { profile ->
+            val resolver = ResolvableProfile.resolvableProfile().name(name).build()
+            return resolver.resolve().thenApply { profile ->
                 read(profile)
             }
         }
@@ -48,8 +50,8 @@ class PlayerSkin(
          * @param profile 玩家信息
          * @return 玩家皮肤
          */
-        fun read(profile: PlayerProfile): PlayerSkin? {
-            if (!profile.hasTextures()) return null
+        fun read(profile: PlayerProfile?): PlayerSkin? {
+            if (profile == null || !profile.hasTextures()) return null
             val textures = profile.properties.first { it.name == "textures" }
             return PlayerSkin(profile.name!!, textures.value, textures.signature!!, profile.textures.skin!!)
         }
