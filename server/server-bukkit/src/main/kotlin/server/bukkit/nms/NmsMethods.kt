@@ -73,13 +73,9 @@ fun ByteArray.deserializePotionEffects(): Collection<PotionEffect> {
     return effects
 }
 
-/** 将 adventure Component 转换成 brigadier Message **/
-fun Component.message(): Message {
-    return AdventureComponent( this)
-}
-
+/** 将文本转换成 brigadier Message **/
 fun String.message(): Message {
-    return component().message()
+    return AdventureComponent(this.component())
 }
 
 fun Entity.sendSpawn(players: List<Player>) {
