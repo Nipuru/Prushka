@@ -2,8 +2,7 @@ package server.bukkit.nms
 
 import com.mojang.brigadier.Message
 import io.netty.channel.ChannelHandler
-import io.papermc.paper.adventure.AdventureComponent
-import net.kyori.adventure.text.Component
+import io.papermc.paper.adventure.PaperAdventure
 import net.minecraft.network.Connection
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
@@ -74,9 +73,7 @@ fun ByteArray.deserializePotionEffects(): Collection<PotionEffect> {
 }
 
 /** 将文本转换成 brigadier Message **/
-fun String.message(): Message {
-    return AdventureComponent(this.component())
-}
+fun String.message(): Message = PaperAdventure.asVanilla(component())
 
 fun Entity.sendSpawn(players: List<Player>) {
     this as CraftEntity
@@ -89,7 +86,7 @@ fun Entity.sendSpawn(players: List<Player>) {
 
 fun Entity.sendMetadata(players: List<Player>) {
     this as CraftEntity
-    val packet = ClientboundSetEntityDataPacket(handle.id, handle.getEntityData().packAll())
+    val packet = ClientboundSetEntityDataPacket(handle.id, handle.entityData.packAll())
     for (player in players) {
         (player as CraftPlayer).handle.connection.send(packet)
     }
