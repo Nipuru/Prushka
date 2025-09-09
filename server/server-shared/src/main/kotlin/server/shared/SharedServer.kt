@@ -12,6 +12,7 @@ import server.shared.SharedServer.shutdown
 import server.shared.SharedServer.startup
 import server.shared.config.Config
 import server.shared.processor.GetTimeSharedProcessor
+import server.shared.processor.OnlinePlayersSharedProcessor
 import server.shared.processor.connection.CloseEventSharedProcessor
 import server.shared.processor.connection.ConnectEventSharedProcessor
 import server.shared.service.PlayerInfoServiceImpl
@@ -40,9 +41,10 @@ internal object SharedServer {
         builder.addConnectionEventProcessor(ConnectEventSharedProcessor())
         builder.addConnectionEventProcessor(CloseEventSharedProcessor())
 
-        builder.registerService(PlayerInfoService::class.java, PlayerInfoServiceImpl())
+        builder.registerService(PlayerInfoService::class.java, PlayerInfoServiceImpl)
 
         builder.registerUserProcessor(GetTimeSharedProcessor())
+        builder.registerUserProcessor(OnlinePlayersSharedProcessor())
     }
 
     private fun initDataSource(config: Config) {

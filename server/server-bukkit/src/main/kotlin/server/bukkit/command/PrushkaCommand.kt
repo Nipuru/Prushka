@@ -10,19 +10,20 @@ import io.papermc.paper.command.brigadier.Commands.literal
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import org.bukkit.World
 import server.bukkit.BukkitPlugin
-import server.bukkit.util.text.MessageType
 import server.bukkit.command.argument.GamePlayerArgument
 import server.bukkit.command.argument.PlayerInfoArgument
-import server.bukkit.util.text.component
 import server.bukkit.gameplay.misc.ResourcePack
 import server.bukkit.gameplay.misc.setResourcePack
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.skin.PlayerSkin
-import server.bukkit.util.text.getWidth
 import server.bukkit.util.CommandTree
+import server.bukkit.util.text.MessageType
+import server.bukkit.util.text.component
+import server.bukkit.util.text.getWidth
 import server.common.logger.Logger
 import server.common.message.PlayerInfoMessage
 import server.common.message.TeleportType
+import java.util.concurrent.CompletableFuture
 
 
 /**
@@ -104,8 +105,14 @@ class PrushkaCommand : CommandTree {
      */
     fun tpa(context: CommandContext<CommandSourceStack>): Int {
         val player = context.source.gamePlayer
-        val target = context.getArgument<PlayerInfoMessage>("player_name")
-        player.teleport.teleport(target.name, TeleportType.TPA)
+        context.getArgument<CompletableFuture<PlayerInfoMessage?>>("player_name").thenAccept { target ->
+            if (target == null) {
+                MessageType.FAILED.sendMessage(player, "玩家不存在")
+                return@thenAccept
+            }
+            player.teleport.teleport(target.name, TeleportType.TPA)
+        }
+
         return Command.SINGLE_SUCCESS
     }
 
@@ -115,8 +122,13 @@ class PrushkaCommand : CommandTree {
      */
     fun tpahere(context: CommandContext<CommandSourceStack>): Int {
         val player = context.source.gamePlayer
-        val target = context.getArgument<PlayerInfoMessage>("player_name")
-        player.teleport.teleport(target.name, TeleportType.TPAHERE)
+        context.getArgument<CompletableFuture<PlayerInfoMessage?>>("player_name").thenAccept { target ->
+            if (target == null) {
+                MessageType.FAILED.sendMessage(player, "玩家不存在")
+                return@thenAccept
+            }
+            player.teleport.teleport(target.name, TeleportType.TPAHERE)
+        }
         return Command.SINGLE_SUCCESS
     }
 

@@ -8,6 +8,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.core.util.ConnectionEventTypeProcessor
 import net.kyori.adventure.key.Key
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -25,16 +26,13 @@ import server.bukkit.time.TimeManager
 import server.bukkit.util.CommandTree
 import server.bukkit.util.ScheduleTask
 import server.bukkit.util.register
-import server.bukkit.util.text.font.Bitmap
 import server.bukkit.util.text.TextFactory
+import server.bukkit.util.text.font.Bitmap
 import server.common.ClientTag
 import server.common.sheet.Sheet
 import server.common.sheet.getAllStBitmap
 import java.io.File
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 /**
  * Bukkit 插件主类
@@ -42,7 +40,7 @@ import java.util.concurrent.TimeUnit
  * @author Nipuru
  * @since 2024/9/16 0:17
  */
-object BukkitPlugin : JavaPlugin() {
+object BukkitPlugin : JavaPlugin(), Executor {
 
     val enableLatch = CountDownLatch(1)
     val bizThread: ExecutorService = Executors.newCachedThreadPool(ThreadFactoryBuilder()
@@ -148,6 +146,10 @@ object BukkitPlugin : JavaPlugin() {
         AfkCommand(),
         FriendCommand()
     )
+
+    override fun execute(command: Runnable) {
+        Bukkit.getScheduler().runTask(this, command)
+    }
 }
 
 

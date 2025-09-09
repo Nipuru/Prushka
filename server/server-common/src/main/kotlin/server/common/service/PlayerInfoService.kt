@@ -14,4 +14,6 @@ interface PlayerInfoService {
     fun getByName(name: String): PlayerInfoMessage?
 
     fun insertOrUpdate(playerInfo: PlayerInfoMessage)
+
+    fun completeNames(name: String, limit: Int): List<String>
 }

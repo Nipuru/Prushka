@@ -8,9 +8,9 @@ import server.common.message.PlayerInfoMessage
 import server.common.service.PlayerInfoService
 import server.shared.schema.PlayerInfoTable
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.set
 
-class PlayerInfoServiceImpl : PlayerInfoService {
+object PlayerInfoServiceImpl : PlayerInfoService {
+    val onlinePlayers: MutableSet<String> = ConcurrentHashMap.newKeySet<String>()
     private val byId = ConcurrentHashMap<Int, PlayerInfoMessage>()
     private val byName = ConcurrentHashMap<String, PlayerInfoMessage>()
 
@@ -35,8 +35,7 @@ class PlayerInfoServiceImpl : PlayerInfoService {
                 result[info.playerId] = info
             }
         }
-        return result
-    }
+        return result }
 
     override fun getByName(name: String): PlayerInfoMessage? {
         if (byName.contains(name)) {
@@ -70,6 +69,11 @@ class PlayerInfoServiceImpl : PlayerInfoService {
             byId[playerInfo.playerId] = playerInfo
             byName[playerInfo.name] = playerInfo
         }
+    }
+
+    override fun completeNames(name: String, limit: Int): List<String> {
+        return onlinePlayers.filter { it.startsWith(name) }
+            .take(limit)
     }
 
     private fun ResultRow.toPlayerInfoMessage(): PlayerInfoMessage {
