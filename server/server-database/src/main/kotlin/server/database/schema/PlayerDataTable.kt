@@ -20,9 +20,9 @@ class PlayerDataTable(tableInfo: TableInfo) : Table() {
     override val primaryKey: PrimaryKey
 
     init {
-        for ((name, clazz, isArray) in tableInfo.fields) {
+        for ((name, clazz, default) in tableInfo.fields) {
             val kClass = clazz.kotlin
-            val column = registerColumn(name, kClass, isArray)
+            val column = registerColumn(name, kClass, default)
             columnMap[name] = kClass to column
         }
         val uniqueColumn = tableInfo.uniqueKeys.map { columnMap[it]!!.second }.toTypedArray()
@@ -47,7 +47,7 @@ class PlayerDataTable(tableInfo: TableInfo) : Table() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun registerColumn(name: String, clazz: KClass<*>, isArray: Boolean): Column<*> {
+    private fun registerColumn(name: String, clazz: KClass<*>, default: Any): Column<*> {
         val columnType = when (clazz) {
             Boolean::class -> BooleanColumnType()
             Byte::class -> ByteColumnType()
@@ -64,10 +64,10 @@ class PlayerDataTable(tableInfo: TableInfo) : Table() {
             else -> error("Unsupported column type: $clazz")
         } as ColumnType<Any>
         val fieldName = name.replace("([a-z])([A-Z])".toRegex(), "$1_$2").lowercase()
-        return if (isArray) {
-            registerColumn(fieldName, ArrayColumnType(columnType))
+        return if (default is List<*>) {
+            registerColumn(fieldName, ArrayColumnType(columnType)).default(default)
         } else {
-            registerColumn(fieldName, columnType)
+            registerColumn(fieldName, columnType).default(default)
         }
     }
 }

@@ -23,22 +23,22 @@ internal object DataConvertor {
     fun preload(request: TableInfos, dataClass: Class<*>) {
         val dataClassCache = getOrCache(dataClass)
         if (dataClassCache.isCache) return
-        val fields = mutableListOf<Triple<String, Class<*>, Boolean>>()
+        val fields = mutableListOf<Triple<String, Class<*>, Any>>()
         dataClassCache.tableFields.forEach{
             val name = it.key
             val genericType = it.value.genericType
-            var isArray = false
             var type = it.value.type
             if (genericType is ParameterizedType) {
                 if (genericType.rawType != List::class.java) error("ParameterizedType field must be of type List<T>")
                 type = genericType.actualTypeArguments[0] as Class<*>
-                isArray = true
             }
             if (!supportedTypes.contains(type.kotlin)) {
                 error("Unsupported type: $type")
             }
+            val default = it.value.get(dataClassCache.defaultInstance)
+            if (default == null) error("Field $name must have a default value")
 
-            fields += Triple(name, type as Class<*>, isArray)
+            fields += Triple(name, type as Class<*>, default)
         }
         val tableInfo = TableInfo(
             dataClassCache.tableName,
@@ -124,12 +124,10 @@ internal object DataConvertor {
         try {
             constructor = dataClass.getDeclaredConstructor()
             constructor.setAccessible(true)
-        } catch (e: NoSuchMethodException) {
+        } catch (_: NoSuchMethodException) {
             throw Exception("dataClass must have default constructor, provided: " + dataClass.name)
         }
-        val table = dataClass.getAnnotation(
-            Table::class.java
-        )
+        val table = dataClass.getAnnotation(Table::class.java)
         val uniqueFields = mutableListOf<String>() // 被 @Unique 注释的字段
         val fields = mutableMapOf<String, Field>() // 所有字段
         val tableFields = mutableMapOf<String, Field>() // 除 @Temp 之外的字段
@@ -148,19 +146,19 @@ internal object DataConvertor {
             fieldNames[field.name] = name
         }
         return DataClassCache(
-            table.name,
-            table.autoCreate,
-            table.cache,
-            uniqueFields,
-            fields,
-            tableFields,
-            updateFields,
-            fieldNames,
-            constructor
+            tableName = table.name,
+            autoCreate = table.autoCreate,
+            isCache = table.cache,
+            uniqueFields = uniqueFields,
+            fields = fields,
+            tableFields = tableFields,
+            updateFields = updateFields,
+            constructor = constructor,
+            defaultInstance = constructor.newInstance()
         )
     }
 
-    data class DataClassCache(
+    class DataClassCache(
         val tableName: String,
         val autoCreate: Boolean,
         val isCache: Boolean,
@@ -168,7 +166,7 @@ internal object DataConvertor {
         val fields: Map<String, Field>,
         val tableFields: Map<String, Field>,
         val updateFields: Map<String, Field>,
-        val fieldNames: Map<String, String>,
-        val constructor: Constructor<*>
+        val constructor: Constructor<*>,
+        val defaultInstance: Any
     )
 }

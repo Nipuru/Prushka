@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture
 @Suppress("UnstableApiUsage")
 object PlayerInfoArgument : CustomArgumentType.Converted<CompletableFuture<PlayerInfoMessage?>, String> {
 
-    private val service = Broker.getService(PlayerInfoService::class.java)
+    private val service by lazy { Broker.getService(PlayerInfoService::class.java) }
 
     override fun getNativeType(): ArgumentType<String> {
         return StringArgumentType.string()
