@@ -4,10 +4,10 @@ import net.afyer.afybroker.client.Broker
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
-import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.*
 import server.common.message.TeleportInvokeRequest
 import server.common.message.TeleportType
+import java.util.concurrent.CompletableFuture
 
 
 /**
@@ -39,13 +39,13 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
         player.update(lastLocation) // 退出的时候保存一下
     }
 
-    fun teleport(playerName: String, type: TeleportType) {
+    fun teleport(playerName: String, type: TeleportType): CompletableFuture<Boolean> {
         val message = when (type) {
-            TeleportType.TPA -> TeleportInvokeRequest(player.name, playerName)
-            TeleportType.TPAHERE -> TeleportInvokeRequest(playerName, player.name)
+            TeleportType.TPA -> TeleportInvokeRequest(froms = listOf(player.name), to = playerName)
+            TeleportType.TPAHERE -> TeleportInvokeRequest(froms = listOf(playerName), to = player.name)
         }
-        BukkitPlugin.bizThread.submit {
-            Broker.oneway(message)
+        return CompletableFuture.supplyAsync {
+            Broker.invokeSync<Boolean>(message)
         }
     }
 

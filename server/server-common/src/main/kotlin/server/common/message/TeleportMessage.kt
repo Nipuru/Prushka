@@ -61,8 +61,8 @@ class TeleportResponseMessage(
 
 class GetPlayerLocationRequest(val name: String) : Serializable
 
-class TeleportInvokeRequest(val from: String, val to: String) : Serializable
+class TeleportInvokeRequest(val froms: List<String>, val to: String) : Serializable
 
-class TeleportOrSpawnRequest(val name: String, val location: LocationMessage) : Serializable
+class TeleportOrSpawnRequest(val names: List<String>, val location: LocationMessage) : Serializable
 
 

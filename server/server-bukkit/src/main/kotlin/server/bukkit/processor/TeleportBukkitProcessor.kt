@@ -47,14 +47,16 @@ class TeleportOrSpawnBukkitProcessor(private val spawnLocations: MutableMap<Stri
     private fun handle(message: TeleportOrSpawnRequest) {
         val world = Bukkit.getWorld(message.location.worldName) ?: return
         val location = Location(world, message.location.x, message.location.y, message.location.z)
-        val bukkitPlayer = Bukkit.getPlayerExact(message.name)
-        if (bukkitPlayer != null) {
-            location.yaw = bukkitPlayer.location.yaw
-            location.pitch = bukkitPlayer.location.pitch
-            bukkitPlayer.teleportAsync(location)
-            return
+        for (name in message.names) {
+            val bukkitPlayer = Bukkit.getPlayerExact(name)
+            if (bukkitPlayer != null) {
+                location.yaw = bukkitPlayer.location.yaw
+                location.pitch = bukkitPlayer.location.pitch
+                bukkitPlayer.teleportAsync(location)
+            } else {
+                spawnLocations[name] = location
+            }
         }
-        spawnLocations[message.name] = location
     }
 
     override fun interest(): String {
