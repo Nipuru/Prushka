@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.gamePlayer
@@ -23,7 +24,17 @@ val ERROR_NOT_PLAYER = SimpleCommandExceptionType("只有玩家才能执行此�
 
 fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.requireOperator(): T = requires { it.sender.isOp }
 
-inline fun <reified T> CommandContext<*>.getArgument(name: String): T = getArgument(name, T::class.java)
+inline fun <reified T> CommandContext<*>.getArgument(name: String): T {
+    return runCatching {
+        getArgument(name, T::class.java)
+    }.getOrElse { e ->
+        // 有可能某些参数是 CompletableFuture 异步参数 但不能在主线程内调用调用 get() 会阻塞线程
+        getArgument(name, CompletableFuture::class.java).let {
+            if (Bukkit.isPrimaryThread()) error("CompletableFuture is not allowed on the server thread")
+            runCatching { it.get() as T }.getOrElse { throw e }
+        }
+    }
+}
 
 val CommandSourceStack.gamePlayer: GamePlayer
     get() {
