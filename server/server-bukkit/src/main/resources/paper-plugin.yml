@@ -4,7 +4,7 @@ api-version: "1.21"
 dependencies:
   server:
     AfyBroker:
-      load: AFTER
+      load: BEFORE
       required: true
 main: server.bukkit.BukkitPlugin
 bootstrapper: server.bukkit.BukkitBootstrap
