@@ -14,5 +14,6 @@ object BrokerPlugin : Plugin() {
         server.registerUserProcessor(GetTimeBrokerProcessor())
         server.registerUserProcessor(DebugTimeBrokerProcessor())
         server.registerUserProcessor(TeleportInvokeBrokerProcessor())
+        server.registerUserProcessor(SystemChatBrokerProcessor())
     }
 }
