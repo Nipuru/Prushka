@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.upsert
 import server.common.message.PlayerInfoMessage
 import server.common.service.PlayerInfoService
 import server.shared.schema.PlayerInfoTable
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 object PlayerInfoServiceImpl : PlayerInfoService {
@@ -58,6 +59,7 @@ object PlayerInfoServiceImpl : PlayerInfoService {
                 it[playerId] = playerInfo.playerId
                 it[name] = playerInfo.name
                 it[uniqueId] = playerInfo.uniqueId
+                it[locale] = playerInfo.locale.toLanguageTag()
                 it[dbId] = playerInfo.dbId
                 it[coin] = playerInfo.coin
                 it[rankId] = playerInfo.rankId
@@ -81,6 +83,7 @@ object PlayerInfoServiceImpl : PlayerInfoService {
         info.playerId = this[PlayerInfoTable.playerId]
         info.name = this[PlayerInfoTable.name]
         info.uniqueId = this[PlayerInfoTable.uniqueId]
+        info.locale = Locale.forLanguageTag(this[PlayerInfoTable.locale])
         info.dbId = this[PlayerInfoTable.dbId]
         info.coin = this[PlayerInfoTable.coin]
         info.rankId = this[PlayerInfoTable.rankId]

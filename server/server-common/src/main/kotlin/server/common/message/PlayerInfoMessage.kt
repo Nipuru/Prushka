@@ -13,6 +13,9 @@ data class PlayerInfoMessage(
     /** uuid */
     var uniqueId: UUID = UUID(0, 0),
 
+    /** 客户端语言 */
+    var locale: Locale = Locale.SIMPLIFIED_CHINESE,
+
     /** dbId  */
     var dbId: Int = 0,
 

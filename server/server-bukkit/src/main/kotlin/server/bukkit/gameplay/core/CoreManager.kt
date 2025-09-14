@@ -111,6 +111,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         playerId = player.playerId,
         name = player.name,
         uniqueId = player.uniqueId,
+        locale = player.locale,
         dbId = player.dbId,
         coin = playerData.coin,
         rankId = playerData.rankId,

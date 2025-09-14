@@ -18,23 +18,17 @@ import server.bukkit.time.TimeManager
 import server.bukkit.util.text.MessageType
 import server.common.logger.Logger
 import server.common.service.PlayerDataService
-import server.common.util.Localizable
 import java.util.*
 import java.util.regex.Pattern
 
 /**
  * 表示一个玩家，所有 api 都应该由主线程去调用，异步要考虑线程安全问题
  */
-class GamePlayer(
-    val playerId: Int,
-    val dbId: Int,
-    val name: String,
-    val uniqueId: UUID
-): Audience, Localizable {
+class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueId: UUID): Audience {
     val namePattern: Pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE)
     val dataService: PlayerDataService = Broker.getService(PlayerDataService::class.java, dbId.toString())
     val bukkitPlayer by lazy { Bukkit.getPlayer(uniqueId)!! }
-    override val locale: Locale get() = bukkitPlayer.locale()
+    val locale: Locale get() = bukkitPlayer.locale()
 
     val writer = DataWriter(this)
     val offline = OfflineManager(this)

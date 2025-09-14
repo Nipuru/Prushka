@@ -13,6 +13,7 @@ object PlayerInfoTable : Table() {
     val playerId = integer("player_id")
     val name = varchar("name", 16).uniqueIndex()
     val uniqueId = uuid("unique_id").uniqueIndex()
+    val locale = text("locale")
     val dbId = integer("db_id")
     val coin = long("coin")
     val rankId = integer("rank_id")
