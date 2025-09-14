@@ -19,6 +19,8 @@ import server.common.message.GetTimeRequest
 class ConnectEventBukkitProcessor : ConnectionEventTypeProcessor {
     override fun getType() = ConnectionEventType.CONNECT
     override fun onEvent(s: String, connection: Connection) {
+        // 等待插件启用
+        BukkitPlugin.enableLatch.await()
         // 初始化定时器
         TimeManager.apply {
             Logger.info("Get time from shared server...")
