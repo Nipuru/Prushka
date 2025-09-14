@@ -3,7 +3,6 @@ package server.bukkit.gameplay.player
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import server.bukkit.scheduler.SystemChatSender
-import server.bukkit.util.text.MessageType
 import server.bukkit.util.text.TextFactory
 import server.common.message.PlayerInfoMessage
 import server.common.message.SystemChatMessage
@@ -18,10 +17,8 @@ import java.util.*
  * @since 2025/09/14 17:13
  */
 val PlayerInfoMessage.remotePlayer: RemotePlayer get() = RemotePlayer(uniqueId)
-
-fun MessageType.sendMessage(sender: PlayerInfoMessage?, vararg args: Any?) {
-    sendMessage(sender?.remotePlayer, *args)
-}
+val Iterable<PlayerInfoMessage>.remotePlayers: List<RemotePlayer> get() = map { RemotePlayer(it.uniqueId) }
+val Array<PlayerInfoMessage>.remotePlayers: List<RemotePlayer> get() = map { RemotePlayer(it.uniqueId) }
 
 /**
  * 代表集群上的一个玩家。

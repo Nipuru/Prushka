@@ -1,6 +1,7 @@
 package server.bukkit.util.text
 
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import java.awt.Color
 
@@ -18,9 +19,21 @@ enum class MessageType(val color: Color) {
     WARNING(Color(236, 90, 93));
 
     fun sendMessage(sender: Audience?, vararg args: Any?) {
+        sender?.sendMessage(createComponent(*args))
+    }
+
+    fun sendMessage(senders: List<Audience>, vararg args: Any?) {
+        if (senders.isEmpty()) return
+        val component = createComponent(*args)
+        for (sender in senders) {
+            sender.sendMessage(component)
+        }
+    }
+
+    fun createComponent(vararg args: Any?): Component {
         val hexString = TextColor.color(color.rgb).asHexString()
         val message = "<$hexString>" + args.joinToString()
-        sender?.sendMessage(message.component())
+        return message.component()
     }
 }
 
