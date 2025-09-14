@@ -13,7 +13,9 @@ import org.bukkit.entity.Player
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.gamePlayer
 import server.bukkit.nms.message
+import java.util.*
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
 
 
 /**
@@ -25,23 +27,30 @@ val ERROR_NOT_PLAYER = SimpleCommandExceptionType("只有玩家才能执行此�
 fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.requireOperator(): T = requires { it.sender.isOp }
 
 inline fun <reified T> CommandContext<*>.getArgument(name: String): T {
-    return runCatching {
-        getArgument(name, T::class.java)
-    }.getOrElse { e ->
+    return runCatching { getArgument(name, T::class.java) }.getOrElse { e ->
         // 有可能某些参数是 CompletableFuture 异步参数 但不能在主线程内调用调用 get() 会阻塞线程
-        getArgument(name, CompletableFuture::class.java).let {
+        runCatching { getArgument(name, CompletableFuture::class.java) }.getOrElse { throw e }.let {
             if (Bukkit.isPrimaryThread()) error("CompletableFuture is not allowed on the server thread")
-            runCatching { it.get() as T }.getOrElse { throw e }
+            runCatching { it.get() as T }.getOrElse {
+                if (it is ExecutionException) throw it.cause ?: it
+                else throw e
+            }
         }
     }
 }
 
-val CommandSourceStack.gamePlayer: GamePlayer
-    get() {
-        val entity = this.executor
-        if (entity !is Player) throw ERROR_NOT_PLAYER.create()
-        return entity.gamePlayer
+val CommandSourceStack.gamePlayer: GamePlayer get() {
+    val entity = this.executor
+    if (entity !is Player) throw ERROR_NOT_PLAYER.create()
+    return entity.gamePlayer
+}
+
+val CommandSourceStack.locale: Locale get() {
+    if (sender is Player) {
+        return (sender as Player).locale()
     }
+    return Locale.SIMPLIFIED_CHINESE
+}
 
 fun <S : Any> suggestion(context: CommandContext<S>, builder: SuggestionsBuilder, suggestions: () -> List<String>): CompletableFuture<Suggestions> {
     if (context.source !is CommandSourceStack) return Suggestions.empty()

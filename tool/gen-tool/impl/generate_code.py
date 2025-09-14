@@ -126,6 +126,12 @@ def generate_code():
         if sheet == None:
             print('%s表没找到名字叫%s的标签页' % ( table_name, table_name ))
             continue
+        i18n = False
+        if "i18n" in table:
+            i18n = table["i18n"]
+        locale_param = "locale: Locale" if i18n else ""
+        locale_params = ", locale: Locale" if i18n else ""
+        holder = "[locale]" if i18n else ".default"
         
         comments = __getLabels( sheet.row_values( 0 ) )
         labels = __getLabels( sheet.row_values( 1 ) )
@@ -157,19 +163,19 @@ def generate_code():
         extentions = []
         if key:
             maps.append(f"val {field_name}Map = mutableMapOf<{key[1]}, {class_name}>()")
-            extentions.append(f"fun Sheet.getAll{class_name}(locale: Locale? = null): Map<{key[1]}, {class_name}> {{\n    check()\n    return holder{class_name}[locale].{field_name}Map\n}}")
-            extentions.append(f"fun Sheet.get{class_name}({key[0]}: {key[1]}, locale: Locale? = null): {class_name}? {{\n    check()\n    return holder{class_name}[locale].{field_name}Map[{key[0]}]\n}}")
+            extentions.append(f"fun Sheet.getAll{class_name}({locale_param}): Map<{key[1]}, {class_name}> {{\n    check()\n    return holder{class_name}{holder}.{field_name}Map\n}}")
+            extentions.append(f"fun Sheet.get{class_name}({key[0]}: {key[1]}{locale_params}): {class_name}? {{\n    check()\n    return holder{class_name}{holder}.{field_name}Map[{key[0]}]\n}}")
         if vkey:
             maps.append(f"val {field_name}VMap= mutableMapOf<{vkey[1]}, {class_name}>()")
-            extentions.append(f"fun Sheet.get{class_name}ById({vkey[0]}: {vkey[1]}, locale: Locale? = null): {class_name}? {{\n    check()\n    return holder{class_name}[locale].{field_name}Map[{vkey[0]}]\n}}")
+            extentions.append(f"fun Sheet.get{class_name}ById({vkey[0]}: {vkey[1]}{locale_params}): {class_name}? {{\n    check()\n    return holder{class_name}{holder}.{field_name}Map[{vkey[0]}]\n}}")
         if akey:
             if subkey:
                 maps.append(f"val {field_name}AMap = mutableMapOf<Pair<{akey[1]}, {subkey[1]}>, {class_name}>()")
-                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, {subkey[0]}: {subkey[1]}, locale: Locale? = null): {class_name}? {{\n    check()\n    return holder{class_name}[locale].{field_name}AMap[{akey[0]} to {subkey[0]}]\n}}")
+                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, {subkey[0]}: {subkey[1]}{locale_params}): {class_name}? {{\n    check()\n    return holder{class_name}{holder}.{field_name}AMap[{akey[0]} to {subkey[0]}]\n}}")
             else:
                 maps.append(f"val {field_name}AMap = mutableMapOf<{akey[1]}, MutableList<{class_name}>>()")
-                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, index: Int, locale: Locale? = null): List<{class_name}> {{\n    check()\n    return holder{class_name}[locale].{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
-                extentions.append(f"fun Sheet.get{class_name}s({akey[0]}: {akey[1]}, locale: Locale? = null): List<{class_name}> {{\n    check()\n    return holder{class_name}[locale].{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
+                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, index: Int{locale_params}): List<{class_name}> {{\n    check()\n    return holder{class_name}{holder}.{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
+                extentions.append(f"fun Sheet.get{class_name}s({akey[0]}: {akey[1]}{locale_params}): List<{class_name}> {{\n    check()\n    return holder{class_name}{holder}.{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
             
         fields = []
         for i in range( len(labels) ):

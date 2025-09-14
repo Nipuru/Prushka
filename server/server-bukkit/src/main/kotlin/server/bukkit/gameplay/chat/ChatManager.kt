@@ -8,9 +8,9 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
 import server.bukkit.BukkitPlugin
-import server.bukkit.util.text.MessageType
 import server.bukkit.gameplay.player.*
 import server.bukkit.time.TimeManager
+import server.bukkit.util.text.MessageType
 import server.common.message.FragmentMessage
 import server.common.message.PlayerChatMessage
 import server.common.message.PlayerInfoMessage
@@ -82,7 +82,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
     }
 
     fun receivePublic(sender: PlayerInfoMessage, fragments: Array<FragmentMessage>) {
-        val rank = Sheet.getStRank(sender.rankId)!!
+        val rank = Sheet.getStRank(sender.rankId, player.locale)!!
         val builder = text()
         builder.color(TextColor.fromHexString(rank.chatColor))
         builder.append(publicChatPrefix(sender))
@@ -162,7 +162,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
     }
 
     private fun publicChatPrefix(sender: PlayerInfoMessage): Component {
-        val rank = Sheet.getStRank(sender.rankId)!!
+        val rank = Sheet.getStRank(sender.rankId, player.locale)!!
         val builder = text()
 
         // 玩家名字

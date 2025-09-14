@@ -3,10 +3,7 @@ package server.bukkit.gameplay.player
 import net.afyer.afybroker.client.Broker
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.ComponentLike
 import org.bukkit.Bukkit
-import org.bukkit.command.CommandSender
-import server.bukkit.util.text.MessageType
 import server.bukkit.constant.DAY
 import server.bukkit.gameplay.chat.ChatManager
 import server.bukkit.gameplay.friend.FriendManager
@@ -18,8 +15,10 @@ import server.bukkit.gameplay.teleport.TeleportManager
 import server.bukkit.logger.LogServer
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
+import server.bukkit.util.text.MessageType
 import server.common.logger.Logger
 import server.common.service.PlayerDataService
+import server.common.util.Localizable
 import java.util.*
 import java.util.regex.Pattern
 
@@ -31,10 +30,11 @@ class GamePlayer(
     val dbId: Int,
     val name: String,
     val uniqueId: UUID
-): Audience {
+): Audience, Localizable {
     val namePattern: Pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE)
     val dataService: PlayerDataService = Broker.getService(PlayerDataService::class.java, dbId.toString())
     val bukkitPlayer by lazy { Bukkit.getPlayer(uniqueId)!! }
+    override val locale: Locale get() = bukkitPlayer.locale()
 
     val writer = DataWriter(this)
     val offline = OfflineManager(this)

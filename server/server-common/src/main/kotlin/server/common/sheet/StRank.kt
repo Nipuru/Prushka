@@ -15,12 +15,12 @@ data class StRank(
     val chatColor: String
 )
 
-fun Sheet.getAllStRank(locale: Locale? = null): Map<Int, StRank> {
+fun Sheet.getAllStRank(locale: Locale): Map<Int, StRank> {
     check()
     return holderStRank[locale].stRankMap
 }
 
-fun Sheet.getStRank(configId: Int, locale: Locale? = null): StRank? {
+fun Sheet.getStRank(configId: Int, locale: Locale): StRank? {
     check()
     return holderStRank[locale].stRankMap[configId]
 }
