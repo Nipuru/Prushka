@@ -12,6 +12,7 @@ import org.bukkit.World
 import server.bukkit.BukkitPlugin
 import server.bukkit.command.argument.GamePlayerArgument
 import server.bukkit.command.argument.PlayerInfoArgument
+import server.bukkit.command.argument.RankArgument
 import server.bukkit.gameplay.misc.ResourcePack
 import server.bukkit.gameplay.misc.setResourcePack
 import server.bukkit.gameplay.player.GamePlayer
@@ -23,6 +24,7 @@ import server.bukkit.util.text.getWidth
 import server.common.logger.Logger
 import server.common.message.PlayerInfoMessage
 import server.common.message.TeleportType
+import server.common.sheet.StRank
 import java.util.concurrent.CompletableFuture
 
 
@@ -58,6 +60,10 @@ class PrushkaCommand : CommandTree {
             .then(argument("player_name", GamePlayerArgument)
                 .then(argument("skin", StringArgumentType.string())
                     .executes(::skin))))
+        .then(literal("rank")
+            .then(argument("player_name", GamePlayerArgument)
+                .then(argument("rank", RankArgument)
+                    .executes(::rank))))
         .build()
 
     /**
@@ -155,7 +161,6 @@ class PrushkaCommand : CommandTree {
 
     fun skin(context: CommandContext<CommandSourceStack>): Int {
         val player = context.getArgument<GamePlayer>("player_name")
-        ArgumentTypes.playerProfiles()
         val skinName = context.getArgument<String>("skin")
         PlayerSkin.create(skinName).whenComplete { skin, throwable ->
             if (throwable != null) {
@@ -169,6 +174,14 @@ class PrushkaCommand : CommandTree {
             MessageType.INFO.sendMessage(context.source.sender, "玩家 ${player.name} 的皮肤已更新")
         }
         MessageType.INFO.sendMessage(context.source.sender, "正在获取皮肤信息...")
+        return Command.SINGLE_SUCCESS
+    }
+
+    fun rank(context: CommandContext<CommandSourceStack>): Int {
+        val player = context.getArgument<GamePlayer>("player_name")
+        val rank = context.getArgument<StRank>("rank")
+        player.core.rankId = rank.configId
+        MessageType.INFO.sendMessage(context.source.sender, "玩家 ${player.name} 的称号设置为 ${rank.name}")
         return Command.SINGLE_SUCCESS
     }
 }
