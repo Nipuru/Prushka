@@ -22,7 +22,7 @@ import server.bukkit.processor.*
 import server.bukkit.processor.connection.CloseEventBukkitProcessor
 import server.bukkit.processor.connection.ConnectEventBukkitProcessor
 import server.bukkit.scheduler.ServerTickTask
-import server.bukkit.scheduler.SystemChatSender
+import server.bukkit.scheduler.AudienceMessenger
 import server.bukkit.time.TimeManager
 import server.bukkit.util.CommandTree
 import server.bukkit.util.ScheduleTask
@@ -111,7 +111,7 @@ object BukkitPlugin : JavaPlugin(), Executor {
 
     private fun newScheduleTasks(): Sequence<ScheduleTask> = sequenceOf(
         ServerTickTask(),
-        SystemChatSender
+        AudienceMessenger
     )
 
     // 在这里添加监听器
@@ -139,7 +139,7 @@ object BukkitPlugin : JavaPlugin(), Executor {
         DebugTimeGameProcessor(),
         GetPlayerLocationBukkitProcessor(),
         TeleportOrSpawnBukkitProcessor(spawnLocations.asMap()),
-        SystemChatBukkitProcessor(),
+        AudienceBukkitProcessor(),
     )
 
     // 在这里添加命令

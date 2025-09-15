@@ -2,10 +2,10 @@ package server.bukkit.gameplay.player
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
-import server.bukkit.scheduler.SystemChatSender
+import server.bukkit.scheduler.AudienceMessenger.send
 import server.bukkit.util.text.TextFactory
+import server.common.message.AudienceMessage.Message.SystemChat
 import server.common.message.PlayerInfoMessage
-import server.common.message.SystemChatMessage
 import java.util.*
 
 
@@ -30,7 +30,7 @@ class RemotePlayer(val uniqueId: UUID) : Audience {
 
     override fun sendMessage(message: Component) {
         val serialized = TextFactory.instance.miniMessage.serialize(message)
-        val request = SystemChatMessage.Message(receiver = uniqueId, message = serialized)
-        SystemChatSender.send(request)
+        val request = SystemChat(receiver = uniqueId, message = serialized)
+        send(request)
     }
 }
