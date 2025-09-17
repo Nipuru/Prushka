@@ -114,11 +114,20 @@ fun ComponentLike.getWidth(
     return TextFactory.instance.font.getTotalWidth(asComponent(), parentBold, parentItalic, parentFont)
 }
 
-class TextFactory private constructor(val plugin: Plugin, bitmaps: List<Bitmap>) {
-    val bitmapMap: Map<String, Bitmap> = bitmaps.associateBy { it.name }
-    val bitmap: BitmapResolver = BitmapResolver(bitmapMap)
-    val split: SplitResolver = split(bitmap)
-    val font: FontRepository = font(bitmapMap)
+class TextFactory private constructor(val plugin: Plugin, splits: List<String>, bitmaps: List<Bitmap>) {
+    val bitmap: BitmapResolver = BitmapResolver(bitmaps.associateBy { it.name })
+    val split: SplitResolver = SplitResolver(splits.map { bitmap.resolve(it) })
+    val font: FontRepository = FontRepository { fileName: String ->
+        plugin.getResource("font/$fileName")
+    }.also { repository ->
+        // 注册 bitmap
+        for (bitmap in bitmaps) {
+            Font.fonts(bitmap, bitmap.width).forEach {
+                repository.register(it)
+            }
+        }
+    }
+
     val fixedWidth: FixedWidthResolver = FixedWidthResolver(split, font)
     val miniMessage: MiniMessage = MiniMessage.builder().tags(
         TagResolver.resolver(
@@ -129,36 +138,13 @@ class TextFactory private constructor(val plugin: Plugin, bitmaps: List<Bitmap>)
         )
     ).build()
 
-    private fun font(bitmaps: Map<String, Bitmap>): FontRepository {
-        val repository = FontRepository { fileName: String ->
-            plugin.getResource("font/$fileName")
-        }
-        // 注册 bitmap
-        for (bitmap in bitmaps.values) {
-            Font.fonts(bitmap, bitmap.width).forEach {
-                repository.register(it)
-            }
-        }
-        return repository
-    }
-
-    private fun split(bitmap: BitmapResolver): SplitResolver {
-        val splits = listOf(
-            "split_pos_1", "split_pos_2", "split_pos_4", "split_pos_8",
-            "split_pos_16", "split_pos_32", "split_pos_64", "split_pos_128",
-            "split_neg_1", "split_neg_2", "split_neg_4", "split_neg_8",
-            "split_neg_16", "split_neg_32", "split_neg_64", "split_neg_128"
-        ).map { bitmap.resolve(it) }
-        return SplitResolver(splits)
-    }
-
     companion object {
         val instance: TextFactory get() = _instance ?: throw IllegalStateException("TextFactory not initialized")
 
         private var _instance: TextFactory? = null
 
-        fun init(plugin: Plugin, bitmaps: () -> List<Bitmap>) {
-            _instance = TextFactory(plugin, bitmaps())
+        fun init(plugin: Plugin, splits: List<String>, bitmaps: () -> List<Bitmap>) {
+            _instance = TextFactory(plugin, splits, bitmaps())
         }
     }
 }

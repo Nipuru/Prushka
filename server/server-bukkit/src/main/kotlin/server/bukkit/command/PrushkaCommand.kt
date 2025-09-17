@@ -18,7 +18,7 @@ import server.bukkit.gameplay.misc.setResourcePack
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.skin.PlayerSkin
 import server.bukkit.util.CommandTree
-import server.bukkit.util.text.MessageType
+import server.bukkit.MessageType
 import server.bukkit.util.text.component
 import server.bukkit.util.text.getWidth
 import server.common.logger.Logger

@@ -10,7 +10,7 @@ import net.kyori.adventure.text.format.TextColor.color
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.*
 import server.bukkit.time.TimeManager
-import server.bukkit.util.text.MessageType
+import server.bukkit.MessageType
 import server.common.message.FragmentMessage
 import server.common.message.PlayerChatMessage
 import server.common.message.PlayerInfoMessage
@@ -138,25 +138,12 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
                     receivePrivate(player.core.playerInfo, receiver, fragments)
                 }
 
-                PlayerPrivateChatMessage.FAILURE -> MessageType.FAILED.sendMessage(player.bukkitPlayer, "消息发送失败。")
-                PlayerPrivateChatMessage.RATE_LIMIT -> MessageType.FAILED.sendMessage(
-                    player.bukkitPlayer,
-                    "你的发言频率过快，请稍候再试。"
-                )
+                PlayerPrivateChatMessage.FAILURE -> MessageType.FAILED.sendMessage(player, "消息发送失败。")
+                PlayerPrivateChatMessage.RATE_LIMIT -> MessageType.FAILED.sendMessage(player, "你的发言频率过快，请稍候再试。")
 
-                PlayerPrivateChatMessage.NOT_ONLINE -> MessageType.FAILED.sendMessage(
-                    player.bukkitPlayer,
-                    "私聊玩家 ",
-                    receiver,
-                    " 不在线"
-                )
+                PlayerPrivateChatMessage.NOT_ONLINE -> MessageType.FAILED.sendMessage(player, "私聊玩家 $receiver 不在线")
 
-                PlayerPrivateChatMessage.DENY -> MessageType.FAILED.sendMessage(
-                    player.bukkitPlayer,
-                    "私聊玩家 ",
-                    receiver,
-                    " 屏蔽了聊天消息"
-                )
+                PlayerPrivateChatMessage.DENY -> MessageType.FAILED.sendMessage(player, "私聊玩家  $receiver 屏蔽了聊天消息")
             }
         }
     }

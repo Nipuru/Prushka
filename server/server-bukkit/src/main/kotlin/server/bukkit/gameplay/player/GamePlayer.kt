@@ -15,7 +15,7 @@ import server.bukkit.gameplay.teleport.TeleportManager
 import server.bukkit.logger.LogServer
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
-import server.bukkit.util.text.MessageType
+import server.bukkit.MessageType
 import server.bukkit.util.text.component
 import server.common.logger.Logger
 import server.common.service.PlayerDataService
@@ -28,7 +28,7 @@ import java.util.regex.Pattern
 /**
  * 表示一个玩家，所有 api 都应该由主线程去调用，异步要考虑线程安全问题
  */
-class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueId: UUID): Audience {
+class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueId: UUID) {
     val namePattern: Pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE)
     val dataService: PlayerDataService = Broker.getService(PlayerDataService::class.java, dbId.toString())
     val bukkitPlayer by lazy { Bukkit.getPlayer(uniqueId)!! }
@@ -204,10 +204,6 @@ class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueI
     fun sendMessage(key: String, vararg args: Any?) {
         val cfg = Sheet.getStMessage(key, locale) ?: return
         val message = MessageFormat.format(cfg.value, *args).component()
-        sendMessage(message)
-    }
-
-    override fun sendMessage(message: Component) {
         bukkitPlayer.sendMessage(message)
     }
 }

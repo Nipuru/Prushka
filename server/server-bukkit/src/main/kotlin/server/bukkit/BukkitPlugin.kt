@@ -90,7 +90,13 @@ object BukkitPlugin : JavaPlugin(), Executor {
 
         // 生成 bitmap 字体
         // 这里要确保和 python 工具使用一样的算法 /tool/export_bitmap.py
-        TextFactory.init(this) {
+        val splits = listOf(
+            "split_pos_1", "split_pos_2", "split_pos_4", "split_pos_8",
+            "split_pos_16", "split_pos_32", "split_pos_64", "split_pos_128",
+            "split_neg_1", "split_neg_2", "split_neg_4", "split_neg_8",
+            "split_neg_16", "split_neg_32", "split_neg_64", "split_neg_128"
+        )
+        TextFactory.init(this, splits) {
             var unicode = 0x1000
             Sheet.getAllStBitmap().values.map { cfg ->
                 val chars = mutableListOf<String>()

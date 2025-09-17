@@ -6,31 +6,24 @@ import server.bukkit.scheduler.AudienceMessenger.send
 import server.bukkit.util.text.TextFactory
 import server.common.message.AudienceMessage.Message.SystemChat
 import server.common.message.PlayerInfoMessage
-import java.util.*
 
 
 /**
- *
- * 扩展函数，用于从 PlayerInfoMessage 对象中获取 RemotePlayer 实例。
- *
- * @author Nipuru
- * @since 2025/09/14 17:13
- */
-val PlayerInfoMessage.remotePlayer: RemotePlayer get() = RemotePlayer(uniqueId)
-val Iterable<PlayerInfoMessage>.remotePlayers: List<RemotePlayer> get() = map { RemotePlayer(it.uniqueId) }
-val Array<PlayerInfoMessage>.remotePlayers: List<RemotePlayer> get() = map { RemotePlayer(it.uniqueId) }
-
-/**
- * 代表集群上的一个玩家。
+ * 代表集群上的一个玩家 可能在线也可能不在线。
  * 用于向当前玩家发送消息。
  *
- * @param uniqueId 玩家的唯一标识符。
+ * @param playerInfo 玩家信息。
  */
-class RemotePlayer(val uniqueId: UUID) : Audience {
+val PlayerInfoMessage.remotePlayer: RemotePlayer get() = RemotePlayer(this)
 
+class RemotePlayer(val playerInfo: PlayerInfoMessage) : Audience {
     override fun sendMessage(message: Component) {
         val serialized = TextFactory.instance.miniMessage.serialize(message)
-        val request = SystemChat(receiver = uniqueId, message = serialized)
+        val request = SystemChat(receiver = playerInfo.uniqueId, message = serialized)
         send(request)
+    }
+
+    override fun clearResourcePacks() {
+        throw UnsupportedOperationException("")
     }
 }

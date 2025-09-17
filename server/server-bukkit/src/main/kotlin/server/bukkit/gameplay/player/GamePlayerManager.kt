@@ -4,10 +4,12 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import server.bukkit.time.TimeManager
 import server.common.logger.Logger
+import server.common.message.PlayerInfoMessage
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 val Player.gamePlayer: GamePlayer get() = GamePlayerManager.getPlayer(uniqueId)
+val PlayerInfoMessage.gamePlayer: GamePlayer? get() = GamePlayerManager.getPlayerOrNull(uniqueId)
 
 object GamePlayerManager {
     private val byUniqueId: MutableMap<UUID, GamePlayer> = ConcurrentHashMap()
@@ -57,6 +59,10 @@ object GamePlayerManager {
         val gamePlayer = byUniqueId[uniqueId]
             ?: throw NullPointerException("Player with uniqueId $uniqueId is not exist")
         return gamePlayer
+    }
+
+    fun getPlayerOrNull(uniqueId: UUID): GamePlayer? {
+        return byUniqueId[uniqueId]
     }
 
     fun hasPlayer(uniqueId: UUID): Boolean {
