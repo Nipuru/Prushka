@@ -3,8 +3,8 @@ package server.bukkit
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
+import org.bukkit.Bukkit
 import server.bukkit.gameplay.player.GamePlayer
-import server.bukkit.gameplay.player.gamePlayer
 import server.bukkit.gameplay.player.remotePlayer
 import server.bukkit.util.text.component
 import server.common.message.PlayerInfoMessage
@@ -26,7 +26,7 @@ enum class MessageType(val prefix: String, val color: Color) {
 
     /** 向远程玩家发送消息 */
     fun sendMessage(receiver: PlayerInfoMessage, message: String) {
-        val player = receiver.gamePlayer?.bukkitPlayer
+        val player = Bukkit.getPlayer(receiver.uniqueId)
         if (player != null) sendMessage(player, message)
         else sendMessage(receiver.remotePlayer, message)
     }
