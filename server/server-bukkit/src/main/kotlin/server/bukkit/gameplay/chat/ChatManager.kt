@@ -20,10 +20,14 @@ import server.common.sheet.getStRank
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import kotlin.math.max
 
 class ChatManager(player: GamePlayer) : BaseManager(player) {
 
     private lateinit var data: ChatData
+    private var lastChatTime = System.currentTimeMillis()
+    private val chatPerSecond = 0.25
+    private val chatCapacity = 3
 
     fun preload(request: TableInfos) {
         request.preload<ChatData>()
@@ -37,20 +41,6 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         dataInfo.pack(data)
     }
 
-    var msgTarget: String
-        get() = data.msgTarget
-        set(msgTarget) {
-            data.msgTarget = msgTarget
-        }
-
-    fun hasMsgTarget(): Boolean {
-        return data.msgTarget.isNotEmpty()
-    }
-
-    fun clearMsgTarget() {
-        data.msgTarget = ""
-    }
-
     var mute: Long
         get() = data.mute
         set(time) {
@@ -58,8 +48,21 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
             player.update(data, ChatData::mute)
         }
 
-    val isMuted: Boolean
-        get() = data.mute > TimeManager.now
+    val isMuted: Boolean get() = data.mute > TimeManager.now
+
+    val muteDateTime: LocalDateTime get() {
+        val dateTime = Instant.ofEpochMilli(data.mute)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime()
+        return dateTime
+    }
+
+    var msgTarget: String
+        get() = data.msgTarget
+        set(value) {
+            data.msgTarget = value
+            player.update(data, ChatData::msgTarget)
+        }
 
     fun unmute() {
         val now: Long = TimeManager.now
@@ -68,20 +71,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         player.update(data, ChatData::mute)
     }
 
-    val muteDateTime: LocalDateTime
-        get() {
-            val dateTime = Instant.ofEpochMilli(data.mute)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime()
-
-            return dateTime
-        }
-
-    fun couldReceivePrivate(sender: PlayerInfoMessage): Boolean {
-        return true
-    }
-
-    fun receivePublic(sender: PlayerInfoMessage, fragments: Array<FragmentMessage>) {
+    fun receivePublicChat(sender: PlayerInfoMessage, fragments: Array<FragmentMessage>) {
         val rank = Sheet.getStRank(sender.rankId, player.locale)!!
         val builder = text()
         builder.color(TextColor.fromHexString(rank.chatColor))
@@ -90,7 +80,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         player.bukkitPlayer.sendMessage(builder.build())
     }
 
-    fun receivePrivate(sender: PlayerInfoMessage, receiver: String, fragments: Array<FragmentMessage>) {
+    fun receivePrivateChat(sender: PlayerInfoMessage, receiver: String, fragments: Array<FragmentMessage>) {
         val builder = text()
         if (sender.playerId == player.playerId) {
             builder.append(privateSenderPrefix(receiver))
@@ -106,44 +96,59 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         player.bukkitPlayer.sendMessage(builder.build())
     }
 
-    fun sendPublic(message: String) {
+    fun rateLimit(): Boolean {
+        if (data.rateLimit == 0.0) {
+            lastChatTime = System.currentTimeMillis()
+            data.rateLimit += 1.0
+            return false
+        }
+        // 执行漏水
+        val waterLeaked = ((System.currentTimeMillis() - lastChatTime) * chatPerSecond / 1000)
+        val waterLeft = data.rateLimit - waterLeaked
+        data.rateLimit = max(0.0, waterLeft)
+        lastChatTime = System.currentTimeMillis()
+        if (data.rateLimit < chatCapacity) {
+            data.rateLimit += 1.0
+            return false
+        } else {
+            return true
+        }
+    }
+
+    fun sendChat(message: String) {
+        if (data.msgTarget != "") {
+            sendPrivateChat(data.msgTarget, message)
+        } else {
+            sendPublicChat(message)
+        }
+    }
+
+    fun sendPublicChat(message: String) {
         val fragments = MessageFormat.parse(player, message)
         val request = PlayerChatMessage(player.core.playerInfo, fragments)
 
         BukkitPlugin.bizThread.submit {
-            val result = Broker.invokeSync<Int>(request)
-            when (result) {
-                PlayerChatMessage.SUCCESS -> {
-                    // 由广播显示自己发送消息
-                }
-
-                PlayerChatMessage.FAILURE -> MessageType.FAILED.sendMessage(player.bukkitPlayer, "消息发送失败。")
-                PlayerChatMessage.RATE_LIMIT -> MessageType.FAILED.sendMessage(
-                    player.bukkitPlayer,
-                    "你的发言频率过快，请稍候再试。"
-                )
+            val result = Broker.invokeSync<Boolean>(request)
+            if (!result) {
+                MessageType.FAILED.sendMessage(player.bukkitPlayer, "消息发送失败。")
             }
         }
     }
 
-    fun sendPrivate(receiver: String, message: String) {
+    fun sendPrivateChat(receiver: String, message: String) {
         val fragments: Array<FragmentMessage> = MessageFormat.parse(player, message)
         val request = PlayerPrivateChatMessage(player.core.playerInfo, fragments, receiver)
 
         BukkitPlugin.bizThread.submit {
-            val result = Broker.invokeSync<Int>(request)
-            when (result) {
-                PlayerPrivateChatMessage.SUCCESS -> {
-                    // 给自己显示一条私聊消息
-                    receivePrivate(player.core.playerInfo, receiver, fragments)
+            val result = Broker.invokeSync<Boolean>(request)
+            receivePrivateChat(player.core.playerInfo, receiver, fragments)
+            if (!result) {
+                if (receiver == data.msgTarget) {
+                    MessageType.FAILED.sendMessage(player, "消息发送失败, 私聊目标无法收到消息, 已退出私聊模式")
+                    msgTarget = ""
+                } else {
+                    MessageType.FAILED.sendMessage(player, "消息发送失败, 私聊目标无法收到消息,")
                 }
-
-                PlayerPrivateChatMessage.FAILURE -> MessageType.FAILED.sendMessage(player, "消息发送失败。")
-                PlayerPrivateChatMessage.RATE_LIMIT -> MessageType.FAILED.sendMessage(player, "你的发言频率过快，请稍候再试。")
-
-                PlayerPrivateChatMessage.NOT_ONLINE -> MessageType.FAILED.sendMessage(player, "私聊玩家 $receiver 不在线")
-
-                PlayerPrivateChatMessage.DENY -> MessageType.FAILED.sendMessage(player, "私聊玩家  $receiver 屏蔽了聊天消息")
             }
         }
     }

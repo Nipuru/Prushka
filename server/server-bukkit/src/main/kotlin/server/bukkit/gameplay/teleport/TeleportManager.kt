@@ -16,8 +16,7 @@ import java.util.concurrent.CompletableFuture
  */
 class TeleportManager(player: GamePlayer) : BaseManager(player) {
 
-    lateinit var lastLocation: LocationData
-        private set
+    lateinit var lastLocation: LocationData private set
 
     fun preload(request: TableInfos) {
         player.bukkitPlayer.location

@@ -15,7 +15,7 @@ class PlayerChatServerProcessor : AsyncUserProcessor<PlayerChatMessage>() {
     override fun handleRequest(bizContext: BizContext, asyncContext: AsyncContext, request: PlayerChatMessage) {
         for (player in GamePlayerManager.getPlayers()) {
             val manager = player.chat
-            manager.receivePublic(request.sender, request.fragments)
+            manager.receivePublicChat(request.sender, request.fragments)
         }
     }
 
@@ -26,16 +26,15 @@ class PlayerChatServerProcessor : AsyncUserProcessor<PlayerChatMessage>() {
 
 class PlayerPrivateChatServerProcessor : SyncUserProcessor<PlayerPrivateChatMessage>() {
     override fun handleRequest(bizContext: BizContext, request: PlayerPrivateChatMessage): Any {
+        val sender = GamePlayerManager.getPlayerOrNull(request.sender.uniqueId)
+        sender?.chat?.receivePrivateChat(request.sender, request.receiver, request.fragments)
         try {
-            val player = Bukkit.getPlayerExact(request.receiver)!!.gamePlayer
-            if (!player.chat.couldReceivePrivate(request.sender)) {
-                return PlayerPrivateChatMessage.DENY
-            }
-            player.chat.receivePrivate(request.sender, request.receiver, request.fragments)
+            val receiver = Bukkit.getPlayerExact(request.receiver)!!.gamePlayer
+            receiver.chat.receivePrivateChat(request.sender, request.receiver, request.fragments)
         } catch (ignored: Exception) {
+            return false
         } // 有概率玩家在跨服或者离线
-
-        return PlayerPrivateChatMessage.SUCCESS
+        return true
     }
 
 

@@ -8,8 +8,9 @@ class ChatData : Data {
     /** 禁言截止时间  */
     var mute: Long = 0L
 
-    /** 私聊玩家名  */
-    var msgTarget: String = ""
+    /** 频率限制  */
+    var rateLimit: Double = 0.0
 
-    var msgTargetId: Int = 0
+    /** 私聊目标名称  */
+    var msgTarget: String = ""
 }
