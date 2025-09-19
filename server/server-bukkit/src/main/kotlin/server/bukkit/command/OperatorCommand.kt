@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.Commands.literal
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import org.bukkit.World
 import server.bukkit.BukkitPlugin
+import server.bukkit.MessageType
 import server.bukkit.command.argument.GamePlayerArgument
 import server.bukkit.command.argument.PlayerInfoArgument
 import server.bukkit.command.argument.RankArgument
@@ -18,7 +19,6 @@ import server.bukkit.gameplay.misc.setResourcePack
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.skin.PlayerSkin
 import server.bukkit.util.CommandTree
-import server.bukkit.MessageType
 import server.bukkit.util.text.component
 import server.bukkit.util.text.getWidth
 import server.common.logger.Logger
@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture
  * @since 2024/11/19 15:11
  */
 @Suppress("UnstableApiUsage")
-class PrushkaCommand : CommandTree {
+class OperatorCommand : CommandTree {
 
     override val root: LiteralCommandNode<CommandSourceStack> = literal("prushka")
         .requireOperator()

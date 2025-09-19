@@ -14,15 +14,15 @@ import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import server.bukkit.command.AfkCommand
 import server.bukkit.command.FriendCommand
-import server.bukkit.command.PrushkaCommand
+import server.bukkit.command.OperatorCommand
 import server.bukkit.command.WhereAmICommand
 import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.listener.*
 import server.bukkit.processor.*
 import server.bukkit.processor.connection.CloseEventBukkitProcessor
 import server.bukkit.processor.connection.ConnectEventBukkitProcessor
-import server.bukkit.scheduler.ServerTickTask
 import server.bukkit.scheduler.AudienceMessenger
+import server.bukkit.scheduler.ServerTickTask
 import server.bukkit.time.TimeManager
 import server.bukkit.util.CommandTree
 import server.bukkit.util.ScheduleTask
@@ -151,7 +151,7 @@ object BukkitPlugin : JavaPlugin(), Executor {
     // 在这里添加命令
     private fun newCommands(): Sequence<CommandTree> = sequenceOf(
         WhereAmICommand(),
-        PrushkaCommand(),
+        OperatorCommand(),
         AfkCommand(),
         FriendCommand()
     )

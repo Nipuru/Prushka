@@ -31,11 +31,7 @@ fun Inventory.getEmptySlot(): Int {
 /**
  * 定时任务基类
  */
-abstract class ScheduleTask(
-    val async: Boolean = false,
-    val delay: Long = 0,
-    val period: Long = -1
-) {
+abstract class ScheduleTask(val async: Boolean = false, val delay: Long = 0, val period: Long = -1) {
     protected abstract fun run(task: BukkitTask)
     fun schedule(plugin: Plugin): BukkitTask {
         return plugin.schedule(async, delay, period, this::run)
@@ -45,14 +41,8 @@ abstract class ScheduleTask(
 /**
  * Bukkit 任务调度
  */
-fun Plugin.schedule(
-    async: Boolean = false,
-    delay: Long = 0,
-    period: Long = -1,
-    block: (BukkitTask) -> Unit
-): BukkitTask {
+fun Plugin.schedule(async: Boolean = false, delay: Long = 0, period: Long = -1, block: (BukkitTask) -> Unit): BukkitTask {
     lateinit var task: BukkitTask
-
     { block(task) }.let {
         if (async) Bukkit.getScheduler().runTaskTimerAsynchronously(this, it, delay, period)
         else Bukkit.getScheduler().runTaskTimer(this, it, delay, period)
