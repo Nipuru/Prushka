@@ -20,11 +20,7 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     }
 
     fun unpack(dataInfo: DataInfo) {
-        playerData = dataInfo.unpack<PlayerData>() ?: PlayerData().also {
-            it.logoutTime = TimeManager.now
-            it.createTime = TimeManager.now
-            player.insert(it)
-        }
+        playerData = dataInfo.unpack<PlayerData>() ?: player.insert(PlayerData(logoutTime = TimeManager.now, createTime = TimeManager.now))
     }
 
     fun pack(dataInfo: DataInfo) {

@@ -20,11 +20,12 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
         private set
 
     fun preload(request: TableInfos) {
+        player.bukkitPlayer.location
         request.preload<LocationData>()
     }
 
     fun unpack(dataInfo: DataInfo) {
-        lastLocation = dataInfo.unpack<LocationData>() ?: LocationData().also { player.insert(it) }
+        lastLocation = dataInfo.unpack<LocationData>() ?: player.insert(LocationData())
     }
 
     fun pack(dataInfo: DataInfo) {
@@ -45,22 +46,24 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
             TeleportType.TPAHERE -> TeleportInvokeRequest(froms = listOf(playerName), to = player.name)
         }
         return CompletableFuture.supplyAsync {
-            Broker.invokeSync<Boolean>(message)
+            Broker.invokeSync(message)
         }
     }
 
 
     fun setLastLocation(location: Location) {
         if (!isSafeLocation(location)) return
-        lastLocation.also {
-            it.worldName = location.world.name
-            it.x = location.x
-            it.y = location.y
-            it.z = location.z
-            it.pitch = location.pitch
-            it.yaw = location.yaw
-        }
+        lastLocation = location.convert()
     }
+
+    private fun Location.convert() = LocationData(
+        worldName = world.name,
+        x = x,
+        y = y,
+        z = z,
+        pitch = pitch,
+        yaw = yaw
+    )
 
     private fun isSafeLocation(location: Location?): Boolean {
         if (location == null) return false

@@ -3,8 +3,6 @@ package server.bukkit.gameplay.player
 import org.bukkit.Bukkit
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.DataConvertor.getOrCache
-import server.bukkit.util.schedule
-
 import server.common.logger.Logger
 import server.common.message.FieldMessage
 import server.common.message.PlayerDataTransactionMessage
@@ -23,8 +21,9 @@ fun <T : Any> GamePlayer.update(data: T, vararg properties: KProperty1<T, *>) {
     writer.add(DataAction(DataActionType.UPDATE, data, DataConvertor.getProperty(data, properties)))
 }
 
-fun <T: Any> GamePlayer.insert(data: T) {
+fun <T: Any> GamePlayer.insert(data: T): T {
     writer.add(DataAction(DataActionType.INSERT, data, null))
+    return data
 }
 
 fun <T: Any> GamePlayer.delete(data: T) {

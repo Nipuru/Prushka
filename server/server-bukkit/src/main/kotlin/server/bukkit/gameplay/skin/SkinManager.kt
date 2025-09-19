@@ -28,7 +28,7 @@ class SkinManager(player: GamePlayer) : BaseManager(player) {
     }
 
     fun unpack(dataInfo: DataInfo) {
-        data = dataInfo.unpack<SkinData>() ?: SkinData().also { player.insert(it) }
+        data = dataInfo.unpack<SkinData>() ?: player.insert(SkinData())
     }
 
     fun pack(dataInfo: DataInfo) {

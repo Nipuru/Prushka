@@ -107,11 +107,7 @@ class RewardManager(player: GamePlayer) : BaseManager(player) {
 
     private fun getReward(type: Int, id: Int): RewardData {
         return rewards.getOrPut(type to id) {
-            RewardData().apply {
-                this.type = type
-                this.id = id
-                player.insert(this)
-            }
+            RewardData(type = type, id = id, amount =  0)
         }
     }
 }

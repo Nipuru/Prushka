@@ -8,9 +8,9 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
 import server.bukkit.BukkitPlugin
+import server.bukkit.MessageType
 import server.bukkit.gameplay.player.*
 import server.bukkit.time.TimeManager
-import server.bukkit.MessageType
 import server.common.message.FragmentMessage
 import server.common.message.PlayerChatMessage
 import server.common.message.PlayerInfoMessage
@@ -30,7 +30,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
     }
 
     fun unpack(dataInfo: DataInfo) {
-        data = dataInfo.unpack<ChatData>() ?: ChatData().also { player.insert(it) }
+        data = dataInfo.unpack<ChatData>() ?: player.insert(ChatData())
     }
 
     fun pack(dataInfo: DataInfo) {

@@ -36,10 +36,10 @@ class InventoryManager(player: GamePlayer) : BaseManager(player) {
             savePlayer(player.bukkitPlayer, data)
             this.data = data
             player.insert(data)
-            return
+        } else {
+            // 运用数据
+            applyPlayer(player.bukkitPlayer, data)
         }
-        // 运用数据
-        applyPlayer(player.bukkitPlayer, data)
     }
 
     fun onQuit() {

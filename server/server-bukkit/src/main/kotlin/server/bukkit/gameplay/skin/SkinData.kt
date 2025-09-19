@@ -10,8 +10,6 @@ import server.bukkit.gameplay.player.Table
  */
 @Table(name = "tb_skin")
 class SkinData : Data {
-
     /** 皮肤材质 长度2(value|signature) */
     var texture: List<String> = emptyList()
-        internal set
 }
