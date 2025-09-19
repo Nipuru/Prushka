@@ -3,7 +3,9 @@ package server.broker.processor
 import com.alipay.remoting.AsyncContext
 import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
+import net.afyer.afybroker.core.BrokerClientType
 import net.afyer.afybroker.server.Broker
+import server.broker.util.require
 import server.common.message.AudienceMessage
 import server.common.message.AudienceMessage.Message
 
@@ -14,6 +16,7 @@ import server.common.message.AudienceMessage.Message
  */
 class AudienceBrokerProcessor : AsyncUserProcessor<AudienceMessage>() {
     override fun handleRequest(bizContext: BizContext, asyncContext: AsyncContext, request: AudienceMessage) {
+        bizContext.require(BrokerClientType.SERVER) // 仅允许来自SERVER的请求
         val serverMessages = mutableMapOf<String, MutableList<Message>>()
         for (message in request.messages) {
             val server = Broker.getPlayer(message.receiver)?.server ?: continue

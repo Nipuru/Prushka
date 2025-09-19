@@ -1,11 +1,12 @@
 package server.bukkit.gameplay.player
 
 import net.afyer.afybroker.client.Broker
-import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
+import server.bukkit.MessageType
 import server.bukkit.constant.DAY
 import server.bukkit.gameplay.chat.ChatManager
+import server.bukkit.gameplay.core.CoreManager
 import server.bukkit.gameplay.friend.FriendManager
 import server.bukkit.gameplay.inventory.InventoryManager
 import server.bukkit.gameplay.offline.OfflineManager
@@ -15,7 +16,6 @@ import server.bukkit.gameplay.teleport.TeleportManager
 import server.bukkit.logger.LogServer
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
-import server.bukkit.MessageType
 import server.bukkit.util.text.component
 import server.common.logger.Logger
 import server.common.service.PlayerDataService
@@ -31,12 +31,12 @@ import java.util.regex.Pattern
 class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueId: UUID) {
     val namePattern: Pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE)
     val dataService: PlayerDataService = Broker.getService(PlayerDataService::class.java, dbId.toString())
-    val bukkitPlayer by lazy { Bukkit.getPlayer(uniqueId)!! }
+    val bukkitPlayer: Player by lazy { Bukkit.getPlayer(uniqueId)!! }
     val locale: Locale get() = bukkitPlayer.locale()
 
     val writer = DataWriter(this)
     val offline = OfflineManager(this)
-    val core = server.bukkit.gameplay.core.CoreManager(this)
+    val core = CoreManager(this)
     val inventory = InventoryManager(this)
     val friend = FriendManager(this)
     val chat = ChatManager(this)

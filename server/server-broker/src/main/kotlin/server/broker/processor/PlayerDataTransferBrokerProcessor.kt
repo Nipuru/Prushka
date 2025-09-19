@@ -3,8 +3,10 @@ package server.broker.processor
 import com.alipay.remoting.AsyncContext
 import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
+import net.afyer.afybroker.core.BrokerClientType
 import net.afyer.afybroker.core.util.AbstractInvokeCallback
 import net.afyer.afybroker.server.Broker
+import server.broker.util.require
 import server.common.ClientTag
 import server.common.logger.Logger
 import server.common.message.PlayerDataTransferRequest
@@ -12,6 +14,7 @@ import server.common.message.PlayerDataTransferRequest
 class PlayerDataTransferBrokerProcessor : AsyncUserProcessor<PlayerDataTransferRequest>() {
 
     override fun handleRequest(bizCtx: BizContext, asyncCtx: AsyncContext, request: PlayerDataTransferRequest) {
+        bizCtx.require(BrokerClientType.SERVER) // 仅允许来自SERVER的请求
         val currentServer = Broker.getPlayer(request.uniqueId)?.server
         val fromServer = Broker.getClient(bizCtx)
         if (currentServer == null || !currentServer.hasTag(ClientTag.GAME) || currentServer == fromServer) {
