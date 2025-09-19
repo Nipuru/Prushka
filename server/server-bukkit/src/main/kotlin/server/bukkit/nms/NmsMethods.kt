@@ -77,7 +77,7 @@ fun String.message(): Message = PaperAdventure.asVanilla(component())
 
 fun Entity.sendSpawn(players: List<Player>) {
     this as CraftEntity
-    val serverEntity = ServerEntity(handle.level() as ServerLevel, handle, 0, false, {}, emptySet())
+    val serverEntity = ServerEntity(handle.level() as ServerLevel, handle, 0, false, { packet -> }, { packet, list -> }, emptySet())
     val packet = handle.getAddEntityPacket(serverEntity)
     for (player in players) {
         (player as CraftPlayer).handle.connection.send(packet)
