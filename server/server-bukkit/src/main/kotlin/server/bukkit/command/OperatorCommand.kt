@@ -158,6 +158,10 @@ class OperatorCommand : CommandTree {
         return Command.SINGLE_SUCCESS
     }
 
+    /**
+     * 设置玩家皮肤
+     * /prushka skin <player_name> <skin_name>
+     */
     fun skin(context: CommandContext<CommandSourceStack>): Int {
         val player = context.getArgument<GamePlayer>("player_name")
         val skinName = context.getArgument<String>("skin")
@@ -176,11 +180,15 @@ class OperatorCommand : CommandTree {
         return Command.SINGLE_SUCCESS
     }
 
+    /**
+     * 设置玩家称号
+     * /prushka rank <player_name> <rank>
+     */
     fun rank(context: CommandContext<CommandSourceStack>): Int {
         val player = context.getArgument<GamePlayer>("player_name")
         val rank = context.getArgument<StRank>("rank")
         player.core.rankId = rank.configId
-        MessageType.INFO.sendMessage(context.source.sender, "玩家 ${player.name} 的称号设置为 ${rank.name}")
+        MessageType.INFO.sendMessage(context.source.sender, "成功将玩家 ${player.name} 的称号设置为 ${rank.name}")
         return Command.SINGLE_SUCCESS
     }
 }
