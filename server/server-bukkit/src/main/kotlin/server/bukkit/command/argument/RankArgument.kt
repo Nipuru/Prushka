@@ -8,7 +8,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import server.bukkit.command.locale
 import server.bukkit.command.suggestion
-import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.nms.message
 import server.common.sheet.Sheet
 import server.common.sheet.StRank
@@ -32,6 +31,7 @@ object RankArgument : ArgumentType<StRank, String>(StringArgumentType.string()) 
     }
 
     override fun <S : Any> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder) = suggestion(context, builder) {
-        GamePlayerManager.getPlayers().map { it.name }
+        context as CommandSourceStack
+        Sheet.getAllStRank(context.locale).values.map { it.name }
     }
 }
