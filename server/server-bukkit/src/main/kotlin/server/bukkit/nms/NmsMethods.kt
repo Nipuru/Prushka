@@ -1,8 +1,10 @@
 package server.bukkit.nms
 
 import com.mojang.brigadier.Message
+import com.mojang.brigadier.exceptions.CommandSyntaxException
 import io.netty.channel.ChannelHandler
 import io.papermc.paper.adventure.PaperAdventure
+import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.minecraft.network.Connection
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
@@ -111,3 +113,8 @@ fun Player.addChannelHandler(handler: ChannelHandler) {
     }
 }
 
+@Suppress("UnstableApiUsage")
+fun CommandSourceStack.handleError(e: CommandSyntaxException) {
+    this as net.minecraft.commands.CommandSourceStack
+    handleError(e, false, null)
+}

@@ -2,6 +2,8 @@ package server.bukkit.gameplay.skin
 
 import com.destroystokyo.paper.profile.PlayerProfile
 import io.papermc.paper.datacomponent.item.ResolvableProfile
+import server.bukkit.BukkitPlugin
+import server.bukkit.util.completeFuture
 import java.net.URL
 import java.util.concurrent.CompletableFuture
 
@@ -24,7 +26,7 @@ class PlayerSkin(
      * IO操作 需要异步调用
      */
     val image: CompletableFuture<ByteArray> get() {
-        return CompletableFuture.supplyAsync {
+        return BukkitPlugin.bizThread.completeFuture {
             url.readBytes()
         }
     }

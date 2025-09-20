@@ -5,8 +5,10 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.resource.ResourcePackRequest
+import server.bukkit.BukkitPlugin
 import server.bukkit.config.Config
 import server.bukkit.gameplay.player.GamePlayer
+import server.bukkit.util.completeFuture
 import java.io.IOException
 import java.net.URI
 import java.net.http.HttpClient
@@ -84,7 +86,7 @@ class ResourcePack(
          * @return 资源包列表
          */
         fun listPacks(): CompletableFuture<List<ResourcePack>> {
-            return CompletableFuture.supplyAsync {
+            return BukkitPlugin.bizThread.completeFuture {
                 val serverAddress = Config.RESOURCEPACK_URL.string()
                 val url = "$serverAddress/api/packs"
                 val response = getData(url)
@@ -104,7 +106,7 @@ class ResourcePack(
          * @return 资源包信息
          */
         fun getServerPack(): CompletableFuture<ResourcePack?> {
-            return CompletableFuture.supplyAsync {
+            return BukkitPlugin.bizThread.completeFuture {
                 val serverAddress = Config.RESOURCEPACK_URL.string()
                 val packName = Config.RESOURCEPACK_PACK.string()
                 val url = "$serverAddress/api/packs/$packName"

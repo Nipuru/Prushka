@@ -30,7 +30,6 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
     // 更新玩家在线时间
     fun tick() {
         updatePlayedTime(System.currentTimeMillis(), false)
-        updatePublic()
         updateAfk()
         playerInfoUploader.upload(false)
     }
@@ -197,12 +196,6 @@ class CoreManager(player: GamePlayer) : BaseManager(player) {
         lastplayedTimeUpdate = systemTimeMills
         playedTime += systemTimeMills - updateTime
         this.playedTime = playedTime
-    }
-
-    // 更新玩家的公共玩家信息
-    private fun updatePublic() {
-
-
     }
 
     private fun updateAfk() {

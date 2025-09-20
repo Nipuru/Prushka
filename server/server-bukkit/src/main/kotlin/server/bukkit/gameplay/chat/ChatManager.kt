@@ -11,6 +11,7 @@ import server.bukkit.BukkitPlugin
 import server.bukkit.MessageType
 import server.bukkit.gameplay.player.*
 import server.bukkit.time.TimeManager
+import server.bukkit.util.completeFuture
 import server.common.message.FragmentMessage
 import server.common.message.PlayerChatMessage
 import server.common.message.PlayerInfoMessage
@@ -20,6 +21,7 @@ import server.common.sheet.getStRank
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.util.concurrent.CompletableFuture
 import kotlin.math.max
 
 class ChatManager(player: GamePlayer) : BaseManager(player) {
@@ -80,9 +82,9 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         player.bukkitPlayer.sendMessage(builder.build())
     }
 
-    fun receivePrivateChat(sender: PlayerInfoMessage, receiver: String, fragments: Array<FragmentMessage>) {
+    fun receivePrivateChat(sender: PlayerInfoMessage, receiver: String, fragments: Array<FragmentMessage>, isSender: Boolean) {
         val builder = text()
-        if (sender.playerId == player.playerId) {
+        if (isSender) {
             builder.append(privateSenderPrefix(receiver))
             builder.color(color(0x93a5ad))
             builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg $receiver "))
@@ -123,33 +125,21 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         }
     }
 
-    fun sendPublicChat(message: String) {
+    fun sendPublicChat(message: String): CompletableFuture<Boolean> {
         val fragments = MessageFormat.parse(player, message)
         val request = PlayerChatMessage(player.core.playerInfo, fragments)
 
-        BukkitPlugin.bizThread.submit {
-            val result = Broker.invokeSync<Boolean>(request)
-            if (!result) {
-                MessageType.FAILED.sendMessage(player.bukkitPlayer, "消息发送失败。")
-            }
+        return BukkitPlugin.bizThread.completeFuture {
+            Broker.invokeSync(request)
         }
     }
 
-    fun sendPrivateChat(receiver: String, message: String) {
+    fun sendPrivateChat(receiver: String, message: String): CompletableFuture<Boolean> {
         val fragments: Array<FragmentMessage> = MessageFormat.parse(player, message)
         val request = PlayerPrivateChatMessage(player.core.playerInfo, fragments, receiver)
 
-        BukkitPlugin.bizThread.submit {
-            val result = Broker.invokeSync<Boolean>(request)
-            receivePrivateChat(player.core.playerInfo, receiver, fragments)
-            if (!result) {
-                if (receiver == data.msgTarget) {
-                    MessageType.FAILED.sendMessage(player, "消息发送失败, 私聊目标无法收到消息, 已退出私聊模式")
-                    msgTarget = ""
-                } else {
-                    MessageType.FAILED.sendMessage(player, "消息发送失败, 私聊目标无法收到消息,")
-                }
-            }
+        return BukkitPlugin.bizThread.completeFuture {
+            Broker.invokeSync(request)
         }
     }
 
@@ -175,7 +165,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
 
         // 接受者名字
         builder.append(
-            text(receiver)
+            text("你对 $receiver 说")
                 .color(color(0x98b7c5))
         )
 
@@ -189,7 +179,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
 
         // 发送名字
         builder.append(
-            text(sender)
+            text("$sender 对你说")
                 .color(color(0x95cee9))
         )
 

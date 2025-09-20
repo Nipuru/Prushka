@@ -37,6 +37,20 @@ class PlayerChatListener : Listener {
             MessageType.WARNING.sendMessage(player, "你的聊天频率过快, 请稍后再试.")
             return
         }
-        player.chat.sendChat(message)
+        if (player.chat.msgTarget != "") {
+            player.chat.sendPrivateChat(player.chat.msgTarget, message).thenApply { success ->
+                if (!success) {
+                    MessageType.FAILED.sendMessage(player, "消息发送失败, 私聊目标无法收到消息, 已退出私聊模式")
+                    player.chat.msgTarget = ""
+                }
+            }
+
+        } else {
+            player.chat.sendPublicChat(message).thenApply { success ->
+                if (!success) {
+                    MessageType.FAILED.sendMessage(player.bukkitPlayer, "消息发送失败。")
+                }
+            }
+        }
     }
 }

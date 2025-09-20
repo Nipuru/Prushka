@@ -53,6 +53,7 @@ fun Node?.getFont(default: Keyed): Keyed {
 }
 
 fun Node?.getStyle(): Style? {
+    @Suppress("UnstableApiUsage")
     if (this is TagNode) {
         val tag = this.tag()
         if (tag is Inserting) {

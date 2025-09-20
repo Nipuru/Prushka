@@ -4,7 +4,9 @@ import net.afyer.afybroker.client.Broker
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.*
+import server.bukkit.util.completeFuture
 import server.common.message.TeleportInvokeRequest
 import server.common.message.TeleportType
 import java.util.concurrent.CompletableFuture
@@ -19,7 +21,6 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
     lateinit var lastLocation: LocationData private set
 
     fun preload(request: TableInfos) {
-        player.bukkitPlayer.location
         request.preload<LocationData>()
     }
 
@@ -44,7 +45,7 @@ class TeleportManager(player: GamePlayer) : BaseManager(player) {
             TeleportType.TPA -> TeleportInvokeRequest(froms = listOf(player.name), to = playerName)
             TeleportType.TPAHERE -> TeleportInvokeRequest(froms = listOf(playerName), to = player.name)
         }
-        return CompletableFuture.supplyAsync {
+        return BukkitPlugin.bizThread.completeFuture {
             Broker.invokeSync(message)
         }
     }

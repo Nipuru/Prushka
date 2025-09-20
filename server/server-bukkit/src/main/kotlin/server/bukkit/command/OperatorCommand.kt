@@ -35,7 +35,6 @@ import java.util.concurrent.CompletableFuture
  * @author Nipuru
  * @since 2024/11/19 15:11
  */
-@Suppress("UnstableApiUsage")
 class OperatorCommand : CommandTree {
 
     override val root: LiteralCommandNode<CommandSourceStack> = literal("prushka")

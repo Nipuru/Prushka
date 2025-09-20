@@ -23,7 +23,7 @@ object MessageFormat {
     }
 
     fun parse(sender: GamePlayer, message: String): Array<FragmentMessage> {
-        val index2Fragment = Int2ObjectOpenHashMap<Map.Entry<Int, FragmentMessage>>()
+        val index2Fragment = Int2ObjectOpenHashMap<Pair<Int, FragmentMessage>>()
         for (i in formatters.indices) {
             val formatter = formatters[i]
             if (formatter !is MessagePattern) continue
@@ -39,7 +39,7 @@ object MessageFormat {
                     continue
                 }
                 val fragmentMessage = FragmentMessage(i, fragment.args)
-                index2Fragment.putIfAbsent(matcher.start(), java.util.Map.entry(matcher.end(), fragmentMessage))
+                index2Fragment.putIfAbsent(matcher.start(), matcher.end() to fragmentMessage)
             }
         }
         val fragments: MutableList<FragmentMessage> = LinkedList()
@@ -53,8 +53,8 @@ object MessageFormat {
             }
             val plainFragment = plainFormatter.parse(sender, message.substring(start, i))
             if (plainFragment != null) fragments.add(FragmentMessage(plainFormatterIdx, plainFragment.args))
-            fragments.add(entry.value)
-            start = entry.key
+            fragments.add(entry.second)
+            start = entry.first
             i = start - 1
             i++
         }

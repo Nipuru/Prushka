@@ -17,7 +17,6 @@ import java.util.concurrent.CompletableFuture
  * @author Nipuru
  * @since 2024/11/20 09:52
  */
-@Suppress("UnstableApiUsage")
 class FriendCommand : CommandTree {
 
     override val root: LiteralCommandNode<CommandSourceStack> = literal("friend")

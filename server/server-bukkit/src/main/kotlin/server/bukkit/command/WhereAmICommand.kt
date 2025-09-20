@@ -19,7 +19,6 @@ import server.bukkit.util.CommandTree
  * @author Nipuru
  * @since 2024/11/13 15:25
  */
-@Suppress("UnstableApiUsage")
 class WhereAmICommand : CommandTree {
 
     override val root: LiteralCommandNode<CommandSourceStack> = literal("whereami")

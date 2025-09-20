@@ -1,17 +1,21 @@
 @file:Suppress("UnstableApiUsage")
 package server.bukkit.command
 
+import com.mojang.brigadier.Command
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.gamePlayer
+import server.bukkit.nms.handleError
 import server.bukkit.nms.message
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -71,4 +75,18 @@ fun <S : Any> suggestion(context: CommandContext<S>, builder: SuggestionsBuilder
         }
     }
     return builder.buildFuture()
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.executesAsync(command: Command<CommandSourceStack>): T {
+    return executes {
+        BukkitPlugin.bizThread.execute {
+            try {
+                command.run(it)
+            } catch (e: CommandSyntaxException) {
+                it.source.handleError(e)
+            }
+        }
+        Command.SINGLE_SUCCESS
+    }
 }

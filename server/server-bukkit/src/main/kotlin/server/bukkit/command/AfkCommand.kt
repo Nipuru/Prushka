@@ -15,7 +15,6 @@ import server.bukkit.util.CommandTree
  * @author Nipuru
  * @since 2024/11/12 18:02
  */
-@Suppress("UnstableApiUsage")
 class AfkCommand : CommandTree {
 
     override val root: LiteralCommandNode<CommandSourceStack> = literal("afk")

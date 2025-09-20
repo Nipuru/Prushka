@@ -55,7 +55,12 @@ fun Plugin.schedule(async: Boolean = false, delay: Long = 0, period: Long = -1, 
  */
 interface CommandTree {
     val root: LiteralCommandNode<CommandSourceStack>
+    val description: String? get() = null
+    val aliases: Collection<String> get() = emptyList()
+
     fun register(plugin: Plugin) {
-        plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commands -> commands.registrar().register(root) }
+        plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commands ->
+            commands.registrar().register(root, description, aliases)
+        }
     }
 }

@@ -12,10 +12,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
-import server.bukkit.command.AfkCommand
-import server.bukkit.command.FriendCommand
-import server.bukkit.command.OperatorCommand
-import server.bukkit.command.WhereAmICommand
+import server.bukkit.command.*
 import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.listener.*
 import server.bukkit.processor.*
@@ -153,7 +150,8 @@ object BukkitPlugin : JavaPlugin(), Executor {
         WhereAmICommand(),
         OperatorCommand(),
         AfkCommand(),
-        FriendCommand()
+        FriendCommand(),
+        MsgCommand(),
     )
 
     override fun execute(command: Runnable) {
