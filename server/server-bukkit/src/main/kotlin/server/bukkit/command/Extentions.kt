@@ -1,4 +1,3 @@
-@file:Suppress("UnstableApiUsage")
 package server.bukkit.command
 
 import com.mojang.brigadier.Command

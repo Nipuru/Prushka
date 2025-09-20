@@ -113,7 +113,6 @@ fun Player.addChannelHandler(handler: ChannelHandler) {
     }
 }
 
-@Suppress("UnstableApiUsage")
 fun CommandSourceStack.handleError(e: CommandSyntaxException) {
     this as net.minecraft.commands.CommandSourceStack
     handleError(e, false, null)

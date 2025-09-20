@@ -16,7 +16,6 @@ import server.bukkit.nms.message
  * @author Nipuru
  * @since 2025/08/05 17:30
  */
-@Suppress("UnstableApiUsage")
 object GamePlayerArgument : CustomArgumentType.Converted<GamePlayer, String> {
 
     private val ERROR_PLAYER_NOT_FOUND = DynamicCommandExceptionType { playerName ->

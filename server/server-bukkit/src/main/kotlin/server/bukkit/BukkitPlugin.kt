@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 package server.bukkit
 
 import com.alipay.remoting.rpc.protocol.UserProcessor

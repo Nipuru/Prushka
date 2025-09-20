@@ -20,7 +20,6 @@ import server.common.sheet.getAllStRank
  * @author Nipuru
  * @since 2025/08/05 17:30
  */
-@Suppress("UnstableApiUsage")
 object RankArgument : CustomArgumentType.Converted<StRank, String> {
 
     private val ERROR_RANK_NOT_FOUND = DynamicCommandExceptionType { rankName ->

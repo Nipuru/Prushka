@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 package server.bukkit.util
 
 import com.mojang.brigadier.tree.LiteralCommandNode

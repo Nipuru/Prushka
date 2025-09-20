@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture
  * @author Nipuru
  * @since 2025/08/05 17:30
  */
-@Suppress("UnstableApiUsage")
 object PlayerInfoArgument : CustomArgumentType.Converted<CompletableFuture<PlayerInfoMessage?>, String> {
 
     private val service by lazy { Broker.getService(PlayerInfoService::class.java) }

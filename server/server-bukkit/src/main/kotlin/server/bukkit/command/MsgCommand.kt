@@ -16,7 +16,6 @@ import server.common.message.PlayerInfoMessage
  * @author Nipuru
  * @since 2025/09/20 11:59
  */
-@Suppress("UnstableApiUsage")
 class MsgCommand : CommandTree {
     override val root: LiteralCommandNode<CommandSourceStack> = literal("msg")
         .then(argument("player_name", PlayerInfoArgument)
