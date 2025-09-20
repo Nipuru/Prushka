@@ -124,7 +124,8 @@ object BukkitPlugin : JavaPlugin(), Executor {
         PlayerCommandListener(),
         PlayerMoveListener(),
         PlayerSpawnLocationListener(spawnLocations.asMap()),
-        ServerExceptionListener()
+        ServerExceptionListener(),
+        UnknownCommandListener()
     )
 
     // 在这里添加网络处理器

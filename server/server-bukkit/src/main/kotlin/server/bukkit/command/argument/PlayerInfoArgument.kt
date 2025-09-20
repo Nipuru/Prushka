@@ -1,12 +1,11 @@
 package server.bukkit.command.argument
 
-import com.mojang.brigadier.arguments.ArgumentType
+import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.command.brigadier.argument.CustomArgumentType
 import net.afyer.afybroker.client.Broker
 import server.bukkit.BukkitPlugin
 import server.bukkit.util.completeFuture
@@ -19,15 +18,11 @@ import java.util.concurrent.CompletableFuture
  * @author Nipuru
  * @since 2025/08/05 17:30
  */
-object PlayerInfoArgument : CustomArgumentType.Converted<CompletableFuture<PlayerInfoMessage?>, String> {
+object PlayerInfoArgument : ArgumentType<CompletableFuture<PlayerInfoMessage?>, String>(StringArgumentType.string()) {
 
-    private val service by lazy { Broker.getService(PlayerInfoService::class.java) }
+    private val service = Broker.getService(PlayerInfoService::class.java)
 
-    override fun getNativeType(): ArgumentType<String> {
-        return StringArgumentType.string()
-    }
-
-    override fun convert(playerName: String): CompletableFuture<PlayerInfoMessage?>  {
+    override fun <S : Any> convert(playerName: String, reader: StringReader, source: S): CompletableFuture<PlayerInfoMessage?> {
         return BukkitPlugin.bizThread.completeFuture {
             service.getByName(playerName)
         }
