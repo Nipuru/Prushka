@@ -4,10 +4,14 @@ import com.alipay.remoting.AsyncContext
 import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.inventory.Book
+import net.kyori.adventure.title.Title.Times
+import net.kyori.adventure.title.TitlePart
 import org.bukkit.Bukkit
-import server.bukkit.util.text.TextFactory
+import server.bukkit.util.text.component
 import server.common.message.AudienceMessage
 import server.common.message.AudienceMessage.Message.SystemChat
+import java.time.Duration.ofMillis
 
 
 /**
@@ -16,8 +20,6 @@ import server.common.message.AudienceMessage.Message.SystemChat
  */
 class AudienceBukkitProcessor : AsyncUserProcessor<AudienceMessage>() {
 
-    private val miniMessage get() = TextFactory.instance.miniMessage
-
     override fun handleRequest(bizContext: BizContext, asyncContext: AsyncContext, request: AudienceMessage) {
         request.messages.forEach { message ->
             Bukkit.getPlayer(message.receiver)?.apply { send(message) }
@@ -25,7 +27,28 @@ class AudienceBukkitProcessor : AsyncUserProcessor<AudienceMessage>() {
     }
 
     private fun Audience.send(message: AudienceMessage.Message) = when(message) {
-        is SystemChat -> sendMessage(miniMessage.deserialize(message.message))
+        is SystemChat ->
+            sendMessage(message.message.component())
+        is AudienceMessage.Message.ActionBar ->
+            sendActionBar(message.message.component())
+        is AudienceMessage.Message.PlayerListFooter ->
+            sendPlayerListFooter(message.footer.component())
+        is AudienceMessage.Message.PlayerListHeader ->
+            sendPlayerListHeader(message.header.component())
+        is AudienceMessage.Message.PlayerListHeaderAndFooter ->
+            sendPlayerListHeaderAndFooter(message.header.component(), message.footer.component())
+        is AudienceMessage.Message.TitlePartTitle ->
+            sendTitlePart(TitlePart.TITLE, message.title.component())
+        is AudienceMessage.Message.TitlePartSubtitle ->
+            sendTitlePart(TitlePart.SUBTITLE, message.subtitle.component())
+        is AudienceMessage.Message.TitlePartTimes ->
+            sendTitlePart(TitlePart.TIMES, Times.times(ofMillis(message.fadeIn), ofMillis(message.stay), ofMillis(message.fadeOut)))
+        is AudienceMessage.Message.TitleClear ->
+            clearTitle()
+        is AudienceMessage.Message.TitleReset ->
+            resetTitle()
+        is AudienceMessage.Message.Book ->
+            openBook(Book.builder().title(message.title.component()).author(message.author.component()).pages(message.pages.map { it.component() }))
     }
 
     override fun interest(): String {

@@ -11,9 +11,9 @@ import org.bukkit.plugin.Plugin
 import server.bukkit.util.text.font.Bitmap
 import server.bukkit.util.text.font.Font
 import server.bukkit.util.text.font.FontRepository
-import server.bukkit.util.text.resolver.FixedWidthResolver.Position
 import server.bukkit.util.text.resolver.BitmapResolver
 import server.bukkit.util.text.resolver.FixedWidthResolver
+import server.bukkit.util.text.resolver.FixedWidthResolver.Position
 import server.bukkit.util.text.resolver.SplitResolver
 
 
@@ -49,6 +49,8 @@ fun String.component(): TextComponent {
         it.build()
     }
 }
+
+fun Component.string(): String = TextFactory.instance.miniMessage.serialize(this)
 
 /**
  * 追加字符串
