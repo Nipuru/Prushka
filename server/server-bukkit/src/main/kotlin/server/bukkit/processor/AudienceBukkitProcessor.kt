@@ -22,7 +22,7 @@ class AudienceBukkitProcessor : AsyncUserProcessor<AudienceMessage>() {
 
     override fun handleRequest(bizContext: BizContext, asyncContext: AsyncContext, request: AudienceMessage) {
         request.messages.forEach { message ->
-            Bukkit.getPlayer(message.receiver)?.apply { send(message) }
+            Bukkit.getPlayer(message.receiver)?.send(message)
         }
     }
 
