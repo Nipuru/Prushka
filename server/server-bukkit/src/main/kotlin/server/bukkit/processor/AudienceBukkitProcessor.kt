@@ -3,11 +3,13 @@ package server.bukkit.processor
 import com.alipay.remoting.AsyncContext
 import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
-import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.inventory.Book
 import net.kyori.adventure.title.Title.Times
 import net.kyori.adventure.title.TitlePart
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
+import server.bukkit.BukkitPlugin
+import server.bukkit.util.schedule
 import server.bukkit.util.text.component
 import server.common.message.AudienceMessage
 import server.common.message.AudienceMessage.Message.SystemChat
@@ -21,12 +23,14 @@ import java.time.Duration.ofMillis
 class AudienceBukkitProcessor : AsyncUserProcessor<AudienceMessage>() {
 
     override fun handleRequest(bizContext: BizContext, asyncContext: AsyncContext, request: AudienceMessage) {
-        request.messages.forEach { message ->
-            Bukkit.getPlayer(message.receiver)?.send(message)
+        BukkitPlugin.schedule {
+            request.messages.forEach { message ->
+                Bukkit.getPlayer(message.receiver)?.send(message)
+            }
         }
     }
 
-    private fun Audience.send(message: AudienceMessage.Message) = when(message) {
+    private fun Player.send(message: AudienceMessage.Message) = when(message) {
         is SystemChat ->
             sendMessage(message.message.component())
         is AudienceMessage.Message.ActionBar ->
