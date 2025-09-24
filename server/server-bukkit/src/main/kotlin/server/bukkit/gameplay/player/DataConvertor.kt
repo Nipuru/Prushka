@@ -1,7 +1,6 @@
 package server.bukkit.gameplay.player
 
-import server.common.message.FieldMessage
-import server.common.message.TableInfo
+import server.common.message.PlayerDataMessage.*
 import java.io.IOException
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -50,7 +49,7 @@ internal object DataConvertor {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> unpack(tables: Map<String, List<List<FieldMessage>>>, dataClass: Class<T>): T? {
+    fun <T> unpack(tables: Map<String, List<List<FieldValue>>>, dataClass: Class<T>): T? {
         val dataClassCache = getOrCache(dataClass)
         val instance = dataClassCache.constructor.newInstance() as T
         val fieldMessagesList = tables[dataClassCache.tableName]
@@ -68,7 +67,7 @@ internal object DataConvertor {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> unpackList(tables: Map<String, List<List<FieldMessage>>>, dataClass: Class<T>): List<T> {
+    fun <T> unpackList(tables: Map<String, List<List<FieldValue>>>, dataClass: Class<T>): List<T> {
         val dataClassCache = getOrCache(dataClass)
         val fieldMessagesList = tables[dataClassCache.tableName]
         if (fieldMessagesList.isNullOrEmpty()) {
@@ -96,15 +95,15 @@ internal object DataConvertor {
 
 
 
-    fun pack(tables: MutableMap<String, MutableList<List<FieldMessage>>>, data: Any) {
+    fun pack(tables: MutableMap<String, MutableList<List<FieldValue>>>, data: Any) {
         val dataClassCache = getOrCache(data.javaClass)
         val fieldMessagesList = tables.getOrPut(dataClassCache.tableName) { mutableListOf() }
-        val fieldMessages = mutableListOf<FieldMessage>()
+        val fieldValues = mutableListOf<FieldValue>()
         for ((key, value) in dataClassCache.fields) {
-            val fieldMessage = FieldMessage(key, value[data])
-            fieldMessages.add(fieldMessage)
+            val fieldValue = FieldValue(key, value[data])
+            fieldValues.add(fieldValue)
         }
-        fieldMessagesList.add(fieldMessages)
+        fieldMessagesList.add(fieldValues)
     }
 
     fun getOrCache(dataClass: Class<*>): DataClassCache {

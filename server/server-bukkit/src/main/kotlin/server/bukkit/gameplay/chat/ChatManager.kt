@@ -8,7 +8,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.color
 import server.bukkit.BukkitPlugin
-import server.bukkit.MessageType
 import server.bukkit.gameplay.player.*
 import server.bukkit.time.TimeManager
 import server.bukkit.util.completeFuture
@@ -87,11 +86,11 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         if (isSender) {
             builder.append(privateSenderPrefix(receiver))
             builder.color(color(0x93a5ad))
-            builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg $receiver "))
+            builder.clickEvent(ClickEvent.suggestCommand("/msg $receiver "))
         } else {
             builder.append(privateReceiverPrefix(sender.name))
             builder.color(color(0xc4eafa))
-            builder.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg ${sender.name} "))
+            builder.clickEvent(ClickEvent.suggestCommand("/msg ${sender.name} "))
         }
 
         builder.append(MessageFormat.format(sender, player, fragments))

@@ -4,7 +4,7 @@ import org.bukkit.Bukkit
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.DataConvertor.getOrCache
 import server.common.logger.Logger
-import server.common.message.FieldMessage
+import server.common.message.PlayerDataMessage.FieldValue
 import server.common.message.PlayerDataTransactionMessage
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -84,26 +84,26 @@ class DataWriter(private val player: GamePlayer) {
                     val dataClassCache = getOrCache(dataAction.data.javaClass)
                     val tableName = dataClassCache.tableName
 
-                    val uniqueFields = mutableListOf<FieldMessage>()
+                    val uniqueFields = mutableListOf<FieldValue>()
                     for (uniqueFieldName in dataClassCache.uniqueFields) {
                         val field = dataClassCache.tableFields[uniqueFieldName]
-                        val fieldMessage = FieldMessage(uniqueFieldName, field!![dataAction.data])
-                        uniqueFields.add(fieldMessage)
+                        val fieldValue = FieldValue(uniqueFieldName, field!![dataAction.data])
+                        uniqueFields.add(fieldValue)
                     }
                     when (dataAction.type) {
                         DataActionType.UPDATE -> {
-                            val updateFields = mutableListOf<FieldMessage>()
+                            val updateFields = mutableListOf<FieldValue>()
                             for (key in dataAction.fields!!) {
                                 val value = dataClassCache.updateFields[key]!!
-                                val fieldMessage = FieldMessage(key, value[dataAction.data])
-                                updateFields.add(fieldMessage)
+                                val fieldValue = FieldValue(key, value[dataAction.data])
+                                updateFields.add(fieldValue)
                             }
                             transaction.addUpdate(tableName, uniqueFields, updateFields)
                         }
                         DataActionType.INSERT -> {
                             for ((key, value) in dataClassCache.updateFields) {
-                                val fieldMessage = FieldMessage(key, value[dataAction.data])
-                                uniqueFields.add(fieldMessage)
+                                val fieldValue = FieldValue(key, value[dataAction.data])
+                                uniqueFields.add(fieldValue)
                             }
                             transaction.addInsert(tableName, uniqueFields)
                         }

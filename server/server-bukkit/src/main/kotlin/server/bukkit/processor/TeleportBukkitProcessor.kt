@@ -28,7 +28,7 @@ class GetPlayerLocationBukkitProcessor : AsyncUserProcessor<GetPlayerLocationReq
         val bukkitPlayer = Bukkit.getPlayerExact(message.name) ?: return null
         val player = bukkitPlayer.gamePlayer
         val location = player.teleport.lastLocation
-        return LocationMessage(location.worldName, location.x, location.y, location.z)
+        return LocationMessage(location.worldName, location.x, location.y, location.z, location.yaw, location.pitch)
     }
 
     override fun interest(): String {

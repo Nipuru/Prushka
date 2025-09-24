@@ -2,7 +2,7 @@ package server.database.schema
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
-import server.common.message.TableInfo
+import server.common.message.PlayerDataMessage.TableInfo
 import java.math.BigDecimal
 import java.math.MathContext
 import java.util.*

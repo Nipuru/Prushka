@@ -6,9 +6,9 @@ import org.jetbrains.exposed.sql.statements.StatementContext
 import org.jetbrains.exposed.sql.statements.expandArgs
 import org.jetbrains.exposed.sql.transactions.transaction
 import server.common.logger.Logger
-import server.common.message.FieldMessage
+import server.common.message.PlayerDataMessage.FieldValue
+import server.common.message.PlayerDataMessage.TableInfo
 import server.common.message.PlayerDataTransactionMessage
-import server.common.message.TableInfo
 import server.common.service.PlayerDataService
 import server.common.util.database.initSchema
 import server.database.schema.PlayerDataTable
@@ -24,17 +24,17 @@ class PlayerDataServiceImpl : PlayerDataService {
         }
     }
 
-    override fun queryPlayer(playerId: Int, tables: List<TableInfo>): MutableMap<String, MutableList<List<FieldMessage>>> {
+    override fun queryPlayer(playerId: Int, tables: List<TableInfo>): MutableMap<String, MutableList<List<FieldValue>>> {
         return transaction {
-            val result = mutableMapOf<String, MutableList<List<FieldMessage>>>()
+            val result = mutableMapOf<String, MutableList<List<FieldValue>>>()
             for (tableInfo in tables) {
                 val table = getTable(tableInfo)
-                val lists = mutableListOf<List<FieldMessage>>()
+                val lists = mutableListOf<List<FieldValue>>()
                 if (table.exists()) {
                     table.selectAll().where(table.playerId eq playerId).forEach {
-                        val fields = mutableListOf<FieldMessage>()
+                        val fields = mutableListOf<FieldValue>()
                         for ((fieldName, _, _) in tableInfo.fields) {
-                            val field = FieldMessage(fieldName, table.getColumn(it, fieldName))
+                            val field = FieldValue(fieldName, table.getColumn(it, fieldName))
                             fields.add(field)
                         }
                         lists.add(fields)

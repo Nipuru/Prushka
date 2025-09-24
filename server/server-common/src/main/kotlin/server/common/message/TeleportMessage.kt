@@ -12,38 +12,14 @@ enum class TeleportType {
     TPA, TPAHERE
 }
 
-class LocationMessage(
-    val worldName: String,
-    val x: Double,
-    val y: Double,
-    val z: Double,
-    val pitch: Float,
-    val yaw: Float,
-) : Serializable {
-    constructor(
-        worldName: String, x: Double, y: Double, z: Double
-    ) : this(
-        worldName, x, y, z, 0.0F, 0.0F
-    )
-
-    fun clone(): LocationMessage {
-        return LocationMessage(worldName, x, y, z, pitch, yaw)
-    }
-}
+class LocationMessage(val worldName: String, val x: Double, val y: Double, val z: Double, val pitch: Float, val yaw: Float) : Serializable
 
 class TeleportRequestMessage(
     val sender: PlayerInfoMessage,
     val receiver: String,
     val type: TeleportType
 ) : Serializable {
-    companion object {
-        const val SUCCESS = 1                 // 成功 (等待回应)
-        const val PLAYER_NOT_ONLINE = 2       // 玩家不在线
-        const val REQUEST_ALREADY_EXISTS = 3  // 已经发送过请求了，稍后再试
-        const val PLAYER_NOT_AVAILABLE = 4    // 玩家无法作出回应
-        const val REQUEST_DISABLED = 5        // 玩家关闭了传送请求
-        const val FRIEND_DIRECT = 6           // 好友快捷传送
-    }
+
 }
 
 class TeleportResponseMessage(
@@ -52,11 +28,7 @@ class TeleportResponseMessage(
     val type: TeleportType,
     val accepted: Boolean,
 ) : Serializable {
-    companion object {
-        const val SUCCESS = 1               // 成功
-        const val PLAYER_NOT_ONLINE = 2     // 玩家不在线
-        const val PLAYER_NOT_AVAILABLE = 3  // 玩家无法作出回应
-    }
+
 }
 
 class GetPlayerLocationRequest(val name: String) : Serializable

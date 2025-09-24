@@ -1,7 +1,7 @@
 package server.bukkit.gameplay.player
 
-import server.common.message.FieldMessage
-import server.common.message.TableInfo
+import server.common.message.PlayerDataMessage.FieldValue
+import server.common.message.PlayerDataMessage.TableInfo
 import java.io.Serializable
 
 interface Data
@@ -11,7 +11,7 @@ class TableInfos : Serializable {
     val tables = mutableListOf<TableInfo>()
 }
 
-class DataInfo(val tables: MutableMap<String, MutableList<List<FieldMessage>>>) {
+class DataInfo(val tables: MutableMap<String, MutableList<List<FieldValue>>>) {
 
     inline fun <reified T : Data> unpack(): T? = DataConvertor.unpack(tables, T::class.java)
 

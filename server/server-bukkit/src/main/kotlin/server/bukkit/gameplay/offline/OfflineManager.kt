@@ -3,7 +3,6 @@ package server.bukkit.gameplay.offline
 import net.afyer.afybroker.client.Broker
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.*
-import server.bukkit.util.schedule
 import server.common.message.PlayerOfflineDataMessage
 import java.util.*
 

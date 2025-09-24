@@ -6,9 +6,9 @@ import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands.argument
 import io.papermc.paper.command.brigadier.Commands.literal
+import server.bukkit.MessageType
 import server.bukkit.command.argument.PlayerInfoArgument
 import server.bukkit.util.CommandTree
-import server.bukkit.MessageType
 import server.common.message.PlayerInfoMessage
 import java.util.concurrent.CompletableFuture
 
