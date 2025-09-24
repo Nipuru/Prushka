@@ -151,6 +151,7 @@ object BukkitPlugin : JavaPlugin(), Executor {
         AfkCommand(),
         FriendCommand(),
         MsgCommand(),
+        MsgModeCommand()
     )
 
     override fun execute(command: Runnable) {

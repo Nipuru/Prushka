@@ -46,9 +46,9 @@ class PlayerChatListener : Listener {
             }
 
         } else {
-            player.chat.sendPublicChat(message).thenApply { success ->
+            player.chat.sendChat(message).thenApply { success ->
                 if (!success) {
-                    MessageType.FAILED.sendMessage(player.bukkitPlayer, "消息发送失败。")
+                    MessageType.FAILED.sendMessage(player, "消息发送失败。")
                 }
             }
         }

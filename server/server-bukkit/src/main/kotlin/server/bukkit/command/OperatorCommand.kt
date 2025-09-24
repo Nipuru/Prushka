@@ -72,7 +72,7 @@ class OperatorCommand : CommandTree {
     private fun text(context: CommandContext<CommandSourceStack>): Int {
         val sender = context.source.sender
         val message = StringArgumentType.getString(context, "args").component()
-        sender.sendMessage("文本宽度: ${message.getWidth()}")
+        MessageType.INFO.sendMessage(sender, "文本宽度: ${message.getWidth()}")
         sender.sendMessage(message)
         return Command.SINGLE_SUCCESS
     }
@@ -85,7 +85,7 @@ class OperatorCommand : CommandTree {
         val sender = context.source.sender
         MessageType.INFO.sendMessage(sender, "正在重载配置文件...")
         BukkitPlugin.reload()
-        MessageType.INFO.sendMessage(sender, "重载完成")
+        MessageType.ALLOW.sendMessage(sender, "重载完成")
         return Command.SINGLE_SUCCESS
     }
 
@@ -116,6 +116,7 @@ class OperatorCommand : CommandTree {
                 return@thenAccept
             }
             player.teleport.teleport(target.name, TeleportType.TPA)
+            MessageType.INFO.sendMessage(player, "正在将你传送至玩家 ${target.name}")
         }
 
         return Command.SINGLE_SUCCESS
@@ -133,6 +134,7 @@ class OperatorCommand : CommandTree {
                 return@thenAccept
             }
             player.teleport.teleport(target.name, TeleportType.TPAHERE)
+            MessageType.INFO.sendMessage(player, "正在将玩家 ${target.name} 传送至你")
         }
         return Command.SINGLE_SUCCESS
     }
@@ -152,7 +154,7 @@ class OperatorCommand : CommandTree {
                 return@whenComplete
             }
             player.setResourcePack(pack)
-            MessageType.INFO.sendMessage(context.source.sender, "资源包已发送")
+            MessageType.ALLOW.sendMessage(context.source.sender, "资源包已发送")
         }
         MessageType.INFO.sendMessage(context.source.sender, "正在获取资源包信息...")
         return Command.SINGLE_SUCCESS
@@ -174,7 +176,7 @@ class OperatorCommand : CommandTree {
                 return@whenComplete
             }
             player.skin.setSkin(skin)
-            MessageType.INFO.sendMessage(context.source.sender, "玩家 ${player.name} 的皮肤已更新")
+            MessageType.ALLOW.sendMessage(context.source.sender, "玩家 ${player.name} 的皮肤已更新")
         }
         MessageType.INFO.sendMessage(context.source.sender, "正在获取皮肤信息...")
         return Command.SINGLE_SUCCESS
@@ -188,7 +190,7 @@ class OperatorCommand : CommandTree {
         val player = context.getArgument<GamePlayer>("player_name")
         val rank = context.getArgument<StRank>("rank")
         player.core.rankId = rank.configId
-        MessageType.INFO.sendMessage(context.source.sender, "成功将玩家 ${player.name} 的称号设置为 ${rank.name}")
+        MessageType.ALLOW.sendMessage(context.source.sender, "成功将玩家 ${player.name} 的称号设置为 ${rank.name}")
         return Command.SINGLE_SUCCESS
     }
 }

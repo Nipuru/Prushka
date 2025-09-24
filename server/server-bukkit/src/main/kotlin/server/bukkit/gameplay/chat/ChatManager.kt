@@ -116,15 +116,10 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         }
     }
 
-    fun sendChat(message: String) {
-        if (data.msgTarget != "") {
-            sendPrivateChat(data.msgTarget, message)
-        } else {
-            sendPublicChat(message)
-        }
-    }
-
-    fun sendPublicChat(message: String): CompletableFuture<Boolean> {
+    /**
+     * 发送公屏消息
+     */
+    fun sendChat(message: String): CompletableFuture<Boolean> {
         val fragments = MessageFormat.parse(player, message)
         val request = PlayerChatMessage(player.core.playerInfo, fragments)
 
@@ -133,9 +128,16 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         }
     }
 
+    /**
+     * 发送私聊消息
+     */
     fun sendPrivateChat(receiver: String, message: String): CompletableFuture<Boolean> {
         val fragments: Array<FragmentMessage> = MessageFormat.parse(player, message)
-        val request = PlayerPrivateChatMessage(player.core.playerInfo, fragments, receiver)
+        val request = PlayerPrivateChatMessage(
+            sender = player.core.playerInfo,
+            fragments = fragments,
+            receiver = receiver
+        )
 
         return BukkitPlugin.bizThread.completeFuture {
             Broker.invokeSync(request)
