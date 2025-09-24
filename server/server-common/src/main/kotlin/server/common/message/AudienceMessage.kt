@@ -21,5 +21,7 @@ class AudienceMessage(val messages: List<Message>): Serializable {
         class TitleClear(receiver: UUID): Message(receiver)
         class TitleReset(receiver: UUID): Message(receiver)
         class Book(receiver: UUID, val title: String, val author: String, val pages: List<String>): Message(receiver)
+        class PlaySound(receiver: UUID, val name: String, val source: Int, val volume: Float, val pitch: Float, val seed: Long?): Message(receiver)
+        class StopSound(receiver: UUID, val name: String?, val source: Int?): Message(receiver)
     }
 }

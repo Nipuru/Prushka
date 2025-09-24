@@ -4,6 +4,10 @@ import com.alipay.remoting.AsyncContext
 import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.AsyncUserProcessor
 import net.kyori.adventure.inventory.Book
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.sound.Sound.Source
+import net.kyori.adventure.sound.SoundStop
 import net.kyori.adventure.title.Title.Times
 import net.kyori.adventure.title.TitlePart
 import org.bukkit.Bukkit
@@ -53,6 +57,19 @@ class AudienceBukkitProcessor : AsyncUserProcessor<AudienceMessage>() {
             resetTitle()
         is AudienceMessage.Message.Book ->
             openBook(Book.builder().title(message.title.component()).author(message.author.component()).pages(message.pages.map { it.component() }))
+        is AudienceMessage.Message.PlaySound ->
+            playSound(Sound.sound(Key.key(message.name), Source.entries[message.source], message.volume, message.pitch))
+        is AudienceMessage.Message.StopSound -> {
+            val name = message.name?.let { Key.key(it) }
+            val source = message.source?.let { Source.entries[it] }
+            val stop = when {
+                name != null && source != null -> SoundStop.namedOnSource(name, source)
+                name != null -> SoundStop.named(name)
+                source != null -> SoundStop.source(source)
+                else -> SoundStop.all()
+            }
+            stopSound(stop)
+        }
     }
 
     override fun interest(): String {

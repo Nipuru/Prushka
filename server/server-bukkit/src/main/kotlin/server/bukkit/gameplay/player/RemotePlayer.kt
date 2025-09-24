@@ -12,9 +12,13 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
 import net.kyori.adventure.title.TitlePart
 import server.bukkit.scheduler.AudienceMessenger.send
+import server.bukkit.util.text.component
 import server.bukkit.util.text.string
 import server.common.message.AudienceMessage.Message.*
 import server.common.message.PlayerInfoMessage
+import server.common.sheet.Sheet
+import server.common.sheet.getStMessage
+import java.text.MessageFormat
 import java.util.*
 
 
@@ -26,48 +30,55 @@ import java.util.*
  */
 val PlayerInfoMessage.remotePlayer: RemotePlayer get() = RemotePlayer(this)
 
-class RemotePlayer(val playerInfo: PlayerInfoMessage) : Audience {
+class RemotePlayer(val info: PlayerInfoMessage) : Audience {
+
+    fun sendMessage(key: String, vararg args: Any?) {
+        val cfg = Sheet.getStMessage(key, info.locale) ?: return
+        val message = MessageFormat.format(cfg.value, *args).component()
+        sendMessage(message)
+    }
+
     override fun sendMessage(message: Component) {
-        send(SystemChat(receiver = playerInfo.uniqueId, message = message.string()))
+        send(SystemChat(receiver = info.uniqueId, message = message.string()))
     }
 
     override fun deleteMessage(signature: SignedMessage.Signature) =
         throw UnsupportedOperationException("Not supported")
 
     override fun sendActionBar(message: Component) {
-        send(ActionBar(receiver = playerInfo.uniqueId, message = message.string()))
+        send(ActionBar(receiver = info.uniqueId, message = message.string()))
     }
 
     override fun sendPlayerListHeader(header: Component) {
-        send(PlayerListHeader(receiver = playerInfo.uniqueId, header = header.string()))
+        send(PlayerListHeader(receiver = info.uniqueId, header = header.string()))
     }
 
     override fun sendPlayerListFooter(footer: Component) {
-        send(PlayerListFooter(receiver = playerInfo.uniqueId, footer = footer.string()))
+        send(PlayerListFooter(receiver = info.uniqueId, footer = footer.string()))
     }
 
     override fun sendPlayerListHeaderAndFooter(header: Component, footer: Component) {
-        send(PlayerListHeaderAndFooter(receiver = playerInfo.uniqueId, header = header.string(), footer = footer.string()))
+        send(PlayerListHeaderAndFooter(receiver = info.uniqueId, header = header.string(), footer = footer.string()))
     }
 
-    override fun <T> sendTitlePart(part: TitlePart<T>, value: T) {
+    override fun <T : Any> sendTitlePart(part: TitlePart<T>, value: T) {
         val request = when (part) {
             TitlePart.TITLE -> {
                 TitlePartTitle(
-                    receiver = playerInfo.uniqueId,
+                    receiver = info.uniqueId,
                     title = (value as Component).string()
                 )
             }
             TitlePart.SUBTITLE -> {
                 TitlePartSubtitle(
-                    receiver = playerInfo.uniqueId,
+                    receiver = info.uniqueId,
                     subtitle = (value as Component).string()
                 )
             }
             TitlePart.TIMES -> {
                 val times = value as Title.Times
                 TitlePartTimes(
-                    receiver = playerInfo.uniqueId,
+                    receiver = info.uniqueId,
                     fadeIn = times.fadeIn().toMillis(),
                     stay = times.stay().toMillis(),
                     fadeOut = times.fadeOut().toMillis()
@@ -78,27 +89,35 @@ class RemotePlayer(val playerInfo: PlayerInfoMessage) : Audience {
         send(request)
     }
     override fun clearTitle() {
-        send(TitleClear(receiver = playerInfo.uniqueId))
+        send(TitleClear(receiver = info.uniqueId))
     }
 
     override fun resetTitle() {
-        send(TitleReset(receiver = playerInfo.uniqueId))
+        send(TitleReset(receiver = info.uniqueId))
     }
 
     override fun showBossBar(bar: BossBar) =
         throw UnsupportedOperationException("Not supported")
     override fun hideBossBar(bar: BossBar) =
         throw UnsupportedOperationException("Not supported")
-    override fun playSound(sound: Sound) =
-        throw UnsupportedOperationException("Not supported")
+    override fun playSound(sound: Sound) {
+        send(PlaySound(
+            receiver = info.uniqueId, name = sound.name().asMinimalString(),
+            source = sound.source().ordinal,
+            volume = sound.volume(),
+            pitch = sound.pitch(),
+            seed = if (sound.seed().isPresent) sound.seed().asLong else null,
+        ))
+    }
     override fun playSound(sound: Sound, x: Double, y: Double, z: Double) =
         throw UnsupportedOperationException("Not supported")
     override fun playSound(sound: Sound, emitter: Sound.Emitter) =
         throw UnsupportedOperationException("Not supported")
-    override fun stopSound(stop: SoundStop) =
-        throw UnsupportedOperationException("Not supported")
+    override fun stopSound(stop: SoundStop) {
+        send(StopSound(receiver = info.uniqueId, name = stop.sound()?.asMinimalString(), source = stop.source()?.ordinal))
+    }
     override fun openBook(book: Book) {
-        send(Book(receiver = playerInfo.uniqueId, title = book.title().string(), author = book.author().string(), pages = book.pages().map { it.string() }))
+        send(Book(receiver = info.uniqueId, title = book.title().string(), author = book.author().string(), pages = book.pages().map { it.string() }))
     }
 
     override fun sendResourcePacks(request: ResourcePackRequest) =
