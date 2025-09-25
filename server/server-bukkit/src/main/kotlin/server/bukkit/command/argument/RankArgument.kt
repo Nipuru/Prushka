@@ -9,6 +9,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import server.bukkit.command.locale
 import server.bukkit.command.suggestion
 import server.bukkit.nms.message
+import server.bukkit.util.CommandArgumentType
 import server.common.sheet.Sheet
 import server.common.sheet.StRank
 import server.common.sheet.getAllStRank
@@ -18,7 +19,7 @@ import server.common.sheet.getAllStRank
  * @author Nipuru
  * @since 2025/08/05 17:30
  */
-object RankArgument : ArgumentType<StRank, String>(StringArgumentType.string()) {
+object RankArgument : CommandArgumentType<StRank, String>(StringArgumentType.string()) {
 
     private val ERROR_RANK_NOT_FOUND = DynamicCommandExceptionType { rankName ->
         "称号不存在: '$rankName'".message()

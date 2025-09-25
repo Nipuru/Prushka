@@ -1,4 +1,4 @@
-package server.bukkit.command.argument
+package server.bukkit.util
 
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
  * @author Nipuru
  * @since 2025/09/20 16:45
  */
-abstract class ArgumentType<T : Any, N : Any>(val type: ArgumentType<N>) : CustomArgumentType<T, N> {
+abstract class CommandArgumentType<T : Any, N : Any>(val type: ArgumentType<N>) : CustomArgumentType<T, N> {
 
     final override fun parse(reader: StringReader): T =
         throw UnsupportedOperationException()
@@ -26,5 +26,5 @@ abstract class ArgumentType<T : Any, N : Any>(val type: ArgumentType<N>) : Custo
 
     abstract fun <S : Any> convert(nativeType: N, reader: StringReader, source: S): T
 
-    override abstract fun <S : Any> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): CompletableFuture<Suggestions>
+    abstract override fun <S : Any> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): CompletableFuture<Suggestions>
 }

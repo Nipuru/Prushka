@@ -9,13 +9,14 @@ import server.bukkit.command.suggestion
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.nms.message
+import server.bukkit.util.CommandArgumentType
 
 
 /**
  * @author Nipuru
  * @since 2025/08/05 17:30
  */
-object GamePlayerArgument : ArgumentType<GamePlayer, String>(StringArgumentType.string()) {
+object GamePlayerArgument : CommandArgumentType<GamePlayer, String>(StringArgumentType.string()) {
 
     private val ERROR_PLAYER_NOT_FOUND = DynamicCommandExceptionType { playerName ->
         "玩家不存在: '$playerName'".message()
