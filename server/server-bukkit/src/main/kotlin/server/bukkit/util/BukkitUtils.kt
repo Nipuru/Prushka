@@ -1,8 +1,5 @@
 package server.bukkit.util
 
-import com.mojang.brigadier.tree.LiteralCommandNode
-import io.papermc.paper.command.brigadier.CommandSourceStack
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import org.bukkit.inventory.Inventory
@@ -26,15 +23,6 @@ fun Inventory.getEmptySlot(): Int {
     }
 }
 
-/**
- * 定时任务基类
- */
-abstract class ScheduleTask(val async: Boolean = false, val delay: Long = 0, val period: Long = -1) {
-    protected abstract fun run(task: BukkitTask)
-    fun schedule(plugin: Plugin): BukkitTask {
-        return plugin.schedule(async, delay, period, this::run)
-    }
-}
 
 /**
  * Bukkit 任务调度
@@ -48,17 +36,3 @@ fun Plugin.schedule(async: Boolean = false, delay: Long = 0, period: Long = -1, 
     return task
 }
 
-/**
- * 命令树
- */
-interface CommandTree {
-    val root: LiteralCommandNode<CommandSourceStack>
-    val description: String? get() = null
-    val aliases: Collection<String> get() = emptyList()
-
-    fun register(plugin: Plugin) {
-        plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commands ->
-            commands.registrar().register(root, description, aliases)
-        }
-    }
-}
