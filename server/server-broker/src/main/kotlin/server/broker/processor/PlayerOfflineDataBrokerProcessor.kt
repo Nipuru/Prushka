@@ -4,7 +4,7 @@ import com.alipay.remoting.BizContext
 import com.alipay.remoting.rpc.protocol.SyncUserProcessor
 import net.afyer.afybroker.server.Broker
 import net.afyer.afybroker.server.proxy.BrokerClientItem
-import server.broker.player.GamePlayers
+import server.broker.player.ServerPlayerManager
 import server.common.ClientTag
 import server.common.ClientType
 import server.common.message.PlayerOfflineDataMessage
@@ -20,7 +20,7 @@ class PlayerOfflineDataBrokerProcessor : SyncUserProcessor<PlayerOfflineDataMess
     }
 
     private fun onlineRequest(request: PlayerOfflineDataMessage): Boolean {
-        val player = GamePlayers.getPlayer(request.name)
+        val player = ServerPlayerManager.getPlayer(request.name)
 
         val bukkit = player?.brokerPlayer?.server ?: return false
         if (!bukkit.hasTag(ClientTag.GAME)) return false
