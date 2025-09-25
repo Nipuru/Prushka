@@ -3,6 +3,7 @@ package server.bukkit.gameplay.player
 import net.afyer.afybroker.client.Broker
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import server.bukkit.BukkitPlugin
 import server.bukkit.MessageType
 import server.bukkit.constant.DAY
 import server.bukkit.gameplay.chat.ChatManager
@@ -16,6 +17,7 @@ import server.bukkit.gameplay.teleport.TeleportManager
 import server.bukkit.logger.LogServer
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
+import server.bukkit.util.schedule
 import server.bukkit.util.text.component
 import server.common.logger.Logger
 import server.common.service.PlayerDataService
@@ -205,5 +207,11 @@ class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueI
         val cfg = Sheet.getStMessage(key, locale) ?: return
         val message = MessageFormat.format(cfg.value, *args).component()
         bukkitPlayer.sendMessage(message)
+    }
+
+    fun kickIfPossible() {
+        val bukkitPlayer = Bukkit.getPlayer(uniqueId) ?: return
+        if (Bukkit.isPrimaryThread()) bukkitPlayer.kick()
+        else BukkitPlugin.schedule { bukkitPlayer.kick() }
     }
 }

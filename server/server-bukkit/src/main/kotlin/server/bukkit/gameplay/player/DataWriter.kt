@@ -1,6 +1,5 @@
 package server.bukkit.gameplay.player
 
-import org.bukkit.Bukkit
 import server.bukkit.BukkitPlugin
 import server.bukkit.gameplay.player.DataConvertor.getOrCache
 import server.common.logger.Logger
@@ -55,7 +54,7 @@ class DataWriter(private val player: GamePlayer) {
                         dataAction.type,
                         dataAction.data.javaClass.name
                     )
-                    kickPlayerIfPossible(player)
+                    player.kickIfPossible()
                     return  // 跳过本次的操作
                 }
 
@@ -115,14 +114,8 @@ class DataWriter(private val player: GamePlayer) {
                 player.dataService.transaction(transaction)
             } catch (e: Exception) {
                 Logger.error("Failed to write database for player {}", player.playerId, e)
-                kickPlayerIfPossible(player)
+                player.kickIfPossible()
             }
         }
-    }
-
-    private fun kickPlayerIfPossible(player: GamePlayer) {
-        val bukkitPlayer = Bukkit.getPlayer(player.uniqueId) ?: return
-        if (Bukkit.isPrimaryThread()) bukkitPlayer.kick()
-        else Bukkit.getScheduler().runTask(BukkitPlugin, Runnable { bukkitPlayer.kick() })
     }
 }
