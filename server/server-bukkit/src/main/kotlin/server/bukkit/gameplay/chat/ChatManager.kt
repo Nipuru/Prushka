@@ -72,7 +72,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         player.update(data, ChatData::mute)
     }
 
-    fun receivePublicChat(sender: PlayerInfoMessage, fragments: Array<FragmentMessage>) {
+    fun receiveChat(sender: PlayerInfoMessage, fragments: Array<FragmentMessage>) {
         val rank = Sheet.getStRank(sender.rankId, player.locale)!!
         val builder = text()
         builder.color(TextColor.fromHexString(rank.chatColor))

@@ -15,7 +15,7 @@ class PlayerChatServerProcessor : AsyncUserProcessor<PlayerChatMessage>() {
     override fun handleRequest(bizContext: BizContext, asyncContext: AsyncContext, request: PlayerChatMessage) {
         for (player in GamePlayerManager.getPlayers()) {
             val manager = player.chat
-            manager.receivePublicChat(request.sender, request.fragments)
+            manager.receiveChat(request.sender, request.fragments)
         }
     }
 
