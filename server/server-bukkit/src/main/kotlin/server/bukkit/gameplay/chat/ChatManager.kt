@@ -76,7 +76,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         val rank = Sheet.getStRank(sender.rankId, player.locale)!!
         val builder = text()
         builder.color(TextColor.fromHexString(rank.chatColor))
-        builder.append(publicChatPrefix(sender))
+        builder.append(chatPrefix(sender))
         builder.append(MessageFormat.format(sender, player, fragments))
         player.bukkitPlayer.sendMessage(builder.build())
     }
@@ -144,7 +144,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
         }
     }
 
-    private fun publicChatPrefix(sender: PlayerInfoMessage): Component {
+    private fun chatPrefix(sender: PlayerInfoMessage): Component {
         val rank = Sheet.getStRank(sender.rankId, player.locale)!!
         val builder = text()
 
