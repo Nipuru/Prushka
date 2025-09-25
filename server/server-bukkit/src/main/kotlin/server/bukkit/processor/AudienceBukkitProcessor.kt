@@ -64,8 +64,8 @@ class AudienceBukkitProcessor : AsyncUserProcessor<AudienceMessage>() {
                 volume(message.volume)
                 pitch(message.pitch)
                 message.seed?.let { seed(it) }
-            }
-            playSound(sound.build())
+            }.build()
+            playSound(sound)
         }
         is AudienceMessage.Message.StopSound -> {
             val name = message.name?.let { Key.key(it) }
