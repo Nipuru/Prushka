@@ -25,8 +25,9 @@ class PlayerChatServerProcessor : AsyncUserProcessor<PlayerChatMessage>() {
 
 class PlayerPrivateChatServerProcessor : SyncUserProcessor<PlayerPrivateChatMessage>() {
     override fun handleRequest(bizContext: BizContext, request: PlayerPrivateChatMessage): Boolean {
-        val sender = GamePlayerManager.getPlayerOrNull(request.sender.uniqueId)
-        sender?.chat?.receivePrivateChat(request.sender, request.receiver, request.fragments, true)
+        GamePlayerManager.getPlayerOrNull(request.sender.uniqueId)?.apply {
+            chat.receivePrivateChat(request.sender, request.receiver, request.fragments, true)
+        }
         Bukkit.getPlayerExact(request.receiver)?.gamePlayer?.apply {
             chat.receivePrivateChat(request.sender, request.receiver, request.fragments, false)
             return true
