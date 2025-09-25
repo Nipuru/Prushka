@@ -57,8 +57,16 @@ class AudienceBukkitProcessor : AsyncUserProcessor<AudienceMessage>() {
             resetTitle()
         is AudienceMessage.Message.Book ->
             openBook(Book.builder().title(message.title.component()).author(message.author.component()).pages(message.pages.map { it.component() }))
-        is AudienceMessage.Message.PlaySound ->
-            playSound(Sound.sound(Key.key(message.name), Source.entries[message.source], message.volume, message.pitch))
+        is AudienceMessage.Message.PlaySound -> {
+            val sound = Sound.sound().apply {
+                type(Key.key(message.name))
+                source(Source.entries[message.source])
+                volume(message.volume)
+                pitch(message.pitch)
+                message.seed?.let { seed(it) }
+            }
+            playSound(sound.build())
+        }
         is AudienceMessage.Message.StopSound -> {
             val name = message.name?.let { Key.key(it) }
             val source = message.source?.let { Source.entries[it] }
