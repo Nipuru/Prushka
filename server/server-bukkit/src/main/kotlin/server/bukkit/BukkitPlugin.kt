@@ -1,12 +1,12 @@
 package server.bukkit
 
 import com.alipay.remoting.rpc.protocol.UserProcessor
+import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.core.util.ConnectionEventTypeProcessor
 import net.kyori.adventure.key.Key
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -21,6 +21,7 @@ import server.bukkit.scheduler.ServerTickTask
 import server.bukkit.time.TimeManager
 import server.bukkit.util.CommandTree
 import server.bukkit.util.ScheduleTask
+import server.bukkit.util.ServerThreadExecutor
 import server.bukkit.util.register
 import server.bukkit.util.text.TextFactory
 import server.bukkit.util.text.font.Bitmap
@@ -28,7 +29,10 @@ import server.common.ClientTag
 import server.common.sheet.Sheet
 import server.common.sheet.getAllStBitmap
 import java.io.File
-import java.util.concurrent.*
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.SynchronousQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 /**
  * Bukkit 插件主类
@@ -36,17 +40,20 @@ import java.util.concurrent.*
  * @author Nipuru
  * @since 2024/9/16 0:17
  */
-object BukkitPlugin : JavaPlugin(), Executor {
+object BukkitPlugin : JavaPlugin() {
 
     val enableLatch = CountDownLatch(1)
-    val bizThread: ExecutorService = Executors.newCachedThreadPool(ThreadFactoryBuilder()
-        .setDaemon(false)
-        .setNameFormat("Prushka-bizThread-%d")
-        .build())
+    val serverThread = ServerThreadExecutor(this)
+    val bizThread = ThreadPoolExecutor(
+        0, Int.MAX_VALUE,
+        60L, TimeUnit.SECONDS,
+        SynchronousQueue(),
+        ThreadFactoryBuilder().setDaemon(false).setNameFormat("Prushka-bizThread-%d").build()
+    )
 
-    private val spawnLocations = CacheBuilder.newBuilder()
+    private val spawnLocations: Cache<String, Location> = CacheBuilder.newBuilder()
         .expireAfterAccess(1, TimeUnit.MINUTES)
-        .build<String, Location>()
+        .build()
 
     override fun onLoad() {
         // 注册 broker-client 信息
@@ -153,10 +160,6 @@ object BukkitPlugin : JavaPlugin(), Executor {
         MsgCommand(),
         MsgModeCommand()
     )
-
-    override fun execute(command: Runnable) {
-        Bukkit.getScheduler().runTask(this, command)
-    }
 }
 
 
