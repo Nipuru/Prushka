@@ -25,6 +25,7 @@ import server.auth.service.PlayerServiceImpl
 import server.auth.util.JWTUtil
 import server.auth.util.overdue
 import server.common.ClientType
+import server.common.logger.Logger
 import server.common.service.PlayerService
 import server.common.util.database.DatabaseFactory
 
@@ -90,6 +91,7 @@ object AuthServer {
             BoltUtils.initProtocols()
             brokerClient.startup()
             brokerClient.ping()
+            brokerClient.printInformation(Logger)
         } catch (e: LifeCycleException) {
             logger.error("Broker client startup failed!")
             throw e

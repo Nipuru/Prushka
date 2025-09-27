@@ -69,6 +69,7 @@ internal object SharedServer {
             BoltUtils.initProtocols()
             brokerClient.startup()
             brokerClient.ping()
+            brokerClient.printInformation(Logger)
         } catch (e: LifeCycleException) {
             Logger.error("Broker client startup failed!")
             throw e
