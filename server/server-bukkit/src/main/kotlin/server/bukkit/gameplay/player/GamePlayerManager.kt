@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap
 val Player.gamePlayer: GamePlayer get() = GamePlayerManager.getPlayer(uniqueId)
 
 object GamePlayerManager {
-    private val byUniqueId: MutableMap<UUID, GamePlayer> = ConcurrentHashMap()
-    private val byPlayerId: MutableMap<Int, GamePlayer> = ConcurrentHashMap()
-    private val pendingPlayers = mutableMapOf<UUID, GamePlayer>()
+    private val byUniqueId = ConcurrentHashMap<UUID, GamePlayer>()
+    private val byPlayerId = ConcurrentHashMap<Int, GamePlayer>()
+    private val pendingPlayers = ConcurrentHashMap<UUID, GamePlayer>()
 
     // 插件启用时调用
     fun loadAll() {
