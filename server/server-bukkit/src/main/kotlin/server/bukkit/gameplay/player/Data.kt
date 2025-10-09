@@ -1,6 +1,5 @@
 package server.bukkit.gameplay.player
 
-import server.common.message.PlayerDataMessage.FieldValue
 import server.common.message.PlayerDataMessage.TableInfo
 import java.io.Serializable
 
@@ -11,7 +10,14 @@ class TableInfos : Serializable {
     val tables = mutableListOf<TableInfo>()
 }
 
-class DataInfo(val tables: MutableMap<String, MutableList<List<FieldValue>>>) {
+class DataInfo() {
+    val tables: MutableMap<String, MutableList<Any>> = hashMapOf()
+
+    constructor(data: Map<String, List<Any>>) : this() {
+        data.forEach { (tableName, data) ->
+            tables[tableName] = data.toMutableList()
+        }
+    }
 
     inline fun <reified T : Data> unpack(): T? = DataConvertor.unpack(tables, T::class.java)
 

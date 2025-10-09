@@ -26,7 +26,7 @@ class PlayerDataTransferBukkitProcessor : AsyncUserProcessor<PlayerDataTransferR
 
         player.bukkitPlayer.quit()   // 强制移出玩家列表 触发 PlayerQuitEvent 并完成数据的保存
 
-        val dataInfo = DataInfo(HashMap())
+        val dataInfo = DataInfo()
         player.pack(dataInfo)
         val response = PlayerDataMessage(player.playerId, player.dbId, dataInfo.tables)
         return response

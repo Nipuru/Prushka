@@ -1,6 +1,6 @@
 package server.bukkit.gameplay.player
 
-import server.common.message.PlayerDataMessage.*
+import server.common.message.PlayerDataMessage.TableInfo
 import java.io.IOException
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
@@ -49,40 +49,59 @@ internal object DataConvertor {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> unpack(tables: Map<String, List<List<FieldValue>>>, dataClass: Class<T>): T? {
+    fun <T> unpack(tables: Map<String, List<Any>>, dataClass: Class<T>): T? {
         val dataClassCache = getOrCache(dataClass)
-        val instance = dataClassCache.constructor.newInstance() as T
-        val fieldMessagesList = tables[dataClassCache.tableName]
-        if (fieldMessagesList.isNullOrEmpty()) {
+
+        val values = tables[dataClassCache.tableName]
+        if (values == null || values.size == 1) {
             return null
         }
-        if (fieldMessagesList.size > 1) {
+        val fields = (values[0] as String).split(";").map { dataClassCache.fields[it] }
+        if (values.size > fields.size) {
             throw IOException("Too many results for " + dataClass.name)
         }
-        for (fieldMessage in fieldMessagesList[0]) {
-            val field = dataClassCache.fields[fieldMessage.name] ?: continue
-            field[instance] = fieldMessage.value
+        val instance = dataClassCache.constructor.newInstance() as T
+        for (i in 1 until values.size) {
+            val field = fields[i - 1]
+            if (field != null) {
+                field[instance] = values[i]
+            }
         }
         return instance
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> unpackList(tables: Map<String, List<List<FieldValue>>>, dataClass: Class<T>): List<T> {
+    fun <T> unpackList(tables: Map<String, List<Any>>, dataClass: Class<T>): List<T> {
         val dataClassCache = getOrCache(dataClass)
-        val fieldMessagesList = tables[dataClassCache.tableName]
-        if (fieldMessagesList.isNullOrEmpty()) {
+        val values = tables[dataClassCache.tableName]
+        if (values == null || values.size == 1) {
             return emptyList()
         }
+        val fields = (values[0] as String).split(";").map { dataClassCache.fields[it] }
         val result = mutableListOf<T>()
-        for (fieldMessages in fieldMessagesList) {
-            val instance = dataClassCache.constructor.newInstance() as T
-            for (fieldMessage in fieldMessages) {
-                val field = dataClassCache.fields[fieldMessage.name] ?: continue
-                field[instance] = fieldMessage.value
+        var instance = dataClassCache.constructor.newInstance() as T
+        for (i in 1 until values.size) {
+            val fieldIndex = (i - 1) % fields.size
+            val field = fields[fieldIndex]
+            if (field != null) {
+                field[instance] = values[i]
             }
-            result.add(instance)
+            if (fieldIndex == fields.size - 1) {
+                result.add(instance)
+                instance = dataClassCache.constructor.newInstance() as T
+            }
         }
         return result
+    }
+
+    fun pack(tables: MutableMap<String, MutableList<Any>>, data: Any) {
+        val dataClassCache = getOrCache(data.javaClass)
+        val values = tables.getOrPut(dataClassCache.tableName) {
+            mutableListOf(dataClassCache.fields.keys.joinToString(";"))
+        }
+        for (field in dataClassCache.fields.values) {
+            values.add(field[data])
+        }
     }
 
     fun <T : Any> getProperty(data: Any, properties: Array<out KProperty1<T, *>>): Array<String> {
@@ -91,19 +110,6 @@ internal object DataConvertor {
             return cache.updateFields.keys.toTypedArray()
         }
         return properties.map { it.name }.toTypedArray()
-    }
-
-
-
-    fun pack(tables: MutableMap<String, MutableList<List<FieldValue>>>, data: Any) {
-        val dataClassCache = getOrCache(data.javaClass)
-        val fieldMessagesList = tables.getOrPut(dataClassCache.tableName) { mutableListOf() }
-        val fieldValues = mutableListOf<FieldValue>()
-        for ((key, value) in dataClassCache.fields) {
-            val fieldValue = FieldValue(key, value[data])
-            fieldValues.add(fieldValue)
-        }
-        fieldMessagesList.add(fieldValues)
     }
 
     fun getOrCache(dataClass: Class<*>): DataClassCache {

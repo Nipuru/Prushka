@@ -6,7 +6,6 @@ import org.jetbrains.exposed.sql.statements.StatementContext
 import org.jetbrains.exposed.sql.statements.expandArgs
 import org.jetbrains.exposed.sql.transactions.transaction
 import server.common.logger.Logger
-import server.common.message.PlayerDataMessage.FieldValue
 import server.common.message.PlayerDataMessage.TableInfo
 import server.common.message.PlayerDataTransactionMessage
 import server.common.service.PlayerDataService
@@ -24,23 +23,18 @@ class PlayerDataServiceImpl : PlayerDataService {
         }
     }
 
-    override fun queryPlayer(playerId: Int, tables: List<TableInfo>): MutableMap<String, MutableList<List<FieldValue>>> {
+    override fun queryPlayer(playerId: Int, tables: List<TableInfo>): Map<String, List<Any>> {
         return transaction {
-            val result = mutableMapOf<String, MutableList<List<FieldValue>>>()
+            val result = mutableMapOf<String, MutableList<Any>>()
             for (tableInfo in tables) {
                 val table = getTable(tableInfo)
-                val lists = mutableListOf<List<FieldValue>>()
-                if (table.exists()) {
-                    table.selectAll().where(table.playerId eq playerId).forEach {
-                        val fields = mutableListOf<FieldValue>()
-                        for ((fieldName, _, _) in tableInfo.fields) {
-                            val field = FieldValue(fieldName, table.getColumn(it, fieldName))
-                            fields.add(field)
-                        }
-                        lists.add(fields)
+                val values = mutableListOf<Any>(tableInfo.fields.joinToString(";") { it.first })
+                table.selectAll().where(table.playerId eq playerId).forEach {
+                    for (field in tableInfo.fields) {
+                        values.add(table.getColumn(it, field.first))
                     }
                 }
-                result[tableInfo.tableName] = lists
+                result[tableInfo.tableName] = values
             }
             result
         }
