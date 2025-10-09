@@ -10,13 +10,12 @@ import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.io.InputStream
 import java.nio.ByteBuffer
 import javax.imageio.ImageIO
 import kotlin.math.roundToInt
 
 
-class FontRepository(private val resourceResolver: (fileName: String) -> InputStream?) {
+class FontRepository(private val resolver: ResourceResolver) {
     private val default = Int2ObjectOpenHashMap<Font>()
     private val uniform = Int2ObjectOpenHashMap<Font>()
     private val fonts = mutableMapOf<Keyed, Int2ObjectOpenHashMap<Font>>()
@@ -27,22 +26,18 @@ class FontRepository(private val resourceResolver: (fileName: String) -> InputSt
     }
 
     fun register(font: Font) {
-        if (font.font == Font.DEFAULT) {
-            this.default[font.codePoint] = font
-        } else if (font.font == Font.UNIFORM) {
-            this.uniform[font.codePoint] = font
-        } else {
-            this.fonts.computeIfAbsent(font.font) { Int2ObjectOpenHashMap() }[font.codePoint] = font
+        when (font.font) {
+            Font.DEFAULT -> this.default[font.codePoint] = font
+            Font.UNIFORM -> this.uniform[font.codePoint] = font
+            else -> this.fonts.computeIfAbsent(font.font) { Int2ObjectOpenHashMap() }[font.codePoint] = font
         }
     }
 
     fun getFont(font: Keyed, ch: Int): Font? {
-        return if (font == Font.DEFAULT) {
-            this.default[ch] ?: this.uniform[ch]
-        } else if (font == Font.UNIFORM) {
-            this.uniform[ch]
-        } else {
-            this.fonts[font]?.get(ch)
+        return when (font) {
+            Font.DEFAULT -> this.default[ch] ?: this.uniform[ch]
+            Font.UNIFORM -> this.uniform[ch]
+            else -> this.fonts[font]?.get(ch)
         }
     }
 
@@ -69,7 +64,7 @@ class FontRepository(private val resourceResolver: (fileName: String) -> InputSt
 
     private fun registerDefault() {
         // 注册 default 字体 来源 minecraft_default.json
-        val inputStream = resourceResolver("minecraft_default.json") ?: error("Unable to find file minecraft_default.json")
+        val inputStream = resolver.resolve("minecraft_default.json") ?: error("Unable to find file minecraft_default.json")
         inputStream.bufferedReader().use { reader ->
             JsonParser.parseReader(reader).asJsonObject.getAsJsonArray("providers")
         }.forEach { provider ->
@@ -77,7 +72,7 @@ class FontRepository(private val resourceResolver: (fileName: String) -> InputSt
             val imageName = provider.get("file").asString.run {
                 if (contains('/')) substringAfterLast('/') else this
             }
-            val imageStream = resourceResolver(imageName) ?: error("Unable to find file $imageName")
+            val imageStream = resolver.resolve(imageName) ?: error("Unable to find file $imageName")
             val image = imageStream.buffered().use { inputStream ->
                 ImageIO.read(inputStream)
             }
@@ -97,7 +92,7 @@ class FontRepository(private val resourceResolver: (fileName: String) -> InputSt
 
     private fun registerUniform() {
         // 注册 uniform 字体 来源 unifont.hex
-        val inputStream = resourceResolver("unifont.hex") ?: error("Unable to find file uniform.hex")
+        val inputStream = resolver.resolve("unifont.hex") ?: error("Unable to find file uniform.hex")
         inputStream.bufferedReader().use { reader ->
             reader.readLines()
         }.forEach { line ->
@@ -105,7 +100,7 @@ class FontRepository(private val resourceResolver: (fileName: String) -> InputSt
             val code = unicode.toInt(16)
             val size = hex.length * 4
             val buf = ByteBuffer.allocate(size)
-            hex.forEachIndexed { index, c ->
+            hex.forEach { c ->
                 val char = c.digitToInt(16)
                 for (i in (0..<4).reversed()) {
                     buf.put(((char shr i) and 1).toByte())

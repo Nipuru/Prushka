@@ -7,10 +7,10 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags
-import org.bukkit.plugin.Plugin
 import server.bukkit.util.text.font.Bitmap
 import server.bukkit.util.text.font.Font
 import server.bukkit.util.text.font.FontRepository
+import server.bukkit.util.text.font.ResourceResolver
 import server.bukkit.util.text.resolver.BitmapResolver
 import server.bukkit.util.text.resolver.FixedWidthResolver
 import server.bukkit.util.text.resolver.FixedWidthResolver.Position
@@ -116,12 +116,10 @@ fun ComponentLike.getWidth(
     return TextFactory.instance.font.getTotalWidth(asComponent(), parentBold, parentItalic, parentFont)
 }
 
-class TextFactory private constructor(val plugin: Plugin, splits: List<String>, bitmaps: List<Bitmap>) {
+class TextFactory private constructor(resourceResolver: ResourceResolver, splits: List<String>, bitmaps: List<Bitmap>) {
     val bitmap: BitmapResolver = BitmapResolver(bitmaps.associateBy { it.name })
     val split: SplitResolver = SplitResolver(splits.map { bitmap.resolve(it) })
-    val font: FontRepository = FontRepository { fileName: String ->
-        plugin.getResource("font/$fileName")
-    }.also { repository ->
+    val font: FontRepository = FontRepository(resourceResolver).also { repository ->
         // 注册 bitmap
         for (bitmap in bitmaps) {
             Font.fonts(bitmap, bitmap.width).forEach {
@@ -145,8 +143,8 @@ class TextFactory private constructor(val plugin: Plugin, splits: List<String>, 
 
         private var _instance: TextFactory? = null
 
-        fun init(plugin: Plugin, splits: List<String>, bitmaps: () -> List<Bitmap>) {
-            _instance = TextFactory(plugin, splits, bitmaps())
+        fun init(resourceResolver: ResourceResolver, splits: List<String>, bitmaps: List<Bitmap>) {
+            _instance = TextFactory(resourceResolver, splits, bitmaps)
         }
     }
 }

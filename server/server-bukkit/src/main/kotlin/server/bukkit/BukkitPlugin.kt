@@ -90,6 +90,10 @@ object BukkitPlugin : JavaPlugin() {
         val serverFolder = File(dataFolder.absolutePath).parentFile.parentFile
         Sheet.load(File(serverFolder.parentFile, "sheet").absolutePath)
 
+        initTextFactory()
+    }
+
+    private fun initTextFactory() {
         // 生成 bitmap 字体
         // 这里要确保和 python 工具使用一样的算法 /tool/export_bitmap.py
         val splits = listOf(
@@ -98,23 +102,25 @@ object BukkitPlugin : JavaPlugin() {
             "split_neg_1", "split_neg_2", "split_neg_4", "split_neg_8",
             "split_neg_16", "split_neg_32", "split_neg_64", "split_neg_128"
         )
-        TextFactory.init(this, splits) {
-            var unicode = 0x1000
-            Sheet.getAllStBitmap().values.map { cfg ->
-                val chars = mutableListOf<String>()
-                repeat(cfg.row) {
-                    val builder = StringBuilder()
-                    repeat(cfg.column) {
-                        builder.append(unicode.toChar())
-                        unicode += 1
-                    }
-                    chars.add(builder.toString())
+        val bitmaps = mutableListOf<Bitmap>()
+        var unicode = 0x1000
+        Sheet.getAllStBitmap().values.forEach { cfg ->
+            val chars = mutableListOf<String>()
+            repeat(cfg.row) {
+                val builder = StringBuilder()
+                repeat(cfg.column) {
+                    builder.append(unicode.toChar())
+                    unicode += 1
                 }
-                val width = (cfg.imgWidth * cfg.height * cfg.row) / (cfg.imgHeight * cfg.column) +
-                        ((cfg.height shr 31) and 1) + 1
-                Bitmap(cfg.configId, Key.key("prushka:bitmap"), width, *chars.toTypedArray())
+                chars.add(builder.toString())
             }
+            val width = (cfg.imgWidth * cfg.height * cfg.row) / (cfg.imgHeight * cfg.column) +
+                    ((cfg.height shr 31) and 1) + 1
+            val bitmap = Bitmap(cfg.configId, Key.key("prushka:bitmap"), width, *chars.toTypedArray())
+            bitmaps.add(bitmap)
         }
+        val resourceResolver = { fileName: String -> getResource("font/$fileName") }
+        TextFactory.init(resourceResolver, splits, bitmaps)
     }
 
     private fun newScheduleTasks(): Sequence<ScheduleTask> = sequenceOf(
