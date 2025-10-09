@@ -10,6 +10,7 @@ import server.common.message.PlayerDataMessage.TableInfo
 import server.common.message.PlayerDataTransactionMessage
 import server.common.service.PlayerDataService
 import server.common.util.database.initSchema
+import server.database.schema.OfflineDataTable
 import server.database.schema.PlayerDataTable
 import java.util.concurrent.ConcurrentHashMap
 import org.jetbrains.exposed.sql.Transaction as ETransaction
@@ -21,6 +22,10 @@ class PlayerDataServiceImpl : PlayerDataService {
         override fun log(context: StatementContext, transaction: ETransaction) {
             Logger.info("SQL: ${context.expandArgs(transaction)}")
         }
+    }
+
+    init {
+        OfflineDataTable // 确保 tb_offline 初始化
     }
 
     override fun queryPlayer(playerId: Int, tables: List<TableInfo>): Map<String, List<Any>> {

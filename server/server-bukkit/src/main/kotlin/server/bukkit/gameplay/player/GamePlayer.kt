@@ -17,7 +17,6 @@ import server.bukkit.gameplay.teleport.TeleportManager
 import server.bukkit.logger.LogServer
 import server.bukkit.nms.hasDisconnected
 import server.bukkit.time.TimeManager
-import server.bukkit.util.schedule
 import server.bukkit.util.text.component
 import server.common.logger.Logger
 import server.common.service.PlayerDataService
@@ -210,8 +209,8 @@ class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueI
     }
 
     fun kickIfPossible() {
-        val bukkitPlayer = Bukkit.getPlayer(uniqueId) ?: return
-        if (Bukkit.isPrimaryThread()) bukkitPlayer.kick()
-        else BukkitPlugin.schedule { bukkitPlayer.kick() }
+        BukkitPlugin.serverThread.execute {
+            bukkitPlayer.kick()
+        }
     }
 }

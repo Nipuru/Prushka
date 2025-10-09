@@ -14,7 +14,7 @@ subprojects {
         mavenCentral()
         maven("https://oss.sonatype.org/content/groups/public/")
         maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://www.jitpack.io")
+        maven("https://jitpack.io")
     }
 
     java {

@@ -57,7 +57,7 @@ internal object DataConvertor {
             return null
         }
         val fields = (values[0] as String).split(";").map { dataClassCache.fields[it] }
-        if (values.size > fields.size) {
+        if (values.size - 1 > fields.size) {
             throw IOException("Too many results for " + dataClass.name)
         }
         val instance = dataClassCache.constructor.newInstance() as T
