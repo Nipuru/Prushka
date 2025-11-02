@@ -9,11 +9,3 @@ sequenceOf(
     "server-bukkit",
     "server-log",
 ).forEach { include(it) }
-
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://repo.papermc.io/repository/maven-public/")
-    }
-}
-
