@@ -1,11 +1,13 @@
 package server.bukkit.command
 
 import com.mojang.brigadier.Command
+import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
+import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -87,5 +89,11 @@ fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceSt
             }
         }
         Command.SINGLE_SUCCESS
+    }
+}
+
+fun <T> ArgumentType<T>.suggestion(): SuggestionProvider<CommandSourceStack> {
+    return SuggestionProvider { context, builder ->
+        this.listSuggestions(context, builder)
     }
 }

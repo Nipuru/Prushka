@@ -5,17 +5,22 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import io.netty.channel.ChannelHandler
 import io.papermc.paper.adventure.PaperAdventure
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import net.kyori.adventure.text.Component
 import net.minecraft.network.Connection
+import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerEntity
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
 import org.bukkit.craftbukkit.entity.CraftEntity
 import org.bukkit.craftbukkit.entity.CraftPlayer
+import org.bukkit.craftbukkit.inventory.CraftContainer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.util.io.BukkitObjectInputStream
@@ -100,6 +105,17 @@ fun Entity.sendDestroy(players: List<Player>) {
     for (player in players) {
         (player as CraftPlayer).handle.connection.send(packet)
     }
+}
+
+// see CraftInventoryView#sendInventoryTitleChange(...)
+fun InventoryView.sendTitleChange(title: Component) {
+    require(player is Player) { "NPCs are not currently supported for this function" }
+    require(topInventory.type.isCreatable) { "Only creatable inventories can have their title changed" }
+    val player = (player as CraftPlayer).handle as ServerPlayer
+    val containerId = player.containerMenu.containerId
+    val windowType = CraftContainer.getNotchInventoryType(topInventory)
+    player.connection.send(ClientboundOpenScreenPacket(containerId, windowType, PaperAdventure.asVanilla(title)))
+    player.containerMenu.sendAllDataToRemote()
 }
 
 fun Player.addChannelHandler(handler: ChannelHandler) {
