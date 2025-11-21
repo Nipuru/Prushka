@@ -1,13 +1,14 @@
 package server.bukkit.gameplay.player
 
 import server.common.message.PlayerDataMessage.TableInfo
-import java.io.Serializable
 
 interface Data
 
 
-class TableInfos : Serializable {
+class TableInfos {
     val tables = mutableListOf<TableInfo>()
+
+    inline fun <reified T> preload() = DataConvertor.preload(this, T::class.java)
 }
 
 class DataInfo() {
@@ -44,4 +45,3 @@ annotation class Table(
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Unique
 
-inline fun <reified T> TableInfos.preload() = DataConvertor.preload(this, T::class.java)
