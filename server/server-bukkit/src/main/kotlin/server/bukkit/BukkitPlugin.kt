@@ -66,6 +66,7 @@ object BukkitPlugin : JavaPlugin() {
 
     override fun onEnable() {
         reload()
+        TimeManager.init()
         GamePlayerManager.loadAll()
         newScheduleTasks().forEach { it.schedule(this) }
         newListeners().forEach { it.register(this) }

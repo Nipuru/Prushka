@@ -12,8 +12,3 @@ import java.io.Serializable
  * 时间通知
  */
 class DebugTimeNotify(val time: Long) : Serializable
-
-/**
- * 查询时间
- */
-class GetTimeRequest : Serializable

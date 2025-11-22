@@ -26,6 +26,11 @@ object TimeManager {
         private set
     /** 当前的时间戳 用于改时间 */
     var debugTime: Long = 0
+        set(value) {
+            if (field == value)  return
+            field = value
+            initTime()
+        }
     /** 新的一天钩子函数（实在不想用event） */
     var newDayFunc: (Long) -> Unit = {}
 
@@ -34,16 +39,12 @@ object TimeManager {
     private lateinit var timer: Timer
 
     fun init() {
-        setTime(debugTime)
+        initTime()
         timer = Timer()
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                if (debugTime != now) {
-                    setTime(debugTime)
-                }
                 val nextDay = now + DAY
                 now += 1
-                debugTime = now
                 if (now >= nextDay) {
                     Logger.info("set dayZero: $nextDay")
                     dayZero = nextDay
@@ -69,18 +70,8 @@ object TimeManager {
         }
     }
 
-    private fun setTime(time: Long) {
-        var debugTime = time
-        if (debugTime == 0L) {
-            if (now == 0L) {
-                // 第一次设置
-                debugTime = System.currentTimeMillis()
-            } else {
-                // 后续就不管了
-                return
-            }
-        }
-        now = debugTime
+    private fun initTime() {
+        now = if (debugTime == 0L) System.currentTimeMillis() else debugTime
         var dayZero = dayZero
         val instant = Instant.ofEpochMilli(now)
         val dateTime = instant.atZone(ZoneId.systemDefault())

@@ -11,7 +11,6 @@ object BrokerPlugin : Plugin() {
         server.registerUserProcessor(PlayerOfflineDataBrokerProcessor())
         server.registerUserProcessor(PlayerChatBrokerProcessor())
         server.registerUserProcessor(PlayerPrivateChatBrokerProcessor())
-        server.registerUserProcessor(GetTimeBrokerProcessor())
         server.registerUserProcessor(DebugTimeBrokerProcessor())
         server.registerUserProcessor(TeleportInvokeBrokerProcessor())
         server.registerUserProcessor(AudienceBrokerProcessor())

@@ -11,7 +11,6 @@ import server.common.util.database.DatabaseFactory
 import server.shared.SharedServer.shutdown
 import server.shared.SharedServer.startup
 import server.shared.config.Config
-import server.shared.processor.GetTimeSharedProcessor
 import server.shared.processor.OnlinePlayersSharedProcessor
 import server.shared.processor.connection.CloseEventSharedProcessor
 import server.shared.processor.connection.ConnectEventSharedProcessor
@@ -42,8 +41,6 @@ internal object SharedServer {
         builder.addConnectionEventProcessor(CloseEventSharedProcessor())
 
         builder.registerService(PlayerInfoService::class.java, PlayerInfoServiceImpl)
-
-        builder.registerUserProcessor(GetTimeSharedProcessor())
         builder.registerUserProcessor(OnlinePlayersSharedProcessor())
     }
 
