@@ -22,5 +22,10 @@ const val REWARD_PROPERTY: Int = 2    // 虚拟道具
 const val PROPERTY_COIN: Int = 1
 const val PROPERTY_POINTS: Int = 2
 
+// 离线数据模块名
+const val OFFLINE_FRIEND_REQUEST = "friend_request"
+const val OFFLINE_FRIEND_ACCEPT = "friend_accept"
+const val OFFLINE_FRIEND_DELETE = "friend_delete"
+
 
     

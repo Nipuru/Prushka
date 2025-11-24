@@ -14,6 +14,7 @@ object OfflineDataTable : Table() {
     val playerId = integer("player_id").index()
     val module = text("module")
     val data = text("data")
+    val duplicateKey = text("duplicate_key").default("")
     override val primaryKey = PrimaryKey(id)
 
     init {

@@ -8,7 +8,7 @@ import server.database.service.OfflineDataServiceImpl
 class PlayerOfflineDataDBProcessor : SyncUserProcessor<PlayerOfflineDataMessage>() {
 
     override fun handleRequest(bizContext: BizContext, request: PlayerOfflineDataMessage): Any {
-        OfflineDataServiceImpl.insert(request.playerId, request.module, request.data)
+        OfflineDataServiceImpl.insert(request.playerId, request.module, request.data, request.duplicateKey)
         return true
     }
 

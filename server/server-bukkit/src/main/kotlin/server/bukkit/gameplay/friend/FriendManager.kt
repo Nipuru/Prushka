@@ -2,6 +2,9 @@ package server.bukkit.gameplay.friend
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import server.bukkit.constant.OFFLINE_FRIEND_ACCEPT
+import server.bukkit.constant.OFFLINE_FRIEND_DELETE
+import server.bukkit.constant.OFFLINE_FRIEND_REQUEST
 import server.bukkit.gameplay.player.*
 import server.bukkit.time.TimeManager
 import server.common.util.fromJson
@@ -10,40 +13,33 @@ import server.common.util.toJson
 
 class FriendManager(player: GamePlayer) : BaseManager(player) {
 
-    private val moduleName = "friendship"
-
     /** 好友列表  */
     private val friendships = Int2ObjectOpenHashMap<FriendshipData>()
 
     /** 收到的好友请求列表  */
-    private val inboundFriendRequests = Int2ObjectOpenHashMap<FriendRequestInboundData>()
-
-    /** 发出的好友请求（防止重复发送离线消息） */
-    private val outboundFriendRequests = Int2ObjectOpenHashMap<FriendRequestOutboundData>()
+    private val friendRequests = Int2ObjectOpenHashMap<FriendRequestData>()
 
     fun preload(request: TableInfos) {
         request.preload<FriendshipData>()
-        request.preload<FriendRequestInboundData>()
-        request.preload<FriendRequestOutboundData>()
+        request.preload<FriendRequestData>()
     }
 
     fun unpack(dataInfo: DataInfo) {
         dataInfo.unpackList<FriendshipData>()
             .forEach{ friendships.put(it.friendId, it) }
-        dataInfo.unpackList<FriendRequestInboundData>()
-            .forEach{ inboundFriendRequests.put(it.friendId, it) }
-        dataInfo.unpackList<FriendRequestOutboundData>()
-            .forEach{ outboundFriendRequests.put(it.friendId, it) }
+        dataInfo.unpackList<FriendRequestData>()
+            .forEach{ friendRequests.put(it.friendId, it) }
     }
 
     fun pack(dataInfo: DataInfo) {
         friendships.values.forEach(dataInfo::pack)
-        inboundFriendRequests.values.forEach(dataInfo::pack)
-        outboundFriendRequests.values.forEach(dataInfo::pack)
+        friendRequests.values.forEach(dataInfo::pack)
     }
 
     fun init() {
-        player.offline.registerHandler(moduleName, this::handleOfflineData)
+        player.offline.registerHandler(OFFLINE_FRIEND_REQUEST, this::handleFriendRequest)
+        player.offline.registerHandler(OFFLINE_FRIEND_ACCEPT, this::handleFriendAccept)
+        player.offline.registerHandler(OFFLINE_FRIEND_DELETE, this::handleFriendDelete)
     }
 
     fun getFriends(): Int2ObjectMap<FriendshipData> {
@@ -61,32 +57,31 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
     val friendCount: Int
         get() = friendships.count()
 
-    fun getReceivedFriendRequests(): Int2ObjectMap<FriendRequestInboundData> {
-        return inboundFriendRequests
+    fun getReceivedFriendRequests(): Int2ObjectMap<FriendRequestData> {
+        return friendRequests
     }
 
     fun hasReceivedFriendRequest(friendId: Int): Boolean {
-        return inboundFriendRequests.containsKey(friendId)
+        return friendRequests.containsKey(friendId)
     }
 
-    fun getReceivedFriendRequest(playerId: Int): FriendRequestInboundData? {
-        return inboundFriendRequests[playerId]
+    fun getReceivedFriendRequest(playerId: Int): FriendRequestData? {
+        return friendRequests[playerId]
     }
 
     fun deleteFriend(name: String, friendId: Int, friendDbId: Int) {
         val friendship = friendships.remove(friendId) ?: return
         player.delete(friendship)
-        pushOfflineData(name, friendId, friendDbId, FriendshipOfflineData.DELETE, player.playerId, player.dbId, 0L)
+        player.offline.pushOfflineData(name, friendId, friendDbId, "friend_delete", createOfflineData())
     }
 
-    fun rejectFriend(name: String, friendId: Int, friendDbId: Int) {
-        val friendRequest = inboundFriendRequests.remove(friendId) ?: return
+    fun rejectFriend(friendId: Int) {
+        val friendRequest = friendRequests.remove(friendId) ?: return
         player.delete(friendRequest)
-        pushOfflineData(name, friendId, friendDbId, FriendshipOfflineData.REJECT, player.playerId, player.dbId, 0L)
     }
 
     fun acceptFriend(name: String, friendId: Int, friendDbId: Int) {
-        val friendRequest = inboundFriendRequests.remove(friendId) ?: return
+        val friendRequest = friendRequests.remove(friendId) ?: return
         player.delete(friendRequest)
         var friendship = friendships[friendId]
         if (friendship != null) return
@@ -96,18 +91,12 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
         friendship.createTime = now
         friendships.put(friendId, friendship)
         player.insert(friendship)
-        pushOfflineData(name, friendId, friendDbId, FriendshipOfflineData.ACCEPT, player.playerId, player.dbId, now)
+        player.offline.pushOfflineData(name, friendId, friendDbId, OFFLINE_FRIEND_ACCEPT, createOfflineData())
     }
 
     fun requestFriend(name: String, friendId: Int, friendDbId: Int) {
         if (friendships.containsKey(friendId)) return
-        if (outboundFriendRequests.containsKey(friendId)) return
-        val now = TimeManager.now
-        val friendRequest = FriendRequestOutboundData()
-        friendRequest.friendId = friendId
-        outboundFriendRequests.put(friendId, friendRequest)
-        player.insert(friendRequest)
-        pushOfflineData(name, friendId, friendDbId, FriendshipOfflineData.REQUEST, player.playerId, player.dbId, now)
+        player.offline.pushOfflineData(name, friendId, friendDbId, OFFLINE_FRIEND_REQUEST, createOfflineData())
     }
 
     /** 强制建立好友关系 */
@@ -120,52 +109,41 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
             friendships.put(friendId, friendship)
             player.insert(friendship)
         }
-        pushOfflineData(name, friendId, friendDbId, FriendshipOfflineData.ACCEPT, player.playerId, player.dbId, now)
+        player.offline.pushOfflineData(name, friendId, friendDbId, OFFLINE_FRIEND_ACCEPT, createOfflineData())
     }
 
-    // 通知请求不要在这里处理，要单独发
-    private fun handleOfflineData(json: String, isOnline: Boolean): Boolean {
+    private fun createOfflineData(): String {
+        val offlineData = FriendshipOfflineData(player.playerId, player.dbId, TimeManager.now)
+        return offlineData.toJson()
+    }
+
+    private fun handleFriendRequest(json: String, isOnline: Boolean): Boolean {
         val data = json.fromJson<FriendshipOfflineData>()
-        when (data.cmd) {
-            FriendshipOfflineData.REQUEST -> {
-                if (inboundFriendRequests.containsKey(data.friendId)) return true
-                val friendRequest = FriendRequestInboundData()
-                friendRequest.friendId = data.friendId
-                friendRequest.createTime = data.createTime
-                inboundFriendRequests.put(friendRequest.friendId, friendRequest)
-                player.insert(friendRequest)
-            }
-
-            FriendshipOfflineData.ACCEPT -> {
-                var friendship = friendships[data.friendId]
-                if (friendship != null) return true
-                friendship = FriendshipData()
-                friendship.friendId = data.friendId
-                friendship.createTime = data.createTime
-                friendships.put(friendship.friendId, friendship)
-                player.insert(friendship)
-            }
-
-            FriendshipOfflineData.REJECT -> {
-                val friendRequest = outboundFriendRequests.remove(data.friendId) ?: return true
-                player.delete(friendRequest)
-            }
-
-            FriendshipOfflineData.DELETE -> {
-                val friendship = friendships.remove(data.friendId) ?: return true
-                player.delete(friendship)
-            }
-
-            else -> {
-                return false
-            }
-        }
+        if (friendRequests.containsKey(data.friendId)) return true
+        val friendRequest = FriendRequestData()
+        friendRequest.friendId = data.friendId
+        friendRequest.createTime = data.createTime
+        friendRequests.put(friendRequest.friendId, friendRequest)
+        player.insert(friendRequest)
         return true
     }
 
-    private fun pushOfflineData(name: String, friendId: Int, friendDbId: Int, cmd: Int, playerId: Int, dbId: Int, createTime: Long) {
-        val offlineData = FriendshipOfflineData(cmd, playerId, dbId, createTime)
-        val json = offlineData.toJson()
-        player.offline.pushOfflineData(name, friendId, friendDbId, moduleName, json)
+    private fun handleFriendAccept(json: String, isOnline: Boolean): Boolean {
+        val data = json.fromJson<FriendshipOfflineData>()
+        var friendship = friendships[data.friendId]
+        if (friendship != null) return true
+        friendship = FriendshipData()
+        friendship.friendId = data.friendId
+        friendship.createTime = data.createTime
+        friendships.put(friendship.friendId, friendship)
+        player.insert(friendship)
+        return true
+    }
+
+    private fun handleFriendDelete(json: String, isOnline: Boolean): Boolean {
+        val data = json.fromJson<FriendshipOfflineData>()
+        val friendship = friendships.remove(data.friendId) ?: return true
+        player.delete(friendship)
+        return true
     }
 }

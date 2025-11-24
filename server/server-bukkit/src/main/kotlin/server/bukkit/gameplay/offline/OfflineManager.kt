@@ -36,8 +36,8 @@ class OfflineManager(player: GamePlayer) : BaseManager(player) {
         offlineDataHandlers[module] = handler
     }
 
-    fun pushOfflineData(name: String, playerId: Int, dbId: Int, moduleName: String, data: String) {
-        val message = PlayerOfflineDataMessage(name, playerId, dbId, moduleName, data)
+    fun pushOfflineData(name: String, playerId: Int, dbId: Int, moduleName: String, data: String, duplicateKey: String? = null) {
+        val message = PlayerOfflineDataMessage(name, playerId, dbId, moduleName, data, duplicateKey)
         // 并不立即发送，而是等到下一tick
         // 为什么这么做呢，因为如果调用此方法的时候，玩家已经离线了，就没必要发送了
         offlineDataMessageQueue.add(message)

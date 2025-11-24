@@ -102,7 +102,7 @@ class FriendCommand : CommandTree {
                 MessageType.FAILED.sendMessage(player, "没有来自玩家 ${target.name} 的好友请求")
                 return@thenAccept
             }
-            player.friend.rejectFriend(target.name, target.playerId, target.dbId)
+            player.friend.rejectFriend(target.playerId)
             MessageType.ALLOW.sendMessage(player, "你拒绝了来自玩家 ${target.name} 的好友请求")
         }
         return Command.SINGLE_SUCCESS

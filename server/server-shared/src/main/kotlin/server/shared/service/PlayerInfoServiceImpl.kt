@@ -11,7 +11,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 object PlayerInfoServiceImpl : PlayerInfoService {
-    val onlinePlayers: MutableSet<String> = ConcurrentHashMap.newKeySet<String>()
+    val onlinePlayers: MutableSet<String> = ConcurrentHashMap.newKeySet()
     private val byId = ConcurrentHashMap<Int, PlayerInfoMessage>()
     private val byName = ConcurrentHashMap<String, PlayerInfoMessage>()
 
