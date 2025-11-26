@@ -72,7 +72,7 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
     fun deleteFriend(name: String, friendId: Int, friendDbId: Int) {
         val friendship = friendships.remove(friendId) ?: return
         player.delete(friendship)
-        player.offline.pushOfflineData(name, friendId, friendDbId, "friend_delete", createOfflineData())
+        player.offline.pushOfflineData(name, friendId, friendDbId, OFFLINE_FRIEND_DELETE, createOfflineData(), friendId.toString())
     }
 
     fun rejectFriend(friendId: Int) {
@@ -91,12 +91,12 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
         friendship.createTime = now
         friendships.put(friendId, friendship)
         player.insert(friendship)
-        player.offline.pushOfflineData(name, friendId, friendDbId, OFFLINE_FRIEND_ACCEPT, createOfflineData())
+        player.offline.pushOfflineData(name, friendId, friendDbId, OFFLINE_FRIEND_ACCEPT, createOfflineData(), friendId.toString())
     }
 
     fun requestFriend(name: String, friendId: Int, friendDbId: Int) {
         if (friendships.containsKey(friendId)) return
-        player.offline.pushOfflineData(name, friendId, friendDbId, OFFLINE_FRIEND_REQUEST, createOfflineData())
+        player.offline.pushOfflineData(name, friendId, friendDbId, OFFLINE_FRIEND_REQUEST, createOfflineData(), friendId.toString())
     }
 
     /** 强制建立好友关系 */
@@ -109,7 +109,7 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
             friendships.put(friendId, friendship)
             player.insert(friendship)
         }
-        player.offline.pushOfflineData(name, friendId, friendDbId, OFFLINE_FRIEND_ACCEPT, createOfflineData())
+        player.offline.pushOfflineData(name, friendId, friendDbId, OFFLINE_FRIEND_ACCEPT, createOfflineData(), friendId.toString())
     }
 
     private fun createOfflineData(): String {
