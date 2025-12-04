@@ -1,6 +1,5 @@
 package server.bukkit.command
 
-import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -19,19 +18,19 @@ import server.common.message.PlayerInfoMessage
 class IgnoreCommand : CommandTree {
     override val root: LiteralCommandNode<CommandSourceStack> = literal("ignore")
         .then(argument("player_name", PlayerInfoArgument)
-            .executesAsync(::ignore))
+            .executes(::ignore))
         .build()
 
     /**
      * 屏蔽/取消屏蔽 指定玩家
      * /ignore <player_name>
      */
-    private fun ignore(context: CommandContext<CommandSourceStack>): Int {
-        val target = context.getArgument<PlayerInfoMessage?>("player_name")
+    private suspend fun ignore(context: CommandContext<CommandSourceStack>) {
+        val target = context.getFutureArgument<PlayerInfoMessage?>("player_name")
         val sender = context.source.gamePlayer
         if (target == null) {
             MessageType.FAILED.sendMessage(sender, "玩家不存在")
-            return Command.SINGLE_SUCCESS
+            return
         }
         if (sender.blacklist.isBlocking(target.playerId)) {
             sender.blacklist.remove(target.name, target.playerId, target.dbId)
@@ -40,6 +39,5 @@ class IgnoreCommand : CommandTree {
             sender.blacklist.add(target.name, target.playerId, target.dbId)
             MessageType.ALLOW.sendMessage(sender, "已屏蔽玩家 ${target.name}")
         }
-        return Command.SINGLE_SUCCESS
     }
 }

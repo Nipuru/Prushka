@@ -1,6 +1,5 @@
 package server.bukkit.command
 
-import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -22,11 +21,10 @@ class AfkCommand : CommandTree {
         .executes(::afk)
         .build()
 
-    private fun afk(context: CommandContext<CommandSourceStack>): Int {
+    private fun afk(context: CommandContext<CommandSourceStack>) {
         val player = context.source.gamePlayer
         player.core.afk = true
         MessageType.ALLOW.sendMessage(player, "已进入挂机模式")
-        return Command.SINGLE_SUCCESS
     }
 
 

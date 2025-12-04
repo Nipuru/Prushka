@@ -1,6 +1,5 @@
 package server.bukkit.command
 
-import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -24,7 +23,7 @@ class WhereAmICommand : CommandTree {
         .executes(::whereami)
         .build()
 
-    private fun whereami(ctx: CommandContext<CommandSourceStack>): Int {
+    private fun whereami(ctx: CommandContext<CommandSourceStack>) {
         val sender = ctx.source.sender
         val serverName = Broker.getClientInfo().name
         var message = "你位于服务器: <white>$serverName</white>"
@@ -33,7 +32,6 @@ class WhereAmICommand : CommandTree {
             message += ", 世界: <white>$worldName</white>"
         }
         MessageType.INFO.sendMessage(sender, message)
-        return Command.SINGLE_SUCCESS
     }
 
 

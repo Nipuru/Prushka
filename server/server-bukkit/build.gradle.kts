@@ -8,6 +8,9 @@ dependencies {
     implementation(project(":server-common"))
     paperweight.paperDevBundle(libs.versions.paper)
     compileOnly(libs.afybroker.client)
+
+    // Kotlin coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 }
 
 tasks.assemble {
