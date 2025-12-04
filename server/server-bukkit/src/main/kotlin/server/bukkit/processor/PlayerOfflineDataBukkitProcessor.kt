@@ -19,8 +19,8 @@ class PlayerOfflineDataBukkitProcessor : AsyncUserProcessor<PlayerOfflineDataMes
     private fun handle(request: PlayerOfflineDataMessage) : Boolean {
         val gamePlayer = GamePlayerManager.getPlayer(request.playerId)
         val handler = gamePlayer.offline.getHandler(request.module) ?: return false
-        val result = handler.handle(request.data, true)
-        return result
+        handler.handle(request.data, true)
+        return true
     }
 
     override fun interest(): String {

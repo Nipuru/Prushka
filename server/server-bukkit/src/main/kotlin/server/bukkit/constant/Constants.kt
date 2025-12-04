@@ -26,6 +26,8 @@ const val PROPERTY_POINTS: Int = 2
 const val OFFLINE_FRIEND_REQUEST = "friend_request"
 const val OFFLINE_FRIEND_ACCEPT = "friend_accept"
 const val OFFLINE_FRIEND_DELETE = "friend_delete"
+const val OFFLINE_BLACKLIST_ADD = "blacklist_add"
+const val OFFLINE_BLACKLIST_REMOVE = "blacklist_remove"
 
 
     

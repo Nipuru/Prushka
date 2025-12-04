@@ -44,14 +44,14 @@ class OfflineManager(player: GamePlayer) : BaseManager(player) {
     }
 
     fun onJoin() {
-        offlineDataList.removeIf {
-            val offlineDataHandler = offlineDataHandlers[it.module] ?: return@removeIf false
-            if (offlineDataHandler.handle(it.data, false)) {
-                player.delete(it)
-                return@removeIf true
-            }
-            false
-        }
+        offlineDataList.removeIf(this::handleOfflineData)
+    }
+
+    private fun handleOfflineData(data: OfflineData): Boolean {
+        val offlineDataHandler = offlineDataHandlers[data.module] ?: return false
+        offlineDataHandler.handle(data.data, false)
+        player.delete(data)
+        return true
     }
 
     private fun pushOfflineData() {

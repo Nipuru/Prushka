@@ -113,37 +113,34 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
     }
 
     private fun createOfflineData(): String {
-        val offlineData = FriendshipOfflineData(player.playerId, player.dbId, TimeManager.now)
+        val offlineData = FriendshipOfflineData(player.playerId, TimeManager.now)
         return offlineData.toJson()
     }
 
-    private fun handleFriendRequest(json: String, isOnline: Boolean): Boolean {
+    private fun handleFriendRequest(json: String, isOnline: Boolean) {
         val data = json.fromJson<FriendshipOfflineData>()
-        if (friendRequests.containsKey(data.friendId)) return true
+        if (friendRequests.containsKey(data.friendId)) return
         val friendRequest = FriendRequestData()
         friendRequest.friendId = data.friendId
         friendRequest.createTime = data.createTime
         friendRequests.put(friendRequest.friendId, friendRequest)
         player.insert(friendRequest)
-        return true
     }
 
-    private fun handleFriendAccept(json: String, isOnline: Boolean): Boolean {
+    private fun handleFriendAccept(json: String, isOnline: Boolean) {
         val data = json.fromJson<FriendshipOfflineData>()
         var friendship = friendships[data.friendId]
-        if (friendship != null) return true
+        if (friendship != null) return
         friendship = FriendshipData()
         friendship.friendId = data.friendId
         friendship.createTime = data.createTime
         friendships.put(friendship.friendId, friendship)
         player.insert(friendship)
-        return true
     }
 
-    private fun handleFriendDelete(json: String, isOnline: Boolean): Boolean {
+    private fun handleFriendDelete(json: String, isOnline: Boolean) {
         val data = json.fromJson<FriendshipOfflineData>()
-        val friendship = friendships.remove(data.friendId) ?: return true
+        val friendship = friendships.remove(data.friendId) ?: return
         player.delete(friendship)
-        return true
     }
 }

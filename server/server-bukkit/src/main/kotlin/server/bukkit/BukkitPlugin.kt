@@ -165,7 +165,8 @@ object BukkitPlugin : JavaPlugin() {
         AfkCommand(),
         FriendCommand(),
         MsgCommand(),
-        MsgModeCommand()
+        MsgModeCommand(),
+        IgnoreCommand(),
     )
 }
 

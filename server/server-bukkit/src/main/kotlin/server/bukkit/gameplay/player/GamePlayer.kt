@@ -6,6 +6,7 @@ import org.bukkit.entity.Player
 import server.bukkit.BukkitPlugin
 import server.bukkit.MessageType
 import server.bukkit.constant.DAY
+import server.bukkit.gameplay.blacklist.BlacklistManager
 import server.bukkit.gameplay.chat.ChatManager
 import server.bukkit.gameplay.core.CoreManager
 import server.bukkit.gameplay.friend.FriendManager
@@ -38,6 +39,7 @@ class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueI
     val writer = DataWriter(this)
     val offline = OfflineManager(this)
     val core = CoreManager(this)
+    val blacklist = BlacklistManager(this)
     val inventory = InventoryManager(this)
     val friend = FriendManager(this)
     val chat = ChatManager(this)
@@ -51,6 +53,7 @@ class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueI
     fun preload(request: TableInfos) {
         offline.preload(request)
         core.preload(request)
+        blacklist.preload(request)
         inventory.preload(request)
         friend.preload(request)
         chat.preload(request)
@@ -65,6 +68,7 @@ class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueI
     fun unpack(dataInfo: DataInfo) {
         offline.unpack(dataInfo)
         core.unpack(dataInfo)
+        blacklist.unpack(dataInfo)
         inventory.unpack(dataInfo)
         friend.unpack(dataInfo)
         chat.unpack(dataInfo)
@@ -79,6 +83,7 @@ class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueI
     fun pack(dataInfo: DataInfo) {
         offline.pack(dataInfo)
         core.pack(dataInfo)
+        blacklist.pack(dataInfo)
         inventory.pack(dataInfo)
         friend.pack(dataInfo)
         chat.pack(dataInfo)
@@ -90,6 +95,7 @@ class GamePlayer(val playerId: Int, val dbId: Int, val name: String, val uniqueI
     fun init() {
         Logger.info("Init GamePlayer: {}", name)
         friend.init()
+        blacklist.init()
     }
 
     /**

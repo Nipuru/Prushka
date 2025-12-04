@@ -6,14 +6,20 @@ import server.bukkit.gameplay.player.Unique
 
 
 /**
- * 黑名单 被哪些玩家屏蔽
+ * 黑名单
  *
  * @author Nipuru
  * @since 2025/06/10 16:41
  */
-@Table(name = "tb_blacklist_inbound")
-class BlacklistInboundData : Data {
+@Table(name = "tb_blacklist")
+class BlacklistData : Data {
     /** 玩家 id  */
     @Unique
-    var blockerId: Int = 0
+    var target: Int = 0
+     
+    /** 屏蔽状态 */
+    var blocking: Boolean = false
+    
+    /** 被屏蔽状态 */
+    var blocked: Boolean = false
 }
