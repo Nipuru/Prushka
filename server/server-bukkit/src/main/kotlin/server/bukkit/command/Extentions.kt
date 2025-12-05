@@ -11,12 +11,14 @@ import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import org.bukkit.entity.Player
-import server.bukkit.BukkitPlugin.serverThread
+import server.bukkit.BukkitPlugin.BizThread
+import server.bukkit.BukkitPlugin.ServerThread
 import server.bukkit.gameplay.player.GamePlayer
 import server.bukkit.gameplay.player.gamePlayer
 import server.bukkit.nms.handleError
@@ -75,9 +77,16 @@ fun <S : Any> suggestion(context: CommandContext<S>, builder: SuggestionsBuilder
     return builder.buildFuture()
 }
 
-@Suppress("UNCHECKED_CAST")
-fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.executes(func: suspend (CommandContext<CommandSourceStack>) -> Unit): T = this.executes {
-    CoroutineScope(serverThread.asCoroutineDispatcher()).launch {
+fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.executes(func: suspend (CommandContext<CommandSourceStack>) -> Unit): T {
+    return this.executes(Dispatchers.ServerThread, func)
+}
+
+fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.executesAsync(func: suspend (CommandContext<CommandSourceStack>) -> Unit): T {
+    return this.executes(Dispatchers.BizThread, func)
+}
+
+fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.executes(dispatcher: CoroutineDispatcher, func: suspend (CommandContext<CommandSourceStack>) -> Unit): T = this.executes {
+    CoroutineScope(dispatcher).launch {
         try {
             func(it)
         } catch (e: CommandSyntaxException) {

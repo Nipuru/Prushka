@@ -4,6 +4,9 @@ import com.alipay.remoting.rpc.protocol.UserProcessor
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.core.util.ConnectionEventTypeProcessor
 import net.kyori.adventure.key.Key
@@ -42,6 +45,7 @@ import java.util.concurrent.TimeUnit
  */
 object BukkitPlugin : JavaPlugin() {
 
+    // 公共属性
     val enableLatch = CountDownLatch(1)
     val serverThread = server.getServerThreadExecutor()
     val bizThread = ThreadPoolExecutor(
@@ -51,9 +55,16 @@ object BukkitPlugin : JavaPlugin() {
         ThreadFactoryBuilder().setDaemon(false).setNameFormat("Prushka-bizThread-%d").build()
     )
 
+    // 私有属性
     private val spawnLocations: Cache<String, Location> = CacheBuilder.newBuilder()
         .expireAfterAccess(1, TimeUnit.MINUTES)
         .build()
+    private val serverThreadDispatcher = serverThread.asCoroutineDispatcher()
+    private val bizThreadDispatcher = bizThread.asCoroutineDispatcher()
+
+    // 公共拓展方法
+    val Dispatchers.ServerThread: CoroutineDispatcher get() = serverThreadDispatcher
+    val Dispatchers.BizThread: CoroutineDispatcher get() = bizThreadDispatcher
 
     override fun onLoad() {
         // 注册 broker-client 信息
