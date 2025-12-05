@@ -87,12 +87,6 @@ fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceSt
     Command.SINGLE_SUCCESS
 }
 
-@Suppress("UNCHECKED_CAST")
-fun <T : ArgumentBuilder<CommandSourceStack, T>> ArgumentBuilder<CommandSourceStack, T>.executes(func: (CommandContext<CommandSourceStack>) -> Unit): T = this.executes {
-    func(it)
-    Command.SINGLE_SUCCESS
-}
-
 fun <T> ArgumentType<T>.asSuggestionProvider(): SuggestionProvider<CommandSourceStack> = SuggestionProvider { context, builder ->
     this.listSuggestions(context, builder)
 }

@@ -14,6 +14,8 @@ import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerEntity
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import org.bukkit.Server
+import org.bukkit.craftbukkit.CraftServer
 import org.bukkit.craftbukkit.entity.CraftEntity
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftContainer
@@ -28,6 +30,7 @@ import org.bukkit.util.io.BukkitObjectOutputStream
 import server.bukkit.util.text.component
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.util.concurrent.Executor
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
@@ -125,6 +128,21 @@ fun Player.addChannelHandler(handler: ChannelHandler) {
         if (it.value is Connection) {
             pipeline.addBefore(it.key, handler.javaClass.name, handler)
             return
+        }
+    }
+}
+
+/**
+ * 获取服务端主线程调度器 Server Thread
+ * 可以避免 bukkit scheduler 执行任务的 1 tick 延迟
+ */
+fun Server.getServerThreadExecutor(): Executor {
+    val minecraftServer = (this as CraftServer).server
+    return Executor {
+        if (minecraftServer.isSameThread) {
+            it.run()
+        } else {
+            minecraftServer.execute(it)
         }
     }
 }

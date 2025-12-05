@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import server.bukkit.command.*
 import server.bukkit.gameplay.player.GamePlayerManager
 import server.bukkit.listener.*
+import server.bukkit.nms.getServerThreadExecutor
 import server.bukkit.processor.*
 import server.bukkit.processor.connection.CloseEventBukkitProcessor
 import server.bukkit.processor.connection.ConnectEventBukkitProcessor
@@ -21,7 +22,6 @@ import server.bukkit.scheduler.ServerTickTask
 import server.bukkit.time.TimeManager
 import server.bukkit.util.CommandTree
 import server.bukkit.util.ScheduleTask
-import server.bukkit.util.ServerThreadExecutor
 import server.bukkit.util.register
 import server.bukkit.util.text.TextFactory
 import server.bukkit.util.text.font.Bitmap
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit
 object BukkitPlugin : JavaPlugin() {
 
     val enableLatch = CountDownLatch(1)
-    val serverThread = ServerThreadExecutor(this)
+    val serverThread = server.getServerThreadExecutor()
     val bizThread = ThreadPoolExecutor(
         0, Int.MAX_VALUE,
         60L, TimeUnit.SECONDS,

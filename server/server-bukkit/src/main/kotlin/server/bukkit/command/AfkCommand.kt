@@ -27,5 +27,4 @@ class AfkCommand : CommandTree {
         MessageType.ALLOW.sendMessage(player, "已进入挂机模式")
     }
 
-
 }

@@ -5,12 +5,10 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":server-common"))
-    paperweight.paperDevBundle(libs.versions.paper)
     compileOnly(libs.afybroker.client)
-
-    // Kotlin coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    paperweight.paperDevBundle(libs.versions.paper)
+    implementation(project(":server-common"))
+    implementation(libs.kotlinx.coroutines.core)
 }
 
 tasks.assemble {
