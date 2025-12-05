@@ -57,15 +57,15 @@ class FriendManager(player: GamePlayer) : BaseManager(player) {
     val friendCount: Int
         get() = friendships.count()
 
-    fun getReceivedFriendRequests(): Int2ObjectMap<FriendRequestData> {
+    fun getFriendRequests(): Int2ObjectMap<FriendRequestData> {
         return friendRequests
     }
 
-    fun hasReceivedFriendRequest(friendId: Int): Boolean {
+    fun hasFriendRequest(friendId: Int): Boolean {
         return friendRequests.containsKey(friendId)
     }
 
-    fun getReceivedFriendRequest(playerId: Int): FriendRequestData? {
+    fun getFriendRequest(playerId: Int): FriendRequestData? {
         return friendRequests[playerId]
     }
 

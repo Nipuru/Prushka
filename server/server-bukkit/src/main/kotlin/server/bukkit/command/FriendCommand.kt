@@ -71,7 +71,7 @@ class FriendCommand : CommandTree {
             MessageType.FAILED.sendMessage(player, "玩家不存在")
             return
         }
-        val targetRequest = player.friend.getReceivedFriendRequest(target.playerId)
+        val targetRequest = player.friend.getFriendRequest(target.playerId)
         if (targetRequest == null) {
             MessageType.FAILED.sendMessage(player, "没有来自玩家 ${target.name} 的好友请求")
             return
@@ -87,7 +87,7 @@ class FriendCommand : CommandTree {
             MessageType.FAILED.sendMessage(player, "玩家不存在")
             return
         }
-        val targetRequest = player.friend.getReceivedFriendRequest(target.playerId)
+        val targetRequest = player.friend.getFriendRequest(target.playerId)
         if (targetRequest == null) {
             MessageType.FAILED.sendMessage(player, "没有来自玩家 ${target.name} 的好友请求")
             return
