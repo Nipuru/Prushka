@@ -22,11 +22,13 @@ import server.auth.http.rootRouting
 import server.auth.logger.logger
 import server.auth.processor.connection.CloseEventAuthProcessor
 import server.auth.service.PlayerServiceImpl
+import server.auth.service.SheetServiceImpl
 import server.auth.util.JWTUtil
 import server.auth.util.overdue
 import server.common.ClientType
 import server.common.logger.Logger
 import server.common.service.PlayerService
+import server.common.service.SheetService
 import server.common.util.database.DatabaseFactory
 
 object AuthServer {
@@ -35,6 +37,7 @@ object AuthServer {
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         builder.registerService(PlayerService::class.java, PlayerServiceImpl())
+        builder.registerService(SheetService::class.java, SheetServiceImpl())
         builder.addConnectionEventProcessor(CloseEventAuthProcessor())
     }
 

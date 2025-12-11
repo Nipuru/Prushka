@@ -5,61 +5,38 @@ package server.common.sheet
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import java.io.File
-import java.util.*
 
 object Sheet {
-    var isLoad = false
-        private set
-        
-    fun load(tablePath: String) {
-        loadStBitmap(tablePath)
-        loadStConstant(tablePath)
-        loadStMessage(tablePath)
-        loadStProperty(tablePath)
-        loadStRank(tablePath)
-        loadStReward(tablePath)
-        loadStRewardPool(tablePath)
+    private var isLoad = false
+    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
+
+    fun load(sheets: Map<String, String>) {
+        load(StBitmapHolder, sheets["st_bitmap"])
+        load(StConstantHolder, sheets["st_constant"])
+        load(StMessageHolder, sheets["st_message"])
+        load(StPropertyHolder, sheets["st_property"])
+        load(StRankHolder, sheets["st_rank"])
+        load(StRewardHolder, sheets["st_reward"])
+        load(StRewardPoolHolder, sheets["st_reward_pool"])
         isLoad = true
     }
-    
+
     fun check() {
         if (!isLoad) throw IllegalStateException("Sheet not loaded")
     }
-}
 
-internal object SheetSerializer {
-    private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
-
-    inline fun <reified T> serialize(json: String): List<T> {
+    private inline fun <reified T> load(holder: SheetHolder<T>, json: String?) {
+        holder.clear()
+        if (json == null) return
         val type = object : TypeToken<List<T>>() {}.type
-        return gson.fromJson(json, type)
-    }
-}
-
-internal class SheetHolder<T: Any> {
-    lateinit var default: T
-    var locales = mutableMapOf<Locale, T>()
-
-    infix operator fun get(locale: Locale?): T {
-        if (locale == null) return default
-        return locales[locale] ?: default
-    }
-
-    inline fun <reified E> load(sheetPath: String, sheetName: String, builder: (elements: List<E>) -> T) {
-        val sheetFiles = File(sheetPath).listFiles { _, fileName -> fileName.startsWith("$sheetName.")}
-        if (sheetFiles == null) return
-        for (sheetFile in sheetFiles) {
-            val fileName = sheetFile.nameWithoutExtension
-            val parts = fileName.split(".")
-            require(parts.size == 1 || parts.size == 2) { "Invalid sheet name: $sheetName"}
-            val elements = SheetSerializer.serialize<E>(sheetFile.readText())
-            if (parts.size == 1) {
-                default = builder(elements)
-            } else {
-                val locale = Locale.forLanguageTag(parts[1])
-                locales[locale] = builder(elements)
-            }
+        val values = gson.fromJson<List<T>>(json, type)
+        for (value in values) {
+            holder.put(value)
         }
     }
+}
+
+interface SheetHolder<T> {
+    fun put(value: T)
+    fun clear()
 }

@@ -15,28 +15,21 @@ data class StReward(
 
 fun Sheet.getStReward(rewardId: Int, index: Int): List<StReward> {
     check()
-    return holderStReward.default.stRewardAMap[rewardId] ?: emptyList()
+    return StRewardHolder.stRewardAMap[rewardId] ?: emptyList()
 }
 
 fun Sheet.getStRewards(rewardId: Int): List<StReward> {
     check()
-    return holderStReward.default.stRewardAMap[rewardId] ?: emptyList()
+    return StRewardHolder.stRewardAMap[rewardId] ?: emptyList()
 }
 
-private class StRewardFile {
+internal object StRewardHolder : SheetHolder<StReward> {
     val stRewardAMap = mutableMapOf<Int, MutableList<StReward>>()
-}
-
-private lateinit var holderStReward: SheetHolder<StRewardFile>
-
-internal fun loadStReward(tablePath: String) {
-    val holder = SheetHolder<StRewardFile>()
-    holder.load<StReward>(tablePath, "st_reward") { elements ->
-        StRewardFile().apply {
-            elements.forEach {
-                stRewardAMap.getOrPut(it.rewardId) { mutableListOf() }.add(it)
-            }
-        }
+    override fun put(value: StReward) {
+        stRewardAMap.getOrPut(value.rewardId) { mutableListOf() }.add(value)
     }
-    holderStReward = holder
+
+    override fun clear() {
+        stRewardAMap.clear()
+    }
 }

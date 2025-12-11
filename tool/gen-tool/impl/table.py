@@ -14,21 +14,18 @@ class Table:
             ]
         },
         "st_message": {
-            "i18n": True,
             "key": "key",
             "unique": [
                 ["key"]
             ]
         },
         "st_property": {
-            "i18n": True,
             "key": "config_id",
             "unique": [
                 ["config_id"]
             ]
         },
         "st_rank": {
-            "i18n": True,
             "key": "config_id",
             "unique": [
                 ["config_id"]

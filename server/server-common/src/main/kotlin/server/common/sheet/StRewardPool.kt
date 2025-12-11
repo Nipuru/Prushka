@@ -17,28 +17,21 @@ data class StRewardPool(
 
 fun Sheet.getStRewardPool(poolId: Int, index: Int): List<StRewardPool> {
     check()
-    return holderStRewardPool.default.stRewardPoolAMap[poolId] ?: emptyList()
+    return StRewardPoolHolder.stRewardPoolAMap[poolId] ?: emptyList()
 }
 
 fun Sheet.getStRewardPools(poolId: Int): List<StRewardPool> {
     check()
-    return holderStRewardPool.default.stRewardPoolAMap[poolId] ?: emptyList()
+    return StRewardPoolHolder.stRewardPoolAMap[poolId] ?: emptyList()
 }
 
-private class StRewardPoolFile {
+internal object StRewardPoolHolder : SheetHolder<StRewardPool> {
     val stRewardPoolAMap = mutableMapOf<Int, MutableList<StRewardPool>>()
-}
-
-private lateinit var holderStRewardPool: SheetHolder<StRewardPoolFile>
-
-internal fun loadStRewardPool(tablePath: String) {
-    val holder = SheetHolder<StRewardPoolFile>()
-    holder.load<StRewardPool>(tablePath, "st_reward_pool") { elements ->
-        StRewardPoolFile().apply {
-            elements.forEach {
-                stRewardPoolAMap.getOrPut(it.poolId) { mutableListOf() }.add(it)
-            }
-        }
+    override fun put(value: StRewardPool) {
+        stRewardPoolAMap.getOrPut(value.poolId) { mutableListOf() }.add(value)
     }
-    holderStRewardPool = holder
+
+    override fun clear() {
+        stRewardPoolAMap.clear()
+    }
 }

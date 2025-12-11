@@ -29,9 +29,9 @@ import server.bukkit.util.register
 import server.bukkit.util.text.TextFactory
 import server.bukkit.util.text.font.Bitmap
 import server.common.ClientTag
+import server.common.service.SheetService
 import server.common.sheet.Sheet
 import server.common.sheet.getAllStBitmap
-import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -61,6 +61,7 @@ object BukkitPlugin : JavaPlugin() {
         .build()
     private val serverThreadDispatcher = serverThread.asCoroutineDispatcher()
     private val bizThreadDispatcher = bizThread.asCoroutineDispatcher()
+    private val sheetService = Broker.getService(SheetService::class.java)
 
     // 公共拓展方法
     val Dispatchers.ServerThread: CoroutineDispatcher get() = serverThreadDispatcher
@@ -99,8 +100,7 @@ object BukkitPlugin : JavaPlugin() {
         saveDefaultConfig()
         reloadConfig()
         // 加载配置表
-        val serverFolder = File(dataFolder.absolutePath).parentFile.parentFile
-        Sheet.load(File(serverFolder.parentFile, "sheet").absolutePath)
+        Sheet.load(sheetService.getSheets())
 
         initTextFactory()
     }

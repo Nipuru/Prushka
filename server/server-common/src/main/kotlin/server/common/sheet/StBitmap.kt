@@ -21,28 +21,21 @@ data class StBitmap(
 
 fun Sheet.getAllStBitmap(): Map<String, StBitmap> {
     check()
-    return holderStBitmap.default.stBitmapMap
+    return StBitmapHolder.stBitmapMap
 }
 
 fun Sheet.getStBitmap(configId: String): StBitmap? {
     check()
-    return holderStBitmap.default.stBitmapMap[configId]
+    return StBitmapHolder.stBitmapMap[configId]
 }
 
-private class StBitmapFile {
+internal object StBitmapHolder : SheetHolder<StBitmap> {
     val stBitmapMap = mutableMapOf<String, StBitmap>()
-}
-
-private lateinit var holderStBitmap: SheetHolder<StBitmapFile>
-
-internal fun loadStBitmap(tablePath: String) {
-    val holder = SheetHolder<StBitmapFile>()
-    holder.load<StBitmap>(tablePath, "st_bitmap") { elements ->
-        StBitmapFile().apply {
-            elements.forEach {
-                stBitmapMap[it.configId] = it
-            }
-        }
+    override fun put(value: StBitmap) {
+        stBitmapMap[value.configId] = value
     }
-    holderStBitmap = holder
+
+    override fun clear() {
+        stBitmapMap.clear()
+    }
 }

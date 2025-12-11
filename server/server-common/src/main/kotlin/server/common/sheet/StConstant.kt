@@ -11,28 +11,21 @@ data class StConstant(
 
 fun Sheet.getAllStConstant(): Map<String, StConstant> {
     check()
-    return holderStConstant.default.stConstantMap
+    return StConstantHolder.stConstantMap
 }
 
 fun Sheet.getStConstant(key: String): StConstant? {
     check()
-    return holderStConstant.default.stConstantMap[key]
+    return StConstantHolder.stConstantMap[key]
 }
 
-private class StConstantFile {
+internal object StConstantHolder : SheetHolder<StConstant> {
     val stConstantMap = mutableMapOf<String, StConstant>()
-}
-
-private lateinit var holderStConstant: SheetHolder<StConstantFile>
-
-internal fun loadStConstant(tablePath: String) {
-    val holder = SheetHolder<StConstantFile>()
-    holder.load<StConstant>(tablePath, "st_constant") { elements ->
-        StConstantFile().apply {
-            elements.forEach {
-                stConstantMap[it.key] = it
-            }
-        }
+    override fun put(value: StConstant) {
+        stConstantMap[value.key] = value
     }
-    holderStConstant = holder
+
+    override fun clear() {
+        stConstantMap.clear()
+    }
 }
