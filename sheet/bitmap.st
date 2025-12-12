@@ -8,7 +8,7 @@ table bitmap {
     height: int32  // 高度
     img_height: int32  // 图片高度
     img_width: int32  // 图片宽度
-    file: string !exclude  // 材质文件路径
+    file: string  // 材质文件路径
 
     @data
     split_pos_1, 1, 1, -32768, 0, 256, 256, prushka:ui/pixel_split.png, 

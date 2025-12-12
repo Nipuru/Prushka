@@ -1,6 +1,7 @@
 import os
 
 from .st_parser import parse_st_file, find_all_st_files
+from .st_validator import StValidator
 from .config import Config
 
 type_mapping = {
@@ -77,6 +78,38 @@ internal object <name>Holder : SheetHolder<<name>> {
 def generate_code():
     sheets = []
     st_files = find_all_st_files(Config.excel_path)
+
+    print('=' * 60)
+    print('开始语法检查...')
+    print('=' * 60)
+
+    validation_failed = False
+    for st_file_path in st_files:
+        try:
+            st = parse_st_file(st_file_path)
+        except Exception as e:
+            print(f'\n解析失败: {st_file_path}')
+            print(f'  错误: {str(e)}')
+            validation_failed = True
+            continue
+
+        validator = StValidator(st, st_file_path)
+        is_valid = validator.validate()
+
+        if not is_valid or validator.warnings:
+            print(f'\n{validator.get_report()}')
+            if not is_valid:
+                validation_failed = True
+
+    if validation_failed:
+        print('\n' + '=' * 60)
+        print('语法检查失败，停止代码生成')
+        print('=' * 60)
+        return
+
+    print('\n' + '=' * 60)
+    print('语法检查通过，开始生成代码...')
+    print('=' * 60 + '\n')
 
     for st_file_path in st_files:
         print('正在生成 %s' % (st_file_path))
@@ -169,7 +202,7 @@ def generate_code():
         if akey:
             mappings += f"        {field_name}AMap.getOrPut(value.{akey[0]}) {{ mutableListOf() }}.add(value)\n"
             if subkey:
-                mappings += f"{field_name}PMap[value.{akey[0]} to value.{subkey[0]}] = value\n"
+                mappings += f"        {field_name}PMap[value.{akey[0]} to value.{subkey[0]}] = value\n"
         mappings = mappings.rstrip()
 
         sheet_code = sheet_template.replace('<name>', class_name)
