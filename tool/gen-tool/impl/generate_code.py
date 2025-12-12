@@ -132,14 +132,13 @@ def generate_code():
             extentions.append(f"fun Sheet.get{class_name}ById({vkey[0]}: {vkey[1]}): {class_name}? {{\n    check()\n    return {class_name}Holder.{field_name}Map[{vkey[0]}]\n}}")
             clearings.append(f"{field_name}VMap.clear()")
         if akey:
-            if subkey:
-                maps.append(f"val {field_name}AMap = mutableMapOf<Pair<{akey[1]}, {subkey[1]}>, {class_name}>()")
-                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, {subkey[0]}: {subkey[1]}): {class_name}? {{\n    check()\n    return {class_name}Holder.{field_name}AMap[{akey[0]} to {subkey[0]}]\n}}")
-            else:
-                maps.append(f"val {field_name}AMap = mutableMapOf<{akey[1]}, MutableList<{class_name}>>()")
-                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, index: Int): List<{class_name}> {{\n    check()\n    return {class_name}Holder.{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
-                extentions.append(f"fun Sheet.get{class_name}s({akey[0]}: {akey[1]}): List<{class_name}> {{\n    check()\n    return {class_name}Holder.{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
+            maps.append(f"val {field_name}AMap = mutableMapOf<{akey[1]}, MutableList<{class_name}>>()")
+            extentions.append(f"fun Sheet.get{class_name}s({akey[0]}: {akey[1]}): List<{class_name}> {{\n    check()\n    return {class_name}Holder.{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
             clearings.append(f"{field_name}AMap.clear()")
+            if subkey:
+                maps.append(f"val {field_name}PMap = mutableMapOf<Pair<{akey[1]}, {subkey[1]}>, {class_name}>()")
+                extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, {subkey[0]}: {subkey[1]}): {class_name}? {{\n    check()\n    return {class_name}Holder.{field_name}PMap[{akey[0]} to {subkey[0]}]\n}}")
+                clearings.append(f"{field_name}PMap.clear()")
         fields = []
         for i in range( len(labels) ):
             if labels[i] == '':
@@ -158,10 +157,9 @@ def generate_code():
         if vkey:
             mappings += f"{field_name}VMap[value.{vkey[0]}] = value\n"
         if akey:
+            mappings += f"{field_name}AMap.getOrPut(value.{akey[0]}) {{ mutableListOf() }}.add(value)\n"
             if subkey:
-                mappings += f"{field_name}AMap[value.{akey[0]} to value.{subkey[0]}] = value\n"
-            else:
-                mappings += f"{field_name}AMap.getOrPut(value.{akey[0]}) {{ mutableListOf() }}.add(value)\n"
+                mappings += f"{field_name}PMap[value.{akey[0]} to value.{subkey[0]}] = value\n"
         mappings = mappings.rstrip()
         sheet_code = sheet_template.replace('<name>', class_name)
         sheet_code = sheet_code.replace('<fields>', ',\n'.join(fields))
