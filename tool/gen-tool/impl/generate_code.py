@@ -1,9 +1,7 @@
 import os
 
-from .table import Table
+from .st_parser import parse_st_file, find_all_st_files
 from .config import Config
-from .common import get_xls_sheet, open_file, to_json_str
-from .check_excel import check_excel
 
 type_mapping = {
     "int32": "Int",
@@ -65,138 +63,151 @@ data class <name>(
 <extentions>
 
 internal object <name>Holder : SheetHolder<<name>> {
-    <maps>
+<maps>
     override fun put(value: <name>) {
-        <mappings>
+<mappings>
     }
 
     override fun clear() {
-        <clearings>
+<clearings>
     }
 }
 """
 
 def generate_code():
     sheets = []
-    
-    for table_name in Table.tables:
-        print('正在生成 %s' % (table_name))
-        table = Table.tables[table_name]
-        exclude = []
-        if "exclude" in table:
-            exclude = table["exclude"]
+    st_files = find_all_st_files(Config.excel_path)
+
+    for st_file_path in st_files:
+        print('正在生成 %s' % (st_file_path))
+
+        try:
+            st = parse_st_file(st_file_path)
+        except Exception as e:
+            print('解析st文件失败: %s' % str(e))
+            continue
+
+        if not st.table_name:
+            print('st文件没有定义table')
+            continue
+
+        table_name = 'st_' + st.table_name
         class_name = snake_to_pascal(table_name)
         field_name = snake_to_camel(table_name)
-        xls_file = open_file( Config.excel_path, table_name )
-        sheet = get_xls_sheet( xls_file, table_name )
-        if sheet == None:
-            print('%s表没找到名字叫%s的标签页' % ( table_name, table_name ))
-            continue
-        
-        comments = __getLabels( sheet.row_values( 0 ) )
-        labels = __getLabels( sheet.row_values( 1 ) )
-        column_types = __getLabels( sheet.row_values( 2 ) )
+
+        config = st.get_table_config()
+        exclude = config.get('exclude', [])
+
         key = []
         vkey = []
         akey = []
         subkey = []
-        for i in range( len(labels) ):
-            if labels[i] == '':
+
+        for field in st.fields:
+            if field['name'] in exclude:
                 continue
-            if labels[i] in exclude:
-                continue
-            if column_types[i] == '':
-                continue
-            k = [snake_to_camel(labels[i]), __kotlin_type(column_types[i])]
-            if "key" in table and table['key'] == labels[i]:
-                key = k
-            elif "vkey" in table and table['vkey'] == labels[i]:
-                vkey = k
-            elif "akey" in table and table['akey'] == labels[i]:
-                akey = k
-            elif "subkey" in table and table['subkey'] == labels[i]:
-                subkey = k
+
+            field_camel = snake_to_camel(field['name'])
+            kotlin_type = __kotlin_type(field['type'])
+
+            if config.get('key') == field['name']:
+                key = [field_camel, kotlin_type]
+            elif config.get('vkey') == field['name']:
+                vkey = [field_camel, kotlin_type]
+            elif config.get('akey') == field['name']:
+                akey = [field_camel, kotlin_type]
+            elif config.get('subkey') == field['name']:
+                subkey = [field_camel, kotlin_type]
+
         if key and akey:
             print('%s表同时存在key和akey' % (table_name))
             continue
+
         maps = []
         extentions = []
         clearings = []
+
         if key:
-            maps.append(f"val {field_name}Map = mutableMapOf<{key[1]}, {class_name}>()")
+            maps.append(f"    val {field_name}Map = mutableMapOf<{key[1]}, {class_name}>()")
             extentions.append(f"fun Sheet.getAll{class_name}(): Map<{key[1]}, {class_name}> {{\n    check()\n    return {class_name}Holder.{field_name}Map\n}}")
             extentions.append(f"fun Sheet.get{class_name}({key[0]}: {key[1]}): {class_name}? {{\n    check()\n    return {class_name}Holder.{field_name}Map[{key[0]}]\n}}")
-            clearings.append(f"{field_name}Map.clear()")
+            clearings.append(f"        {field_name}Map.clear()")
+
         if vkey:
-            maps.append(f"val {field_name}VMap= mutableMapOf<{vkey[1]}, {class_name}>()")
-            extentions.append(f"fun Sheet.get{class_name}ById({vkey[0]}: {vkey[1]}): {class_name}? {{\n    check()\n    return {class_name}Holder.{field_name}Map[{vkey[0]}]\n}}")
-            clearings.append(f"{field_name}VMap.clear()")
+            maps.append(f"    val {field_name}VMap= mutableMapOf<{vkey[1]}, {class_name}>()")
+            extentions.append(f"fun Sheet.get{class_name}ById({vkey[0]}: {vkey[1]}): {class_name}? {{\n    check()\n    return {class_name}Holder.{field_name}VMap[{vkey[0]}]\n}}")
+            clearings.append(f"        {field_name}VMap.clear()")
+
         if akey:
-            maps.append(f"val {field_name}AMap = mutableMapOf<{akey[1]}, MutableList<{class_name}>>()")
+            maps.append(f"    val {field_name}AMap = mutableMapOf<{akey[1]}, MutableList<{class_name}>>()")
             extentions.append(f"fun Sheet.get{class_name}s({akey[0]}: {akey[1]}): List<{class_name}> {{\n    check()\n    return {class_name}Holder.{field_name}AMap[{akey[0]}] ?: emptyList()\n}}")
-            clearings.append(f"{field_name}AMap.clear()")
+            clearings.append(f"        {field_name}AMap.clear()")
+
             if subkey:
-                maps.append(f"val {field_name}PMap = mutableMapOf<Pair<{akey[1]}, {subkey[1]}>, {class_name}>()")
+                maps.append(f"    val {field_name}PMap = mutableMapOf<Pair<{akey[1]}, {subkey[1]}>, {class_name}>()")
                 extentions.append(f"fun Sheet.get{class_name}({akey[0]}: {akey[1]}, {subkey[0]}: {subkey[1]}): {class_name}? {{\n    check()\n    return {class_name}Holder.{field_name}PMap[{akey[0]} to {subkey[0]}]\n}}")
-                clearings.append(f"{field_name}PMap.clear()")
+                clearings.append(f"        {field_name}PMap.clear()")
+
         fields = []
-        for i in range( len(labels) ):
-            if labels[i] == '':
+        for field in st.fields:
+            if field['name'] in exclude:
                 continue
-            if labels[i] in exclude:
-                continue
-            if column_types[i] == '':
-                continue
-            name = snake_to_camel(labels[i])
-            typ = __kotlin_type(column_types[i])
-            comment = comments[i]
-            fields.append(f"    /** {comment} */\n    val {name}: {typ}")
+
+            name = snake_to_camel(field['name'])
+            typ = __kotlin_type(field['type'])
+            comment = field.get('comment', '')
+            if comment:
+                fields.append(f"    /** {comment} */\n    val {name}: {typ}")
+            else:
+                fields.append(f"    val {name}: {typ}")
+
         mappings = ""
         if key:
-            mappings += f"{field_name}Map[value.{key[0]}] = value\n"
+            mappings += f"        {field_name}Map[value.{key[0]}] = value\n"
         if vkey:
-            mappings += f"{field_name}VMap[value.{vkey[0]}] = value\n"
+            mappings += f"        {field_name}VMap[value.{vkey[0]}] = value\n"
         if akey:
-            mappings += f"{field_name}AMap.getOrPut(value.{akey[0]}) {{ mutableListOf() }}.add(value)\n"
+            mappings += f"        {field_name}AMap.getOrPut(value.{akey[0]}) {{ mutableListOf() }}.add(value)\n"
             if subkey:
                 mappings += f"{field_name}PMap[value.{akey[0]} to value.{subkey[0]}] = value\n"
         mappings = mappings.rstrip()
+
         sheet_code = sheet_template.replace('<name>', class_name)
         sheet_code = sheet_code.replace('<fields>', ',\n'.join(fields))
         sheet_code = sheet_code.replace('<maps>', '\n'.join(maps))
         sheet_code = sheet_code.replace('<extentions>', '\n\n'.join(extentions))
-        sheet_code = sheet_code.replace('<mappings>', mappings)
+        sheet_code = sheet_code.replace('<mappings>',  mappings)
         sheet_code = sheet_code.replace('<clearings>', '\n'.join(clearings))
+
         sheet_path = '%s/server-common/src/main/kotlin/server/common/sheet/%s.kt' % (Config.code_path, class_name)
         write_file(sheet_path, sheet_code)
-            
+
         sheets.append(table_name)
-        
-        
+
     load_sheets = []
     for sheet in sheets:
         load_sheets.append(f"        load({snake_to_pascal(sheet)}Holder, sheets[\"{sheet}\"])")
     sheet_loader_code = sheet_loader_template.replace('<sheets>', '\n'.join(load_sheets))
     sheet_loader_path = '%s/server-common/src/main/kotlin/server/common/sheet/Sheet.kt' % (Config.code_path)
     write_file(sheet_loader_path, sheet_loader_code)
-    
+
 def __kotlin_type(column_type):
     original_type = column_type
-    
+
     is_array = column_type.startswith("[]")
     if is_array:
         element_type = column_type[2:]
-        
+
         base_kotlin_type = type_mapping.get(element_type)
         if base_kotlin_type is None:
             raise ValueError(f"不支持的数据类型: {original_type}")
-        
+
         kotlin_type = f"List<{base_kotlin_type}>"
     else:
         kotlin_type = type_mapping.get(column_type)
         if kotlin_type is None:
             raise ValueError(f"不支持的数据类型: {original_type}")
-    
+
     return kotlin_type
 
 def snake_to_pascal(snake_str):
@@ -205,15 +216,6 @@ def snake_to_pascal(snake_str):
 def snake_to_camel(snake_str):
     words = snake_str.split('_')
     return words[0] + ''.join(word.capitalize() for word in words[1:])
-
-def __getLabels( line ):
-    labels = []
-    for l in line:
-        if l and l != '':
-            labels.append( l.strip() )
-        else:
-            labels.append( '' )
-    return labels
 
 def write_file(path, context):
     print('正在保存 %s' % (path))

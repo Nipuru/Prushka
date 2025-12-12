@@ -15,11 +15,6 @@ data class StRewardPool(
     val weight: Int
 )
 
-fun Sheet.getStRewardPool(poolId: Int, index: Int): List<StRewardPool> {
-    check()
-    return StRewardPoolHolder.stRewardPoolAMap[poolId] ?: emptyList()
-}
-
 fun Sheet.getStRewardPools(poolId: Int): List<StRewardPool> {
     check()
     return StRewardPoolHolder.stRewardPoolAMap[poolId] ?: emptyList()

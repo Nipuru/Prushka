@@ -13,11 +13,6 @@ data class StReward(
     val amount: Int
 )
 
-fun Sheet.getStReward(rewardId: Int, index: Int): List<StReward> {
-    check()
-    return StRewardHolder.stRewardAMap[rewardId] ?: emptyList()
-}
-
 fun Sheet.getStRewards(rewardId: Int): List<StReward> {
     check()
     return StRewardHolder.stRewardAMap[rewardId] ?: emptyList()

@@ -1,83 +1,78 @@
-
-
 import os
 from .config import Config
-from .common import get_xls_sheet, open_file, to_json_bool, to_json_str
-from .check_excel import check_excel
+from .st_parser import parse_st_file
 
+def export_bitmap():
+    st_file_path = os.path.join(Config.excel_path, 'bitmap.st')
 
-table_name = 'st_bitmap'   # 表名
-
-def export_bitmap(check = True):
-    if check and check_excel(table_name) != 0: return
-    
-    xls_file = open_file( Config.excel_path, table_name )
-    print('开始从%s导出位图字体......' % ( table_name ))
-    
-    sheet = get_xls_sheet( xls_file, table_name )
-    if sheet == None:
-        print('%s表没找到名字叫%s的标签页' % ( table_name, table_name ))
+    if not os.path.exists(st_file_path):
+        print('bitmap.st文件不存在，跳过位图字体导出')
         return
-    
-    labels = __getLabels( sheet.row_values( 1 ) )
-    				
 
-    row_idx = __getLabelIndex( labels, 'row' )
-    column_idx = __getLabelIndex( labels, 'column' )
-    ascent_idx = __getLabelIndex( labels, 'ascent' )
-    height_idx = __getLabelIndex( labels, 'height' )	
-    file_idx = __getLabelIndex( labels, 'file' )
-    
-    __store_json(sheet, row_idx, column_idx, ascent_idx, height_idx, file_idx)
+    try:
+        st = parse_st_file(st_file_path)
+    except Exception as e:
+        print('解析bitmap.st失败: %s' % str(e))
+        return
 
-def __getLabels( line ):
-    labels = []
-    for l in line:
-        if l and l != '':
-            labels.append( l.strip() )
-        else:
-            labels.append( '' )
-    return labels    
+    if not st.data_rows:
+        print('bitmap.st没有@data数据，跳过位图字体导出')
+        return
 
-def __getLabelIndex( line, label ):
-    index = line.index( label )
-    if index == -1:
-        print('%s表没有%s字段' % ( table_name, label ))
-    return index
+    print('开始从bitmap.st导出位图字体......')
 
-def __store_json(sheet, row_idx, column_idx, ascent_idx, height_idx, file_idx):
+    field_names = [f['name'] for f in st.fields]
+
+    try:
+        row_idx = field_names.index('row')
+        column_idx = field_names.index('column')
+        ascent_idx = field_names.index('ascent')
+        height_idx = field_names.index('height')
+        file_idx = field_names.index('file')
+    except ValueError as e:
+        print('bitmap表缺少必要字段: %s' % str(e))
+        return
+
     objs = []
     unicode = 0x1000
-    for i in range( 3, sheet.nrows ):
-        line = sheet.row_values( i )
-        row = to_json_str(line[row_idx])
-        column = to_json_str(line[column_idx])
-        ascent = to_json_str(line[ascent_idx])
-        height = to_json_str(line[height_idx])
-        file = to_json_str(line[file_idx])
+
+    for row_str in st.data_rows:
+        values = st.parse_data_row(row_str)
+
+        if len(values) <= max(row_idx, column_idx, ascent_idx, height_idx, file_idx):
+            continue
+
+        row = values[row_idx].strip()
+        column = values[column_idx].strip()
+        ascent = values[ascent_idx].strip()
+        height = values[height_idx].strip()
+        file = values[file_idx].strip()
+
         chars = []
-        
-        for _ in range( int(row) ):
+        for _ in range(int(row)):
             line = ''
-            for _ in range( int(column) ):
+            for _ in range(int(column)):
                 line += '\\u%03x' % unicode
                 unicode += 1
             chars.append('"%s"' % line)
-        obj = '{"file":"%s","ascent":%s,"height":%s,"type":"bitmap","chars":[%s]}' % ( file, ascent, height, ",".join(chars) )
+
+        obj = '{"file":"%s","ascent":%s,"height":%s,"type":"bitmap","chars":[%s]}' % (
+            file, ascent, height, ",".join(chars)
+        )
         objs.append(obj)
+
     data = ','.join(objs)
-    if data != None:
+    if data:
         __save_json_file(data)
-        
-        
+
 def __save_json_file(data):
     context = '{"providers":[%s]}'
     try:
         path = '%s/assets/prushka/font/bitmap.json' % (Config.resource_path)
         print('正在保存 %s' % (path))
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        f = open( path, 'w', encoding='utf-8' )
-        f.write(  str((context % ( data )).encode('utf-8'), encoding='utf-8') )
+        f = open(path, 'w', encoding='utf-8')
+        f.write(str((context % (data)).encode('utf-8'), encoding='utf-8'))
         f.close()
     except Exception as e:
-        print('导出位图字体失败:[%s]' % (str(e)) )
+        print('导出位图字体失败:[%s]' % (str(e)))
