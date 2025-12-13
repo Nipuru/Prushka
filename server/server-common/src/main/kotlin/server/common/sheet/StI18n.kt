@@ -3,29 +3,34 @@
 package server.common.sheet
 
 data class StI18n(
+    /** 国际化键 */
     val key: String,
-    val zhCn: String,
-    val enUs: String,
-    val jaJp: String
+    /** 语言代码 */
+    val lang: String,
+    /** 翻译文本 */
+    val text: String
 )
 
-fun Sheet.getAllStI18n(): Map<String, StI18n> {
+fun Sheet.getStI18ns(key: String): List<StI18n> {
     check()
-    return StI18nHolder.stI18nMap
+    return StI18nHolder.stI18nAMap[key] ?: emptyList()
 }
 
-fun Sheet.getStI18n(key: String): StI18n? {
+fun Sheet.getStI18n(key: String, lang: String): StI18n? {
     check()
-    return StI18nHolder.stI18nMap[key]
+    return StI18nHolder.stI18nPMap[key to lang]
 }
 
 internal object StI18nHolder : SheetHolder<StI18n> {
-    val stI18nMap = mutableMapOf<String, StI18n>()
+    val stI18nAMap = mutableMapOf<String, MutableList<StI18n>>()
+    val stI18nPMap = mutableMapOf<Pair<String, String>, StI18n>()
     override fun put(value: StI18n) {
-        stI18nMap[value.key] = value
+        stI18nAMap.getOrPut(value.key) { mutableListOf() }.add(value)
+        stI18nPMap[value.key to value.lang] = value
     }
 
     override fun clear() {
-        stI18nMap.clear()
+        stI18nAMap.clear()
+        stI18nPMap.clear()
     }
 }
