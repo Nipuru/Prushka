@@ -14,7 +14,6 @@ object Sheet {
         load(StBitmapHolder, sheets["st_bitmap"])
         load(StConstantHolder, sheets["st_constant"])
         load(StI18nHolder, sheets["st_i18n"])
-        load(StMessageHolder, sheets["st_message"])
         load(StPropertyHolder, sheets["st_property"])
         load(StRankHolder, sheets["st_rank"])
         load(StRewardHolder, sheets["st_reward"])

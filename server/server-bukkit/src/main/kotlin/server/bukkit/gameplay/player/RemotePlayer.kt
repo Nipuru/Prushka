@@ -12,13 +12,9 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
 import net.kyori.adventure.title.TitlePart
 import server.bukkit.scheduler.AudienceMessenger.send
-import server.bukkit.util.text.component
 import server.bukkit.util.text.string
 import server.common.message.AudienceMessage.Message.*
 import server.common.message.PlayerInfoMessage
-import server.common.sheet.Sheet
-import server.common.sheet.getStMessage
-import java.text.MessageFormat
 import java.util.*
 
 
@@ -31,12 +27,6 @@ import java.util.*
 val PlayerInfoMessage.remotePlayer: RemotePlayer get() = RemotePlayer(this)
 
 class RemotePlayer(val info: PlayerInfoMessage) : Audience {
-
-    fun sendMessage(key: String, vararg args: Any?) {
-        val cfg = Sheet.getStMessage(key) ?: return
-        val message = MessageFormat.format(cfg.value, *args).component()
-        sendMessage(message)
-    }
 
     override fun sendMessage(message: Component) {
         send(SystemChat(receiver = info.uniqueId, message = message.string()))

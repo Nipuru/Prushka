@@ -25,6 +25,7 @@ import server.common.logger.Logger
 import server.common.message.PlayerInfoMessage
 import server.common.message.TeleportType
 import server.common.sheet.StRank
+import server.common.util.translateText
 
 
 /**
@@ -179,7 +180,7 @@ class OperatorCommand : CommandTree {
         val player = context.getArgument<GamePlayer>("player_name")
         val rank = context.getArgument<StRank>("rank")
         player.core.rankId = rank.configId
-        MessageType.ALLOW.sendMessage(context.source.sender, "成功将玩家 ${player.name} 的称号设置为 ${rank.name}")
+        MessageType.ALLOW.sendMessage(context.source.sender, "成功将玩家 ${player.name} 的称号设置为 ${context.source.locale.translateText(rank.name)}")
     }
 }
 

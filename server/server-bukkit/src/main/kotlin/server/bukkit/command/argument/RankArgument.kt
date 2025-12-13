@@ -13,6 +13,7 @@ import server.bukkit.util.CommandArgumentType
 import server.common.sheet.Sheet
 import server.common.sheet.StRank
 import server.common.sheet.getAllStRank
+import server.common.util.translateText
 
 
 /**
@@ -27,12 +28,12 @@ object RankArgument : CommandArgumentType<StRank, String>(StringArgumentType.str
 
     override fun <S : Any> convert(rankName: String, reader: StringReader, source: S): StRank {
         source as CommandSourceStack
-        val cfg = Sheet.getAllStRank().values.firstOrNull { it.name == rankName }
+        val cfg = Sheet.getAllStRank().values.firstOrNull { source.locale.translateText(it.name) == rankName }
         return cfg ?: throw ERROR_RANK_NOT_FOUND.createWithContext(reader, rankName)
     }
 
     override fun <S : Any> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder) = suggestion(context, builder) {
-        context as CommandSourceStack
-        Sheet.getAllStRank().values.map { it.name }
+        val source = context.source as CommandSourceStack
+        Sheet.getAllStRank().values.map { source.locale.translateText(it.name) }
     }
 }
