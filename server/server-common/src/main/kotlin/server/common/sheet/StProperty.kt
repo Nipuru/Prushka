@@ -5,7 +5,7 @@ package server.common.sheet
 data class StProperty(
     /** 配置id */
     val configId: Int,
-    /** 名称 */
+    /** 名称 ref<i18n.key> */
     val name: String
 )
 

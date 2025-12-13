@@ -51,6 +51,15 @@ table <表名> {
 []float64  → List<Double>
 ```
 
+### 引用类型
+
+使用 `ref<表名.字段名>` 表示引用，类型自动与目标字段一致：
+
+```
+name: ref<i18n.key>         → 类型与 i18n.key 相同 (String)
+item_id: ref<item.config_id> → 类型与 item.config_id 相同
+```
+
 ## 索引配置
 
 ### @key - 主键索引
@@ -125,18 +134,10 @@ fun Sheet.getStQuest(questId: Int, stage: Int): StQuest?
 
 示例：
 ```
-config_id: string  // 配置ID
-level: int32       // 等级
-exp: []int32       // 经验值列表
-```
-
-#### -> 关联引用
-
-表示字段关联到其他表：
-
-```
-item_id: int32 -> item.config_id  // 关联到物品表
-reward_id: int32 -> reward.reward_id  // 关联到奖励表
+config_id: string       // 配置ID
+level: int32            // 等级
+exp: []int32            // 经验值列表
+name: ref<i18n.key>     // 引用i18n.key，类型自动推断
 ```
 
 ## 预制数据

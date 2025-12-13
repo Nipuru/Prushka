@@ -5,7 +5,7 @@ package server.common.sheet
 data class StRank(
     /** 配置id */
     val configId: Int,
-    /** 名称 */
+    /** 名称 ref<i18n.key> */
     val name: String,
     /** 聊天名字颜色 */
     val nameColor: String,

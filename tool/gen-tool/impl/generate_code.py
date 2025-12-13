@@ -1,4 +1,5 @@
 import os
+import re
 
 from .st_parser import parse_st_file, find_all_st_files
 from .st_validator import StValidator
@@ -79,21 +80,26 @@ def generate_code():
     sheets = []
     st_files = find_all_st_files(Config.excel_path)
 
-    print('=' * 60)
-    print('开始语法检查...')
-    print('=' * 60)
+    print('开始解析所有表...')
 
-    validation_failed = False
+    # 先解析所有表，构建 all_tables 字典
+    all_tables = {}
+    parsed_files = {}  # {file_path: StParser}
     for st_file_path in st_files:
         try:
             st = parse_st_file(st_file_path)
+            parsed_files[st_file_path] = st
+            if st.table_name:
+                all_tables[st.table_name] = st
         except Exception as e:
             print(f'\n解析失败: {st_file_path}')
             print(f'  错误: {str(e)}')
-            validation_failed = True
-            continue
 
-        validator = StValidator(st, st_file_path)
+    print('开始语法检查...')
+
+    validation_failed = False
+    for st_file_path, st in parsed_files.items():
+        validator = StValidator(st, st_file_path, all_tables)
         is_valid = validator.validate()
 
         if not is_valid or validator.warnings:
@@ -102,23 +108,13 @@ def generate_code():
                 validation_failed = True
 
     if validation_failed:
-        print('\n' + '=' * 60)
         print('语法检查失败，停止代码生成')
-        print('=' * 60)
         return
 
-    print('\n' + '=' * 60)
     print('语法检查通过，开始生成代码...')
-    print('=' * 60 + '\n')
 
-    for st_file_path in st_files:
+    for st_file_path, st in parsed_files.items():
         print('正在生成 %s' % (st_file_path))
-
-        try:
-            st = parse_st_file(st_file_path)
-        except Exception as e:
-            print('解析st文件失败: %s' % str(e))
-            continue
 
         if not st.table_name:
             print('st文件没有定义table')
@@ -129,7 +125,6 @@ def generate_code():
         field_name = snake_to_camel(table_name)
 
         config = st.get_table_config()
-        exclude = config.get('exclude', [])
 
         key = []
         vkey = []
@@ -137,11 +132,9 @@ def generate_code():
         subkey = []
 
         for field in st.fields:
-            if field['name'] in exclude:
-                continue
 
             field_camel = snake_to_camel(field['name'])
-            kotlin_type = __kotlin_type(field['type'])
+            kotlin_type = __kotlin_type(field['type'], all_tables)
 
             if config.get('key') == field['name']:
                 key = [field_camel, kotlin_type]
@@ -183,12 +176,19 @@ def generate_code():
 
         fields = []
         for field in st.fields:
-            if field['name'] in exclude:
-                continue
 
             name = snake_to_camel(field['name'])
-            typ = __kotlin_type(field['type'])
+            field_type = field['type']
+            typ = __kotlin_type(field_type, all_tables)
             comment = field.get('comment', '')
+
+            # 如果是引用类型，在注释中添加引用信息
+            if field_type.startswith('ref<'):
+                if comment:
+                    comment = f"{comment} {field_type}"
+                else:
+                    comment = field_type
+
             if comment:
                 fields.append(f"    /** {comment} */\n    val {name}: {typ}")
             else:
@@ -224,8 +224,22 @@ def generate_code():
     sheet_loader_path = '%s/server-common/src/main/kotlin/server/common/sheet/Sheet.kt' % (Config.code_path)
     write_file(sheet_loader_path, sheet_loader_code)
 
-def __kotlin_type(column_type):
+def __kotlin_type(column_type, all_tables=None):
     original_type = column_type
+
+    # 处理 ref<表名.字段> 类型
+    if column_type.startswith('ref<'):
+        match = re.match(r'ref<(\w+)\.(\w+)>', column_type)
+        if match and all_tables:
+            ref_table = match.group(1)
+            ref_field = match.group(2)
+            if ref_table in all_tables:
+                ref_st = all_tables[ref_table]
+                for f in ref_st.fields:
+                    if f['name'] == ref_field:
+                        # 递归获取引用字段的实际类型
+                        return __kotlin_type(f['type'], all_tables)
+        raise ValueError(f"无法解析引用类型: {original_type}")
 
     is_array = column_type.startswith("[]")
     if is_array:

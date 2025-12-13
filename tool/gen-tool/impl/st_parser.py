@@ -12,7 +12,6 @@ class StParser:
         self.unique = []
         self.fields = []
         self.data_rows = []
-        self.exclude = []
 
     def parse(self):
         lines = self.content.strip().split('\n')
@@ -80,21 +79,16 @@ class StParser:
                     self.unique.append(fields)
                 continue
 
-            field_match = re.match(r'(\w+):\s*([\w\[\]]+)(?:\s+!exclude)?(?:\s*//\s*(.+))?', line)
+            field_match = re.match(r'(\w+):\s*(ref<[\w.]+>|[\w\[\]]+)?(?:\s*//\s*(.+))?', line)
             if field_match:
                 field_name = field_match.group(1)
                 field_type = field_match.group(2)
                 field_comment = field_match.group(3) if field_match.group(3) else ''
-                is_excluded = '!exclude' in line
-
-                if is_excluded:
-                    self.exclude.append(field_name)
 
                 self.fields.append({
                     'name': field_name,
                     'type': field_type,
                     'comment': field_comment.strip(),
-                    'exclude': is_excluded
                 })
 
         return self
@@ -110,8 +104,6 @@ class StParser:
             config['akey'] = self.akey
         if self.subkey:
             config['subkey'] = self.subkey
-        if self.exclude:
-            config['exclude'] = self.exclude
         if self.unique:
             config['unique'] = self.unique
 
