@@ -27,12 +27,12 @@ object RankArgument : CommandArgumentType<StRank, String>(StringArgumentType.str
 
     override fun <S : Any> convert(rankName: String, reader: StringReader, source: S): StRank {
         source as CommandSourceStack
-        val cfg = Sheet.getAllStRank(source.locale).values.firstOrNull { it.name == rankName }
+        val cfg = Sheet.getAllStRank().values.firstOrNull { it.name == rankName }
         return cfg ?: throw ERROR_RANK_NOT_FOUND.createWithContext(reader, rankName)
     }
 
     override fun <S : Any> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder) = suggestion(context, builder) {
         context as CommandSourceStack
-        Sheet.getAllStRank(context.locale).values.map { it.name }
+        Sheet.getAllStRank().values.map { it.name }
     }
 }

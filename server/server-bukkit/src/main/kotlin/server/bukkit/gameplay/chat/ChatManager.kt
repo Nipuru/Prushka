@@ -73,7 +73,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
     }
 
     fun receiveChat(sender: PlayerInfoMessage, fragments: Array<FragmentMessage>) {
-        val rank = Sheet.getStRank(sender.rankId, player.locale)!!
+        val rank = Sheet.getStRank(sender.rankId)!!
         val builder = text()
         builder.color(TextColor.fromHexString(rank.chatColor))
         builder.append(chatPrefix(sender))
@@ -145,7 +145,7 @@ class ChatManager(player: GamePlayer) : BaseManager(player) {
     }
 
     private fun chatPrefix(sender: PlayerInfoMessage): Component {
-        val rank = Sheet.getStRank(sender.rankId, player.locale)!!
+        val rank = Sheet.getStRank(sender.rankId)!!
         val builder = text()
 
         // 玩家名字

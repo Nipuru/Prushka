@@ -33,7 +33,7 @@ val PlayerInfoMessage.remotePlayer: RemotePlayer get() = RemotePlayer(this)
 class RemotePlayer(val info: PlayerInfoMessage) : Audience {
 
     fun sendMessage(key: String, vararg args: Any?) {
-        val cfg = Sheet.getStMessage(key, info.locale) ?: return
+        val cfg = Sheet.getStMessage(key) ?: return
         val message = MessageFormat.format(cfg.value, *args).component()
         sendMessage(message)
     }
