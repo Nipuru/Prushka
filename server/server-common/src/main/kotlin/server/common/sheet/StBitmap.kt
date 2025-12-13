@@ -16,7 +16,9 @@ data class StBitmap(
     /** 图片高度 */
     val imgHeight: Int,
     /** 图片宽度 */
-    val imgWidth: Int
+    val imgWidth: Int,
+    /** 材质文件路径 */
+    val file: String
 )
 
 fun Sheet.getAllStBitmap(): Map<String, StBitmap> {

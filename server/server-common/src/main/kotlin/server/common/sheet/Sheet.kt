@@ -13,6 +13,7 @@ object Sheet {
     fun load(sheets: Map<String, String>) {
         load(StBitmapHolder, sheets["st_bitmap"])
         load(StConstantHolder, sheets["st_constant"])
+        load(StI18nHolder, sheets["st_i18n"])
         load(StMessageHolder, sheets["st_message"])
         load(StPropertyHolder, sheets["st_property"])
         load(StRankHolder, sheets["st_rank"])
