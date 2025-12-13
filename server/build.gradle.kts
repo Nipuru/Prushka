@@ -3,6 +3,12 @@ plugins {
     alias(libs.plugins.shadow) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.paperweight) apply false
+    id("sheet-code-gen")
+}
+
+sheetCodeGen {
+    sheetDir.set(file("../sheet"))
+    genToolDir.set(file("../tool/gen-tool"))
 }
 
 subprojects {
