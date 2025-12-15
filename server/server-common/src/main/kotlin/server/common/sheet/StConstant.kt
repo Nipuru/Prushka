@@ -28,4 +28,8 @@ internal object StConstantHolder : SheetHolder<StConstant> {
     override fun clear() {
         stConstantMap.clear()
     }
+
+    override fun type(): Class<StConstant> {
+        return StConstant::class.java
+    }
 }

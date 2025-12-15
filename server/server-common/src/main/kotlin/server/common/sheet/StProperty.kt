@@ -28,4 +28,8 @@ internal object StPropertyHolder : SheetHolder<StProperty> {
     override fun clear() {
         stPropertyMap.clear()
     }
+
+    override fun type(): Class<StProperty> {
+        return StProperty::class.java
+    }
 }

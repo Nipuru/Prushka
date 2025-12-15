@@ -36,11 +36,10 @@ object Sheet {
         if (!isLoad) throw IllegalStateException("Sheet not loaded")
     }
 
-    private inline fun <reified T> load(holder: SheetHolder<T>, json: String?) {
+    private fun <T> load(holder: SheetHolder<T>, json: String?) {
         holder.clear()
         if (json == null) return
-        val type = object : TypeToken<List<T>>() {}.type
-        val values = gson.fromJson<List<T>>(json, type)
+        val values = gson.fromJson<Array<T>>(json, holder.type().arrayType())
         for (value in values) {
             holder.put(value)
         }
@@ -50,6 +49,7 @@ object Sheet {
 interface SheetHolder<T> {
     fun put(value: T)
     fun clear()
+    fun type(): Class<T>
 }
 """
 
@@ -72,6 +72,10 @@ internal object <name>Holder : SheetHolder<<name>> {
 
     override fun clear() {
 <clearings>
+    }
+
+    override fun type(): Class<<name>> {
+        return <name>::class.java
     }
 }
 """

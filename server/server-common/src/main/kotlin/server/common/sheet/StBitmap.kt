@@ -40,4 +40,8 @@ internal object StBitmapHolder : SheetHolder<StBitmap> {
     override fun clear() {
         stBitmapMap.clear()
     }
+
+    override fun type(): Class<StBitmap> {
+        return StBitmap::class.java
+    }
 }

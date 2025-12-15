@@ -29,4 +29,8 @@ internal object StRewardPoolHolder : SheetHolder<StRewardPool> {
     override fun clear() {
         stRewardPoolAMap.clear()
     }
+
+    override fun type(): Class<StRewardPool> {
+        return StRewardPool::class.java
+    }
 }

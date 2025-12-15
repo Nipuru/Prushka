@@ -33,4 +33,8 @@ internal object StI18nHolder : SheetHolder<StI18n> {
         stI18nAMap.clear()
         stI18nPMap.clear()
     }
+
+    override fun type(): Class<StI18n> {
+        return StI18n::class.java
+    }
 }

@@ -32,4 +32,8 @@ internal object StRankHolder : SheetHolder<StRank> {
     override fun clear() {
         stRankMap.clear()
     }
+
+    override fun type(): Class<StRank> {
+        return StRank::class.java
+    }
 }
