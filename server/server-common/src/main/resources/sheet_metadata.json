@@ -1,0 +1,514 @@
+[
+  {
+    "table_name": "bitmap",
+    "holder_class": "server.common.sheet.StBitmapHolder",
+    "indexes": {
+      "key": "config_id",
+      "vkey": null,
+      "akey": null,
+      "subkey": null
+    },
+    "unique": [],
+    "fields": [
+      {
+        "name": "config_id",
+        "type": "string",
+        "comment": "配置id"
+      },
+      {
+        "name": "row",
+        "type": "int32",
+        "comment": "行数"
+      },
+      {
+        "name": "column",
+        "type": "int32",
+        "comment": "列数"
+      },
+      {
+        "name": "ascent",
+        "type": "int32",
+        "comment": "基线偏移"
+      },
+      {
+        "name": "height",
+        "type": "int32",
+        "comment": "高度"
+      },
+      {
+        "name": "img_height",
+        "type": "int32",
+        "comment": "图片高度"
+      },
+      {
+        "name": "img_width",
+        "type": "int32",
+        "comment": "图片宽度"
+      },
+      {
+        "name": "file",
+        "type": "string",
+        "comment": "材质文件路径"
+      }
+    ],
+    "data": [
+      [
+        "split_pos_1",
+        1,
+        1,
+        -32768,
+        0,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_pos_2",
+        1,
+        1,
+        -32768,
+        1,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_pos_4",
+        1,
+        1,
+        -32768,
+        3,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_pos_8",
+        1,
+        1,
+        -32768,
+        7,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_pos_16",
+        1,
+        1,
+        -32768,
+        15,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_pos_32",
+        1,
+        1,
+        -32768,
+        31,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_pos_64",
+        1,
+        1,
+        -32768,
+        63,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_pos_128",
+        1,
+        1,
+        -32768,
+        127,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_neg_1",
+        1,
+        1,
+        -32768,
+        -3,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_neg_2",
+        1,
+        1,
+        -32768,
+        -4,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_neg_4",
+        1,
+        1,
+        -32768,
+        -6,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_neg_8",
+        1,
+        1,
+        -32768,
+        -10,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_neg_16",
+        1,
+        1,
+        -32768,
+        -18,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_neg_32",
+        1,
+        1,
+        -32768,
+        -34,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_neg_64",
+        1,
+        1,
+        -32768,
+        -66,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "split_neg_128",
+        1,
+        1,
+        -32768,
+        -130,
+        256,
+        256,
+        "prushka:ui/pixel_split.png"
+      ],
+      [
+        "emoji",
+        5,
+        12,
+        8,
+        9,
+        85,
+        204,
+        "prushka:ui/emojis.png"
+      ],
+      [
+        "system_prefix",
+        1,
+        5,
+        7,
+        8,
+        16,
+        80,
+        "prushka:ui/system_prefix.png"
+      ]
+    ]
+  },
+  {
+    "table_name": "constant",
+    "holder_class": "server.common.sheet.StConstantHolder",
+    "indexes": {
+      "key": "key",
+      "vkey": null,
+      "akey": null,
+      "subkey": null
+    },
+    "unique": [],
+    "fields": [
+      {
+        "name": "key",
+        "type": "string",
+        "comment": "键名"
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "comment": "键值"
+      }
+    ],
+    "data": []
+  },
+  {
+    "table_name": "i18n",
+    "holder_class": "server.common.sheet.StI18nHolder",
+    "indexes": {
+      "key": null,
+      "vkey": null,
+      "akey": "key",
+      "subkey": "lang"
+    },
+    "unique": [],
+    "fields": [
+      {
+        "name": "key",
+        "type": "string",
+        "comment": "国际化键"
+      },
+      {
+        "name": "lang",
+        "type": "string",
+        "comment": "语言代码"
+      },
+      {
+        "name": "text",
+        "type": "string",
+        "comment": "翻译文本"
+      }
+    ],
+    "data": [
+      [
+        "welcome.title",
+        "zh_cn",
+        "欢迎"
+      ],
+      [
+        "welcome.title",
+        "en_us",
+        "Welcome"
+      ],
+      [
+        "welcome.title",
+        "ja_jp",
+        "ようこそ"
+      ],
+      [
+        "property.gold",
+        "zh_cn",
+        "金币"
+      ],
+      [
+        "property.points",
+        "zh_cn",
+        "点券"
+      ],
+      [
+        "rank.player",
+        "zh_cn",
+        "玩家"
+      ],
+      [
+        "rank.vip1",
+        "zh_cn",
+        "会员I"
+      ],
+      [
+        "rank.vip2",
+        "zh_cn",
+        "会员II"
+      ],
+      [
+        "rank.vip3",
+        "zh_cn",
+        "会员III"
+      ],
+      [
+        "rank.admin",
+        "zh_cn",
+        "管理员"
+      ]
+    ]
+  },
+  {
+    "table_name": "property",
+    "holder_class": "server.common.sheet.StPropertyHolder",
+    "indexes": {
+      "key": "config_id",
+      "vkey": null,
+      "akey": null,
+      "subkey": null
+    },
+    "unique": [],
+    "fields": [
+      {
+        "name": "config_id",
+        "type": "int32",
+        "comment": "配置id"
+      },
+      {
+        "name": "name",
+        "type": "ref<i18n.key>",
+        "comment": "名称",
+        "resolved_type": "string"
+      }
+    ],
+    "data": [
+      [
+        1,
+        "property.gold"
+      ],
+      [
+        2,
+        "property.points"
+      ]
+    ]
+  },
+  {
+    "table_name": "rank",
+    "holder_class": "server.common.sheet.StRankHolder",
+    "indexes": {
+      "key": "config_id",
+      "vkey": null,
+      "akey": null,
+      "subkey": null
+    },
+    "unique": [],
+    "fields": [
+      {
+        "name": "config_id",
+        "type": "int32",
+        "comment": "配置id"
+      },
+      {
+        "name": "name",
+        "type": "ref<i18n.key>",
+        "comment": "名称",
+        "resolved_type": "string"
+      },
+      {
+        "name": "name_color",
+        "type": "string",
+        "comment": "聊天名字颜色"
+      },
+      {
+        "name": "chat_color",
+        "type": "string",
+        "comment": "聊天文本颜色"
+      }
+    ],
+    "data": [
+      [
+        0,
+        "rank.player",
+        "#ACACAC",
+        "#D3D3D3"
+      ],
+      [
+        1,
+        "rank.vip1",
+        "#6BD266",
+        "#A2F99D"
+      ],
+      [
+        2,
+        "rank.vip2",
+        "#4FD2BF",
+        "#91F8EA"
+      ],
+      [
+        3,
+        "rank.vip3",
+        "#B173E2",
+        "#E2A5FF"
+      ],
+      [
+        7,
+        "rank.admin",
+        "#FF6565",
+        "#FFCACD"
+      ]
+    ]
+  },
+  {
+    "table_name": "reward",
+    "holder_class": "server.common.sheet.StRewardHolder",
+    "indexes": {
+      "key": null,
+      "vkey": null,
+      "akey": "reward_id",
+      "subkey": null
+    },
+    "unique": [],
+    "fields": [
+      {
+        "name": "reward_id",
+        "type": "int32",
+        "comment": "配置id"
+      },
+      {
+        "name": "type",
+        "type": "int32",
+        "comment": "类型"
+      },
+      {
+        "name": "id",
+        "type": "int32",
+        "comment": "物品id"
+      },
+      {
+        "name": "amount",
+        "type": "int32",
+        "comment": "数量"
+      }
+    ],
+    "data": []
+  },
+  {
+    "table_name": "reward_pool",
+    "holder_class": "server.common.sheet.StRewardPoolHolder",
+    "indexes": {
+      "key": null,
+      "vkey": null,
+      "akey": "pool_id",
+      "subkey": null
+    },
+    "unique": [],
+    "fields": [
+      {
+        "name": "pool_id",
+        "type": "int32",
+        "comment": "配置id"
+      },
+      {
+        "name": "type",
+        "type": "int32",
+        "comment": "类型"
+      },
+      {
+        "name": "id",
+        "type": "int32",
+        "comment": "物品id"
+      },
+      {
+        "name": "amount",
+        "type": "int32",
+        "comment": "数量"
+      },
+      {
+        "name": "weight",
+        "type": "int32",
+        "comment": "权重"
+      }
+    ],
+    "data": []
+  }
+]
