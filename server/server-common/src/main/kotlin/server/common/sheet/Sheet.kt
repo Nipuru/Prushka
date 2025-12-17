@@ -6,12 +6,12 @@ import com.google.gson.GsonBuilder
 object Sheet {
     private var isLoad = false
     private val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
-    private var metadataMap = loadAllMetadata()
+    private val metadataMap = loadAllMetadata()
 
     @Suppress("UNCHECKED_CAST")
     fun load(sheets: Map<String, String>) {
         for (metadata in metadataMap.values) {
-            val holder = Class.forName(metadata.holderClass).kotlin.objectInstance as SheetHolder<Any>
+            val holder = Class.forName(metadata.holderClass).getDeclaredField("INSTANCE").get(null) as SheetHolder<Any>
             holder.clear()
             val json = sheets[metadata.tableName] ?: loadFromMetadataJson(metadata.tableName)
             if (json == null) error("Sheet data for '${metadata.tableName}' not found")
