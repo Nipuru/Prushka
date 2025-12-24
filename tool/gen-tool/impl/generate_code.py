@@ -284,6 +284,7 @@ def export_sheet_metadata(st, table_name, all_tables):
     # 构建 JSON 数据结构
     metadata = {
         'table_name': st.table_name,
+        'table_comment': st.table_comment,  # table的中文名称注释
         'holder_class': 'server.common.sheet.St' + snake_to_pascal(st.table_name) + 'Holder',
         'indexes': {
             'key': config.get('key'),

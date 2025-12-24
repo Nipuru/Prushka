@@ -1,4 +1,4 @@
-table reward_pool {
+table reward_pool {  // 奖励池表
     @akey(pool_id)
 
     pool_id: int32  // 配置id

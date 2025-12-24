@@ -1,4 +1,4 @@
-table constant {
+table constant {  // 常量表
     @key(key)
 
     key: string  // 键名

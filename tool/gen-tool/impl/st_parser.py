@@ -5,6 +5,7 @@ class StParser:
     def __init__(self, content):
         self.content = content
         self.table_name = None
+        self.table_comment = None  # table的中文名称注释
         self.key = None
         self.vkey = None
         self.akey = None
@@ -25,9 +26,12 @@ class StParser:
                 continue
 
             if line.startswith('table '):
-                match = re.match(r'table\s+(\w+)\s*\{', line)
+                # 解析 table 名称和可选的注释: table xxx {  // 中文名称
+                match = re.match(r'table\s+(\w+)\s*\{(?:\s*//\s*(.+))?', line)
                 if match:
                     self.table_name = match.group(1)
+                    if match.group(2):
+                        self.table_comment = match.group(2).strip()
                     in_table = True
                 continue
 

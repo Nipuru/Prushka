@@ -1,4 +1,4 @@
-table property {
+table property {  // 道具表
     @key(config_id)
 
     config_id: int32  // 配置id

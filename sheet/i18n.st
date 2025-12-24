@@ -1,4 +1,4 @@
-table i18n {
+table i18n {  // 国际化表
     @akey(key, subkey=lang)
 
     key: string   // 国际化键

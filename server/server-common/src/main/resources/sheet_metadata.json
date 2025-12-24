@@ -1,6 +1,7 @@
 [
   {
     "table_name": "bitmap",
+    "table_comment": "位图表",
     "holder_class": "server.common.sheet.StBitmapHolder",
     "indexes": {
       "key": "config_id",
@@ -236,6 +237,7 @@
   },
   {
     "table_name": "constant",
+    "table_comment": "常量表",
     "holder_class": "server.common.sheet.StConstantHolder",
     "indexes": {
       "key": "key",
@@ -260,6 +262,7 @@
   },
   {
     "table_name": "i18n",
+    "table_comment": "国际化表",
     "holder_class": "server.common.sheet.StI18nHolder",
     "indexes": {
       "key": null,
@@ -340,6 +343,7 @@
   },
   {
     "table_name": "property",
+    "table_comment": "道具表",
     "holder_class": "server.common.sheet.StPropertyHolder",
     "indexes": {
       "key": "config_id",
@@ -374,6 +378,7 @@
   },
   {
     "table_name": "rank",
+    "table_comment": "等级表",
     "holder_class": "server.common.sheet.StRankHolder",
     "indexes": {
       "key": "config_id",
@@ -440,6 +445,7 @@
   },
   {
     "table_name": "reward",
+    "table_comment": "奖励表",
     "holder_class": "server.common.sheet.StRewardHolder",
     "indexes": {
       "key": null,
@@ -474,6 +480,7 @@
   },
   {
     "table_name": "reward_pool",
+    "table_comment": "奖励池表",
     "holder_class": "server.common.sheet.StRewardPoolHolder",
     "indexes": {
       "key": null,

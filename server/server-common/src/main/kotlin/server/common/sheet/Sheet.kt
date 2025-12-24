@@ -81,6 +81,7 @@ interface SheetHolder<T> {
 
 data class SheetMetadata(
     val tableName: String,
+    val tableComment: String,
     val holderClass: String,
     val indexes: IndexInfo,
     val unique: List<List<String>>,

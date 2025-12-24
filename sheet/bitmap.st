@@ -1,4 +1,4 @@
-table bitmap {
+table bitmap {  // 位图表
     @key(config_id)
 
     config_id: string  // 配置id

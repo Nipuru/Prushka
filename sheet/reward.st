@@ -1,4 +1,4 @@
-table reward {
+table reward {  // 奖励表
     @akey(reward_id)
 
     reward_id: int32  // 配置id

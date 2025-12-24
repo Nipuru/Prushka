@@ -1,4 +1,4 @@
-table rank {
+table rank {  // 等级表
     @key(config_id)
 
     config_id: int32  // 配置id
