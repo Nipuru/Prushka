@@ -27,5 +27,14 @@ fun Route.configureRouting() {
         get("/api/table/getTableList") { getTableList() }
         // 表格元数据
         get("/api/sheet/getSheetMetadata") { getSheetMetadata() }
+        // 获取指定表格数据
+        get("/api/sheet/getSheetList") { getSheetList() }
+        // 更新表格数据
+        post("/api/sheet/updateSheet") { updateSheet() }
+        // 新增表格数据
+        post("/api/sheet/insertSheet") { insertSheet() }
+        // 删除表格数据
+        get("/api/sheet/deleteSheet") { deleteSheet() }
     }
 }
+

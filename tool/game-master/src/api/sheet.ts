@@ -1,4 +1,5 @@
 import { service } from '@/utils/axios'
+import { PageState } from '@/views/table/table-basic/types'
 
 export interface SheetMetadata {
   table_name: string
@@ -27,3 +28,38 @@ export function getSheetMetadata(): Promise<SheetMetadata[]> {
     method: 'get'
   })
 }
+
+export function getSheetList(tableName: string, tableQuery: PageState) {
+  return service({
+    url: '/table/getTableList',
+    method: 'get',
+    params: { tableName: tableName, ...tableQuery }
+  })
+}
+
+export function deleteSheet(id: number) {
+  return service({
+    url: '/table/getTableList',
+    method: 'get',
+    params: { id: id }
+  })
+}
+
+export function insertSheet(tableName: string, data: any) {
+  return service({
+    url: '/table/getTableList',
+    method: 'post',
+    params: { tableName: tableName},
+    data
+  })
+}
+
+export function updateSheet(id: number, data: any) {
+  return service({
+    url: '/table/getTableList',
+    method: 'post',
+    params: { id: id },
+    data
+  })
+}
+

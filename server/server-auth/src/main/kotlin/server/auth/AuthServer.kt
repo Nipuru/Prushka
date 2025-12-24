@@ -39,7 +39,7 @@ object AuthServer {
 
     private fun buildBrokerClient(builder: BrokerClientBuilder) {
         builder.registerService(PlayerService::class.java, PlayerServiceImpl())
-        builder.registerService(SheetService::class.java, SheetServiceImpl())
+        builder.registerService(SheetService::class.java, SheetServiceImpl)
         builder.addConnectionEventProcessor(CloseEventAuthProcessor())
     }
 
