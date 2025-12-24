@@ -1,6 +1,7 @@
 package server.auth
 
 import com.alipay.remoting.LifeCycleException
+import com.google.gson.FieldNamingPolicy
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.serialization.gson.*
@@ -45,7 +46,10 @@ object AuthServer {
     private fun initHttpServer() {
         httpServer = embeddedServer(Netty, 11300) {
             install(ContentNegotiation) {
-                gson()
+                gson {
+                    setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                    setPrettyPrinting()
+                }
             }
             install(CORS) {
                 allowMethod(HttpMethod.Get)

@@ -23,7 +23,9 @@ fun Route.configureRouting() {
         get("/api/getUserInfo") { getUserInfo() }
         // 登出接口
         get("/api/logout") { logout() }
-        // 表格数据接口
+        // 表格数据
         get("/api/table/getTableList") { getTableList() }
+        // 表格元数据
+        get("/api/sheet/getSheetMetadata") { getSheetMetadata() }
     }
 }
