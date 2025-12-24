@@ -9,7 +9,7 @@ import server.auth.constant.HttpStatus
  * @author Nipuru
  * @since 2025/01/02 14:20
  */
-class Result(code: Int, msg: String, data: Any? = null)
+class Result(val code: Int, val  msg: String, val data: Any? = null)
 class TableData(list: List<Any> = emptyList(), pageNum: Int = list.size, pageSize: Int = list.size, total: Int = list.size)
 
 suspend fun ApplicationCall.success(msg: String = "操作成功", data: Any? = null) {

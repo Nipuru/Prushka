@@ -1,7 +1,7 @@
 package server.auth
 
 import com.alipay.remoting.LifeCycleException
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.serialization.gson.gson
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -18,8 +18,7 @@ import net.afyer.afybroker.client.BrokerClientBuilder
 import net.afyer.afybroker.core.util.BoltUtils
 import org.slf4j.event.Level
 import server.auth.config.Config
-import server.auth.http.rootRouting
-import server.auth.logger.logger
+import server.auth.http.configureRouting
 import server.auth.processor.connection.CloseEventAuthProcessor
 import server.auth.service.PlayerServiceImpl
 import server.auth.service.SheetServiceImpl
@@ -44,7 +43,7 @@ object AuthServer {
     private fun initHttpServer() {
         httpServer = embeddedServer(Netty, 11300) {
             install(ContentNegotiation) {
-                json(Json { prettyPrint = true })
+                gson()
             }
             install(CallLogging) {
                 level = Level.INFO
@@ -52,7 +51,7 @@ object AuthServer {
                     "receive request: ${call.request.httpMethod.value} ${call.request.uri} " +
                             "parameters: ${call.parameters}"
                 }
-                logger = server.auth.logger.logger
+                logger = Logger
             }
             install(Authentication) {
                 jwt {
@@ -66,7 +65,7 @@ object AuthServer {
                 }
             }
             routing {
-                rootRouting()
+                configureRouting()
             }
         }
         httpServer.start(wait = false)
@@ -96,10 +95,10 @@ object AuthServer {
             brokerClient.ping()
             brokerClient.printInformation(Logger)
         } catch (e: LifeCycleException) {
-            logger.error("Broker client startup failed!")
+            Logger.error("Broker client startup failed!")
             throw e
         } catch (e: Exception) {
-            logger.error("Ping to the broker server failed!")
+            Logger.error("Ping to the broker server failed!")
             throw e
         }
     }

@@ -17,10 +17,9 @@ dependencies {
     implementation(libs.ktor.server.content)
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)
-    implementation(libs.ktor.serialization.json)
+    implementation(libs.ktor.serialization.gson)
     implementation(libs.slf4j.api)
     implementation(libs.guava)
-    implementation(libs.netty)
 
 
     // pgsql驱动
