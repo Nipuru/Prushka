@@ -1,0 +1,17 @@
+.idea
+.local
+
+/public
+/docs
+/src/assets
+dist
+node_modules
+Dockerfile
+
+eslint.config.js
+postcss.config.js
+prettier.config.js
+
+*.md
+*.woff
+*.ttf

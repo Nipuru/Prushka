@@ -1,103 +1,68 @@
-import { defineConfig, loadEnv, ConfigEnv, UserConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { resolve } from "path";
-import { wrapperEnv } from "@/utils/getEnv";
-import { visualizer } from "rollup-plugin-visualizer";
-import { createHtmlPlugin } from "vite-plugin-html";
-import viteCompression from "vite-plugin-compression";
-import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
+import type { ConfigEnv, UserConfig } from 'vite'
+import { loadEnv } from 'vite'
+import react from '@vitejs/plugin-react'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+import { viteMockServe } from 'vite-plugin-mock'
+import { wrapperEnv } from './build/utils'
+// 需要安装 @typings/node 插件
+import { resolve } from 'path'
 
-// @see: https://vitejs.dev/config/
-export default defineConfig((mode: ConfigEnv): UserConfig => {
-	const env = loadEnv(mode.mode, process.cwd());
-	const viteEnv = wrapperEnv(env);
+/** @type {import('vite').UserConfig} */
+export default ({ command, mode }: ConfigEnv): UserConfig => {
+  const root = process.cwd()
+  const isBuild = command === 'build'
 
-	return {
-		// base: "/",
-		// alias config
-		resolve: {
-			alias: {
-				"@": resolve(__dirname, "./src")
-			}
-		},
-		// global css
-		css: {
-			preprocessorOptions: {
-				less: {
-					// modifyVars: {
-					// 	"primary-color": "#1DA57A",
-					// },
-					javascriptEnabled: true,
-					additionalData: `@import "@/styles/var.less";`
-				}
-			}
-		},
-		// server config
-		server: {
-			host: "0.0.0.0", // 服务器主机名，如果允许外部访问，可设置为"0.0.0.0"
-			port: viteEnv.VITE_PORT,
-			open: viteEnv.VITE_OPEN,
-			cors: true,
-			// https: false,
-			// 代理跨域（mock 不需要配置，这里只是个事列）
-			proxy: {
-				"/api": {
-					target: "https://mock.mengxuegu.com/mock/62abda3212c1416424630a45", // easymock
-					changeOrigin: true,
-					rewrite: path => path.replace(/^\/api/, "")
-				}
-			}
-		},
-		// plugins
-		plugins: [
-			react(),
-			createHtmlPlugin({
-				inject: {
-					data: {
-						title: viteEnv.VITE_GLOB_APP_TITLE
-					}
-				}
-			}),
-			// * 使用 svg 图标
-			createSvgIconsPlugin({
-				iconDirs: [resolve(process.cwd(), "src/assets/icons")],
-				symbolId: "icon-[dir]-[name]"
-			}),
-			// * 是否生成包预览
-			viteEnv.VITE_REPORT && visualizer(),
-			// * gzip compress
-			viteEnv.VITE_BUILD_GZIP &&
-				viteCompression({
-					verbose: true,
-					disable: false,
-					threshold: 10240,
-					algorithm: "gzip",
-					ext: ".gz"
-				})
-		],
-		esbuild: {
-			pure: viteEnv.VITE_DROP_CONSOLE ? ["console.log", "debugger"] : []
-		},
-		// build configure
-		build: {
-			outDir: "dist",
-			// esbuild 打包更快，但是不能去除 console.log，去除 console 使用 terser 模式
-			minify: "esbuild",
-			// minify: "terser",
-			// terserOptions: {
-			// 	compress: {
-			// 		drop_console: viteEnv.VITE_DROP_CONSOLE,
-			// 		drop_debugger: true
-			// 	}
-			// },
-			rollupOptions: {
-				output: {
-					// Static resource classification and packaging
-					chunkFileNames: "assets/js/[name]-[hash].js",
-					entryFileNames: "assets/js/[name]-[hash].js",
-					assetFileNames: "assets/[ext]/[name]-[hash].[ext]"
-				}
-			}
-		}
-	};
-});
+  const env = loadEnv(mode, root)
+
+  // this function can be converted to different typings
+  const viteEnv: any = wrapperEnv(env)
+  const { VITE_PORT, VITE_DROP_CONSOLE } = viteEnv
+
+  return {
+    base: './',
+    server: {
+      // Listening on all local ips
+      host: true,
+      open: true,
+      port: VITE_PORT
+    },
+    plugins: [
+      react(),
+      createSvgIconsPlugin({
+        iconDirs: [resolve(process.cwd(), 'src/assets/icons')],
+        symbolId: 'icon-[dir]-[name]'
+      }),
+      viteMockServe({
+        mockPath: 'mock',
+        ignore: /^_/,
+        localEnabled: !isBuild,
+        prodEnabled: isBuild,
+        injectCode: `
+          import { setupProdMockServer } from 'mock/_createProductionServer';
+
+          setupProdMockServer()
+          `
+      })
+    ],
+
+    build: {
+      target: 'es2015',
+      cssTarget: 'chrome86',
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          keep_infinity: true,
+          // used to delete console and debugger in production environment
+          drop_console: VITE_DROP_CONSOLE
+        }
+      },
+      chunkSizeWarningLimit: 2000
+    },
+
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, './src')
+      }
+    }
+  }
+}
