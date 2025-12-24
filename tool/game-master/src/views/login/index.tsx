@@ -44,23 +44,21 @@ const LoginPage: FC = () => {
   }
 
   const loginAction = async (
-    params: LoginParams & {
-      goHome?: boolean
-    }
+    params: LoginParams
   ): Promise<UserInfo | null> => {
     try {
-      const { goHome = true, ...loginParams } = params
+      const { ...loginParams } = params
       const data = await loginApi(loginParams)
 
       // 保存 Token
       dispatch(setToken(data?.token))
-      return afterLoginAction(goHome)
+      return afterLoginAction()
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  const afterLoginAction = async (goHome?: boolean): Promise<UserInfo | null> => {
+  const afterLoginAction = async (): Promise<UserInfo | null> => {
     if (!getToken()) return null
 
     const userInfo = await getUserInfoAction()
@@ -72,7 +70,7 @@ const LoginPage: FC = () => {
       if (redirect) {
         navigate(redirect)
       } else {
-        goHome && navigate(userInfo?.homePath || '/home')
+        navigate('/home')
       }
     }
 

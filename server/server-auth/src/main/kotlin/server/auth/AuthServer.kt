@@ -3,7 +3,6 @@ package server.auth
 import com.alipay.remoting.LifeCycleException
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.serialization.gson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -68,7 +67,7 @@ object AuthServer {
             }
             install(Authentication) {
                 jwt {
-                    authHeader(JWTUtil::parseHeader)
+                    authHeader(JWTUtil::parseAuthHeader)
                     verifier(JWTUtil.makeVerifier())
                     validate { credentials ->
                         JWTPrincipal(credentials.payload)

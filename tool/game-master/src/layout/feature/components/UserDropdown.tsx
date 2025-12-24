@@ -1,6 +1,6 @@
 import type { MenuProps } from 'antd'
 import { Space, Dropdown } from 'antd'
-import { PoweroffOutlined } from '@ant-design/icons'
+import { PoweroffOutlined, UserOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { getAuthCache, clearAuthCache } from '@/utils/auth'
 import { TOKEN_KEY } from '@/enums/cacheEnum'
@@ -8,7 +8,6 @@ import { useAppDispatch, useAppSelector } from '@/stores'
 import { useMessage } from '@/hooks/web/useMessage'
 import { logoutApi } from '@/api/login'
 import { resetState } from '@/stores/modules/user'
-import headerImg from '@/assets/images/avatar.jpeg'
 
 export default function UserDropdown() {
   const items: MenuProps['items'] = [
@@ -34,7 +33,7 @@ export default function UserDropdown() {
   const navigate = useNavigate()
 
   const dispatch = useAppDispatch()
-  const { token } = useAppSelector(state => state.user)
+  const { token, userInfo } = useAppSelector(state => state.user)
   const getToken = (): string => {
     return token || getAuthCache<string>(TOKEN_KEY)
   }
@@ -68,16 +67,9 @@ export default function UserDropdown() {
 
   return (
     <Dropdown menu={{ items, onClick }} placement='bottomRight' arrow>
-      <span className='flex-center' style={{ cursor: 'pointer' }}>
-        <img
-          src={headerImg}
-          style={{
-            width: '24px',
-            height: '24px',
-            borderRadius: '50%'
-          }}
-          alt=''
-        />
+      <span className='flex-center' style={{ cursor: 'pointer', gap: '6px' }}>
+        <UserOutlined style={{ fontSize: '16px' }} />
+        <span style={{ fontSize: '14px' }}>{userInfo?.username}</span>
       </span>
     </Dropdown>
   )

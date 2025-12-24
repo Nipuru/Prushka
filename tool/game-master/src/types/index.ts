@@ -4,13 +4,8 @@ export interface LoginParams {
 }
 
 export interface UserInfo {
-  userId: string | number
   username: string
-  realName: string
-  avatar: string
   token: string
-  desc?: string
-  homePath?: string
 }
 
 export type ThemeMode = 'dark' | 'light'

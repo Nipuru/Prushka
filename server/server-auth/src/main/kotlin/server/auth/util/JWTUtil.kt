@@ -35,7 +35,7 @@ object JWTUtil {
             .build()
     }
 
-    fun parseHeader(call : ApplicationCall): HttpAuthHeader.Single? {
+    fun parseAuthHeader(call : ApplicationCall): HttpAuthHeader.Single? {
         val header = call.request.header("Authorization") ?: return null
         return HttpAuthHeader.Single("Bearer", header)
     }

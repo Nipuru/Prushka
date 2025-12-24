@@ -3,13 +3,8 @@ import type { AppModeEnum, ThemeEnum } from '@/enums/appEnum'
 import type { RouteObject } from '@/router/types'
 
 export interface UserInfo {
-  userId: string | number
   username: string
-  realName: string
-  avatar: string
   token: string
-  desc?: string
-  homePath?: string
 }
 
 export interface UserState {

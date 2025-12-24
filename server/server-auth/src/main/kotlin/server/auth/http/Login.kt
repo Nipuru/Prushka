@@ -17,14 +17,9 @@ import kotlin.random.Random
  */
 private val fakeUserList = listOf(
     FakeUser(
-        userId = "10000",
         username = "admin",
-        realName = "react admin design",
-        avatar = "https://cdn.jsdelivr.net/gh/baimingxuan/media-store/images/avatar.jpeg",
-        desc = "super admin",
         password = "123456",
-        token = "",  // token 将在登录时动态生成
-        homePath = "/home"
+        token = ""  // token 将在登录时动态生成
     )
 )
 
@@ -33,14 +28,9 @@ private val userTokens = mutableMapOf<String, FakeUser>()
 
 // 假用户数据
 data class FakeUser(
-    val userId: String,
     val username: String,
-    val realName: String,
-    val avatar: String,
-    val desc: String,
     val password: String,
     val token: String,
-    val homePath: String
 )
 
 // 登录请求体
@@ -60,10 +50,6 @@ data class TableItem(
 
 // 分页响应数据
 data class PageData<T>(val list: List<T>, val total: Int)
-
-
-
-
 
 private val prefixList = listOf(135, 136, 137, 138, 139, 155, 158, 183, 185, 189)
 private val educationList = listOf("小学", "初中", "高中", "专科", "本科", "研究生")
@@ -100,11 +86,7 @@ suspend fun RoutingContext.login() {
     userTokens[token] = user
 
     call.success("登录成功", mapOf(
-        "userId" to user.userId,
-        "username" to user.username,
         "token" to token,
-        "realName" to user.realName,
-        "desc" to user.desc
     ))
 }
 
@@ -138,12 +120,7 @@ suspend fun RoutingContext.getUserInfo() {
         return
     }
     call.success("获取成功", mapOf(
-        "userId" to user.userId,
         "username" to user.username,
-        "realName" to user.realName,
-        "avatar" to user.avatar,
-        "desc" to user.desc,
-        "homePath" to user.homePath
     ))
 }
 
