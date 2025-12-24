@@ -1,17 +1,29 @@
 package server.auth.http
 
-import io.ktor.server.response.*
+import io.ktor.server.auth.*
 import io.ktor.server.routing.*
-import server.auth.constant.HttpStatus
-import server.auth.util.Result
+import server.auth.util.success
 
 
 /**
+ * 路由配置
+ *
  * @author Nipuru
  * @since 2025/01/22 15:55
  */
 fun Route.configureRouting() {
-    get("/") {
-        call.respond(Result(HttpStatus.SUCCESS, "Hello World!"))
+    get("/") { call.success("Hello World!") }
+
+    // 登录
+    post("/api/login") { login() }
+
+    // 需要JWT验证的
+    authenticate {
+        // 获取用户信息
+        get("/api/getUserInfo") { getUserInfo() }
+        // 登出接口
+        get("/api/logout") { logout() }
+        // 表格数据接口
+        get("/api/table/getTableList") { getTableList() }
     }
 }

@@ -2,7 +2,6 @@ import type { ConfigEnv, UserConfig } from 'vite'
 import { loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-import { viteMockServe } from 'vite-plugin-mock'
 import { wrapperEnv } from './build/utils'
 // 需要安装 @typings/node 插件
 import { resolve } from 'path'
@@ -10,13 +9,12 @@ import { resolve } from 'path'
 /** @type {import('vite').UserConfig} */
 export default ({ command, mode }: ConfigEnv): UserConfig => {
   const root = process.cwd()
-  const isBuild = command === 'build'
 
   const env = loadEnv(mode, root)
 
   // this function can be converted to different typings
   const viteEnv: any = wrapperEnv(env)
-  const { VITE_PORT, VITE_DROP_CONSOLE } = viteEnv
+  const { VITE_PORT, VITE_DROP_CONSOLE, VITE_API_URL } = viteEnv
 
   return {
     base: './',
@@ -24,24 +22,19 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       // Listening on all local ips
       host: true,
       open: true,
-      port: VITE_PORT
+      port: VITE_PORT,
+      proxy: {
+        '/api': {
+          target: VITE_API_URL,
+          changeOrigin: true
+        }
+      }
     },
     plugins: [
       react(),
       createSvgIconsPlugin({
         iconDirs: [resolve(process.cwd(), 'src/assets/icons')],
         symbolId: 'icon-[dir]-[name]'
-      }),
-      viteMockServe({
-        mockPath: 'mock',
-        ignore: /^_/,
-        localEnabled: !isBuild,
-        prodEnabled: isBuild,
-        injectCode: `
-          import { setupProdMockServer } from 'mock/_createProductionServer';
-
-          setupProdMockServer()
-          `
       })
     ],
 

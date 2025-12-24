@@ -6,7 +6,7 @@ import { getAuthCache, clearAuthCache } from '@/utils/auth'
 import { TOKEN_KEY } from '@/enums/cacheEnum'
 import { useAppDispatch, useAppSelector } from '@/stores'
 import { useMessage } from '@/hooks/web/useMessage'
-import { logoutApi } from '@/api'
+import { logoutApi } from '@/api/login'
 import { resetState } from '@/stores/modules/user'
 import headerImg from '@/assets/images/avatar.jpeg'
 

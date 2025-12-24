@@ -1,7 +1,10 @@
 package server.auth
 
 import com.alipay.remoting.LifeCycleException
-import io.ktor.serialization.gson.gson
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.auth.HttpAuthHeader
+import io.ktor.serialization.gson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -9,9 +12,9 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.json.Json
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
 import net.afyer.afybroker.client.BrokerClientBuilder
@@ -45,6 +48,16 @@ object AuthServer {
             install(ContentNegotiation) {
                 gson()
             }
+            install(CORS) {
+                allowMethod(HttpMethod.Get)
+                allowMethod(HttpMethod.Post)
+                allowMethod(HttpMethod.Put)
+                allowMethod(HttpMethod.Delete)
+                allowMethod(HttpMethod.Options)
+                allowHeader(HttpHeaders.Authorization)
+                allowHeader(HttpHeaders.ContentType)
+                anyHost()
+            }
             install(CallLogging) {
                 level = Level.INFO
                 format { call ->
@@ -55,6 +68,7 @@ object AuthServer {
             }
             install(Authentication) {
                 jwt {
+                    authHeader(JWTUtil::parseHeader)
                     verifier(JWTUtil.makeVerifier())
                     validate { credentials ->
                         JWTPrincipal(credentials.payload)

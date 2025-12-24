@@ -2,24 +2,22 @@ package server.auth.util
 
 import io.ktor.server.application.*
 import io.ktor.server.response.*
-import server.auth.constant.HttpStatus
 
 
 /**
  * @author Nipuru
  * @since 2025/01/02 14:20
  */
-class Result(val code: Int, val  msg: String, val data: Any? = null)
-class TableData(list: List<Any> = emptyList(), pageNum: Int = list.size, pageSize: Int = list.size, total: Int = list.size)
+class Result(val code: Int, val message: String, val data: Any? = null)
 
-suspend fun ApplicationCall.success(msg: String = "操作成功", data: Any? = null) {
-    this.respond(Result(HttpStatus.SUCCESS, msg, data))
+suspend fun ApplicationCall.success(message: String = "操作成功", data: Any? = null) {
+    this.respond(Result(0, message, data))
 }
 
-suspend fun ApplicationCall.fail(msg: String = "操作失败") {
-    this.respond(Result(HttpStatus.ERROR, msg))
+suspend fun ApplicationCall.fail(message: String = "操作失败") {
+    this.respond(Result(-1, message))
 }
 
 suspend fun ApplicationCall.overdue() {
-    this.respond(Result(HttpStatus.OVERDUE, "身份认证过期"))
+    this.respond(Result(599, "身份认证过期"))
 }

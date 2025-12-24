@@ -29,12 +29,3 @@ export function logoutApi() {
     method: 'get'
   })
 }
-
-// Table list
-export function getTableList(params: any) {
-  return service({
-    url: '/table/getTableList',
-    method: 'get',
-    params
-  })
-}

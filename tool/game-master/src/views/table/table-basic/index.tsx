@@ -17,7 +17,7 @@ import {
 } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { TABLE_COMPO } from '@/settings/websiteSetting'
-import { getTableList } from '@/api'
+import { getTableList } from '@/api/table'
 import { PageWrapper } from '@/components/Page'
 import type { APIResult, PageState, TableDataType } from './types'
 
