@@ -1,32 +1,10 @@
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
-  Card,
-  Table,
-  Button,
-  Space,
-  Modal,
-  Form,
-  Input,
-  InputNumber,
-  Spin,
-  message,
-  Popconfirm,
-  Descriptions,
-  Tag,
-  Switch
-} from 'antd'
+  Card, Table, Button, Space, Modal, Form, Input, InputNumber, Spin, message, Popconfirm, Descriptions, Tag, Switch, Select } from 'antd'
 import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
-import {
-  getSheetMetadata,
-  getSheetList,
-  insertSheet,
-  updateSheet,
-  deleteSheet,
-  type SheetMetadata,
-  type SheetData
-} from '@/api/sheet'
+import { getSheetMetadata, getSheetList, insertSheet, updateSheet, deleteSheet, type SheetMetadata, type SheetData } from '@/api/sheet'
 
 export default function SheetEdit() {
   const { sheetName } = useParams<{ sheetName: string }>()
@@ -36,6 +14,7 @@ export default function SheetEdit() {
   const [loading, setLoading] = useState(true)
   const [tableLoading, setTableLoading] = useState(false)
   const [metadata, setMetadata] = useState<SheetMetadata | null>(null)
+  const [allMetadata, setAllMetadata] = useState<SheetMetadata[]>([])
   const [dataSource, setDataSource] = useState<SheetData[]>([])
   const [total, setTotal] = useState(0)
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
@@ -45,12 +24,12 @@ export default function SheetEdit() {
   const [editingRecord, setEditingRecord] = useState<SheetData | null>(null)
   const [submitLoading, setSubmitLoading] = useState(false)
 
-  // 获取元数据
   useEffect(() => {
     const fetchMetadata = async () => {
       setLoading(true)
       try {
         const data = await getSheetMetadata()
+        setAllMetadata(data)
         const sheet = data.find(item => item.table_name === sheetName)
         setMetadata(sheet || null)
       } catch (error) {
@@ -62,7 +41,6 @@ export default function SheetEdit() {
     fetchMetadata()
   }, [sheetName])
 
-  // 获取数据列表
   const fetchData = useCallback(async () => {
     if (!sheetName) return
     setTableLoading(true)
@@ -83,22 +61,79 @@ export default function SheetEdit() {
     }
   }, [metadata, fetchData])
 
-  // 根据字段类型渲染表单项
+  // 解析引用类型 resolved_type 格式: "表名.字段名"
+  const getRefOptions = useCallback(
+    (resolvedType: string) => {
+      const [tableName, fieldName] = resolvedType.split('.')
+      const refTable = allMetadata.find(m => m.table_name === tableName)
+      if (!refTable || !refTable.data) return []
+
+      const fieldIndex = refTable.fields.findIndex(f => f.name === fieldName)
+      if (fieldIndex === -1) return []
+
+      const options = refTable.data.map(row => row[fieldIndex]).filter(v => v !== null && v !== undefined)
+      return [...new Set(options)].map(value => ({ label: String(value), value }))
+    },
+    [allMetadata]
+  )
+
+  const isArrayType = (type: string) => type.startsWith('[]')
+  const getArrayElementType = (type: string) => type.match(/^\[\](.+)$/)?.[1] || 'string'
+  const isNumberType = (type: string) => ['int32', 'int64', 'float32', 'float64'].includes(type)
+  const isFloatType = (type: string) => ['float32', 'float64'].includes(type)
+  const isBooleanType = (type: string) => type === 'bool'
+
   const renderFormItem = (field: SheetMetadata['fields'][0]) => {
-    const { name, type, comment } = field
+    const { name, type, comment, resolved_type } = field
     const label = comment || name
 
-    // 数字类型
-    if (type === 'Int' || type === 'Long' || type === 'Double' || type === 'Float') {
+    console.log(type, isNumberType(type))
+
+    if (resolved_type) {
       return (
         <Form.Item key={name} name={name} label={label}>
-          <InputNumber style={{ width: '100%' }} />
+          <Select
+            mode={isArrayType(type) ? 'multiple' : undefined}
+            allowClear
+            showSearch
+            placeholder={`请选择${label}`}
+            options={getRefOptions(resolved_type)}
+            filterOption={(input, option) =>
+              String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+          />
         </Form.Item>
       )
     }
 
-    // 布尔类型
-    if (type === 'Boolean') {
+    if (isArrayType(type)) {
+      const elementType = getArrayElementType(type)
+      return (
+        <Form.Item key={name} name={name} label={label}>
+          <Select
+            mode="tags"
+            allowClear
+            placeholder={`请输入${label}，按回车添加`}
+            tokenSeparators={[',']}
+            {...(isNumberType(elementType) && {
+              onChange: (values: string[]) => {
+                form.setFieldValue(name, values.map(v => Number(v) || 0))
+              }
+            })}
+          />
+        </Form.Item>
+      )
+    }
+
+    if (isNumberType(type)) {
+      return (
+        <Form.Item key={name} name={name} label={label}>
+          <InputNumber style={{ width: '100%' }} precision={isFloatType(type) ? 6 : 0} />
+        </Form.Item>
+      )
+    }
+
+    if (isBooleanType(type)) {
       return (
         <Form.Item key={name} name={name} label={label} valuePropName="checked">
           <Switch />
@@ -106,7 +141,6 @@ export default function SheetEdit() {
       )
     }
 
-    // 默认文本
     return (
       <Form.Item key={name} name={name} label={label}>
         <Input.TextArea autoSize={{ minRows: 1, maxRows: 4 }} />
@@ -114,7 +148,6 @@ export default function SheetEdit() {
     )
   }
 
-  // 新增
   const handleAdd = () => {
     setModalTitle('新增')
     setEditingRecord(null)
@@ -122,16 +155,13 @@ export default function SheetEdit() {
     setModalVisible(true)
   }
 
-  // 编辑
   const handleEdit = (record: SheetData) => {
     setModalTitle('编辑')
     setEditingRecord(record)
-    // 表单填充 data 内的字段数据
     form.setFieldsValue(record.data)
     setModalVisible(true)
   }
 
-  // 删除
   const handleDelete = async (record: SheetData) => {
     try {
       await deleteSheet(record.id)
@@ -142,7 +172,6 @@ export default function SheetEdit() {
     }
   }
 
-  // 提交表单
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields()
@@ -165,28 +194,26 @@ export default function SheetEdit() {
     }
   }
 
-  // 渲染单元格值
   const renderCellValue = (value: any) => {
     if (value === null || value === undefined) return '-'
     if (typeof value === 'boolean') return value ? '是' : '否'
+    if (Array.isArray(value)) return value.join(', ')
     if (typeof value === 'object') return JSON.stringify(value)
     return String(value)
   }
 
-  // 动态生成表格列
   const columns: ColumnsType<SheetData> = useMemo(() => {
     if (!metadata) return []
 
     const fieldColumns: ColumnsType<SheetData> = metadata.fields.map(field => ({
       title: field.comment || field.name,
-      dataIndex: ['data', field.name], // 访问嵌套的 data 对象
+      dataIndex: ['data', field.name],
       key: field.name,
       ellipsis: true,
       width: 150,
       render: renderCellValue
     }))
 
-    // 添加操作列
     fieldColumns.push({
       title: '操作',
       key: 'action',
@@ -233,7 +260,6 @@ export default function SheetEdit() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {/* 基本信息 */}
       <Card
         title={
           <Space>
@@ -253,7 +279,6 @@ export default function SheetEdit() {
         </Descriptions>
       </Card>
 
-      {/* 数据表格 */}
       <Card
         title="数据列表"
         extra={
@@ -279,7 +304,6 @@ export default function SheetEdit() {
         />
       </Card>
 
-      {/* 新增/编辑弹窗 */}
       <Modal
         title={modalTitle}
         open={modalVisible}
@@ -291,8 +315,8 @@ export default function SheetEdit() {
       >
         <Form form={form} layout="vertical" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
           {metadata.fields
-            .filter(f => f.name !== 'id') // id 字段不允许编辑
-            .map(field => renderFormItem(field))}
+            .filter(f => f.name !== 'id')
+            .map(f => renderFormItem(f))}
         </Form>
       </Modal>
     </div>
