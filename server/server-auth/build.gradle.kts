@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.server.cors)
+    implementation(libs.ktor.server.status.pages)
     implementation(libs.ktor.serialization.gson)
     implementation(libs.slf4j.api)
     implementation(libs.guava)

@@ -4,6 +4,7 @@ import com.alipay.remoting.LifeCycleException
 import com.google.gson.FieldNamingPolicy
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.gson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -13,7 +14,9 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import net.afyer.afybroker.client.Broker
 import net.afyer.afybroker.client.BrokerClient
@@ -68,6 +71,15 @@ object AuthServer {
                             "parameters: ${call.parameters}"
                 }
                 logger = Logger
+            }
+            install(StatusPages) {
+                exception<Throwable> { call, cause ->
+                    Logger.error("HTTP request error: ${call.request.uri}", cause)
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        mapOf("code" to -1, "message" to (cause.message ?: "Internal Server Error"))
+                    )
+                }
             }
             install(Authentication) {
                 jwt {

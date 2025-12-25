@@ -1,6 +1,7 @@
 import type { AppMenu } from '../types'
 import { basicRoutes } from '..'
 import { transformRouteToMenu } from '../helpers'
+import { filter } from '@/utils/helper/treeHelper'
 
 // Get async menus
 export async function getAsyncMenus(): Promise<AppMenu[]> {
@@ -9,5 +10,5 @@ export async function getAsyncMenus(): Promise<AppMenu[]> {
     return (a?.orderNo || staticMenus.length) - (b?.orderNo || staticMenus.length)
   })
 
-  return staticMenus.filter(item => !item.hideMenu)
+  return filter(staticMenus, item => !item.hideMenu)
 }

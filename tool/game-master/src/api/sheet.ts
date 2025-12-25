@@ -21,6 +21,12 @@ export interface SheetMetadata {
   data: any[][]
 }
 
+export interface SheetData {
+  id: number
+  name: string
+  data: any
+}
+
 // 获取表格元数据
 export function getSheetMetadata(): Promise<SheetMetadata[]> {
   return service({
@@ -29,36 +35,39 @@ export function getSheetMetadata(): Promise<SheetMetadata[]> {
   })
 }
 
-export function getSheetList(tableName: string, tableQuery: PageState) {
+export interface SheetListResult {
+  list: SheetData[]
+  total: number
+}
+
+export function getSheetList(tableName: string, tableQuery: PageState): Promise<SheetListResult> {
   return service({
-    url: '/table/getTableList',
+    url: '/sheet/getSheetList',
     method: 'get',
-    params: { tableName: tableName, ...tableQuery }
+    params: { tableName, ...tableQuery }
   })
 }
 
 export function deleteSheet(id: number) {
   return service({
-    url: '/table/getTableList',
+    url: '/sheet/deleteSheet',
     method: 'get',
-    params: { id: id }
+    params: { id }
   })
 }
 
-export function insertSheet(tableName: string, data: any) {
+export function insertSheet(data: SheetData) {
   return service({
-    url: '/table/getTableList',
+    url: '/sheet/insertSheet',
     method: 'post',
-    params: { tableName: tableName},
     data
   })
 }
 
-export function updateSheet(id: number, data: any) {
+export function updateSheet(data: SheetData) {
   return service({
-    url: '/table/getTableList',
+    url: '/sheet/updateSheet',
     method: 'post',
-    params: { id: id },
     data
   })
 }

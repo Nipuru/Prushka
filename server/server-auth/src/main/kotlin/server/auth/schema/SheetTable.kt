@@ -1,7 +1,7 @@
 package server.auth.schema
 
+import com.google.gson.JsonObject
 import org.jetbrains.exposed.sql.Table
-import server.common.sheet.SheetMetadata
 import server.common.util.database.initSchema
 
 
@@ -19,3 +19,5 @@ object SheetTable : Table() {
         initSchema()
     }
 }
+
+data class SheetData(val id: Int = 0, var name: String, var data: JsonObject)

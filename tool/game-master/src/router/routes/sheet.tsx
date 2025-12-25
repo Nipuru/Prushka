@@ -11,16 +11,25 @@ const SheetRoute: RouteObject = {
   meta: {
     title: '配置表',
     icon: 'table',
-    orderNo: 2,
+    orderNo: 2
   },
   children: [
     {
-      path: ':sheetName',
-      name: 'SheetDetail',
-      element: LazyLoad(lazy(() => import('@/views/sheet'))),
+      path: '',
+      name: 'SheetList',
+      element: LazyLoad(lazy(() => import('@/views/sheet/list'))),
       meta: {
-        title: '配置表详情',
-        key: 'sheetDetail',
+        title: '配置表列表',
+        key: 'sheetList'
+      }
+    },
+    {
+      path: 'edit/:sheetName',
+      name: 'SheetEdit',
+      element: LazyLoad(lazy(() => import('@/views/sheet/edit'))),
+      meta: {
+        title: '配置表编辑',
+        key: 'sheetEdit',
         hideMenu: true
       }
     }

@@ -1,9 +1,9 @@
 package server.auth.http
 
-import com.google.gson.JsonObject
-import io.ktor.server.request.receive
+import io.ktor.server.request.*
 import io.ktor.server.routing.*
-import io.ktor.server.util.getOrFail
+import io.ktor.server.util.*
+import server.auth.schema.SheetData
 import server.auth.service.SheetServiceImpl
 import server.auth.util.success
 import server.common.sheet.Sheet
@@ -24,7 +24,7 @@ suspend fun RoutingContext.getSheetList() {
     val pageSize = call.parameters["pageSize"]?.toIntOrNull() ?: 10
 
     val offset = (current - 1) * pageSize
-    val tableList = SheetServiceImpl.getSheetList(tableName)?.asList() ?: emptyList()
+    val tableList = SheetServiceImpl.getSheetList(tableName)
     val pageData = if (offset + pageSize >= tableList.size) {
         tableList.subList(offset.coerceAtMost(tableList.size), tableList.size)
     } else {
@@ -40,15 +40,13 @@ suspend fun RoutingContext.deleteSheet() {
 }
 
 suspend fun RoutingContext.insertSheet() {
-    val tableName = call.parameters.getOrFail<String>("tableName")
-    val data = call.receive<JsonObject>()
-    SheetServiceImpl.insertSheet(tableName, data)
+    val data = call.receive<SheetData>()
+    SheetServiceImpl.insertSheet(data)
     call.success()
 }
 
 suspend fun RoutingContext.updateSheet() {
-    val id = call.parameters.getOrFail<Int>("id")
-    val data = call.receive<JsonObject>()
-    SheetServiceImpl.updateSheet(id, data)
+    val data = call.receive<SheetData>()
+    SheetServiceImpl.updateSheet(data)
     call.success()
 }
