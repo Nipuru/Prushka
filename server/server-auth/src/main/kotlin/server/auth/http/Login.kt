@@ -23,8 +23,8 @@ private val fakeUserList = listOf(
     )
 )
 
-// 存储用户token映射
-private val userTokens = mutableMapOf<String, FakeUser>()
+// 存储有效的token集合
+val validTokens = mutableSetOf<String>()
 
 // 假用户数据
 data class FakeUser(
@@ -80,10 +80,8 @@ suspend fun RoutingContext.login() {
         call.fail("账号或密码错误!")
         return
     }
-    // 生成token
     val token = JWTUtil.makeToken(user.username)
-    // 存储token与用户的映射
-    userTokens[token] = user
+    validTokens.add(token)
 
     call.success("登录成功", mapOf(
         "token" to token,
@@ -125,10 +123,9 @@ suspend fun RoutingContext.getUserInfo() {
 }
 
 suspend fun RoutingContext.logout() {
-    val authHeader = call.request.header("Authorization")
-    val token = authHeader?.removePrefix("Bearer ")
+    val token = call.request.header("Authorization")
     if (token != null) {
-        userTokens.remove(token)
+        validTokens.remove(token)
     }
     call.success("Token已销毁!")
 }

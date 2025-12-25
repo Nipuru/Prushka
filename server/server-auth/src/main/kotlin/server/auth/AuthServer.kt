@@ -25,6 +25,7 @@ import net.afyer.afybroker.core.util.BoltUtils
 import org.slf4j.event.Level
 import server.auth.config.Config
 import server.auth.http.configureRouting
+import server.auth.http.validTokens
 import server.auth.processor.connection.CloseEventAuthProcessor
 import server.auth.service.PlayerServiceImpl
 import server.auth.service.SheetServiceImpl
@@ -86,7 +87,12 @@ object AuthServer {
                     authHeader(JWTUtil::parseAuthHeader)
                     verifier(JWTUtil.makeVerifier())
                     validate { credentials ->
-                        JWTPrincipal(credentials.payload)
+                        val token = request.header("Authorization")
+                        if (token != null && token in validTokens) {
+                            JWTPrincipal(credentials.payload)
+                        } else {
+                            null
+                        }
                     }
                     challenge { _, _ ->
                         call.overdue()
