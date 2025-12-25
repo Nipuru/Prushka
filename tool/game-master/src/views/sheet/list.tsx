@@ -112,7 +112,7 @@ export default function SheetList() {
         size="middle"
         pagination={{ pageSize: 15, showSizeChanger: true, showTotal: total => `共 ${total} 条` }}
         onRow={record => ({
-          onClick: () => navigate(`/sheet/edit/${record.table_name}`),
+          onClick: () => navigate(`/sheet/editor/${record.table_name}`),
           style: { cursor: 'pointer' }
         })}
       />

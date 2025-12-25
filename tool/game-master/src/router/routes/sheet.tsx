@@ -15,7 +15,7 @@ const SheetRoute: RouteObject = {
   },
   children: [
     {
-      path: '',
+      path: 'list',
       name: 'SheetList',
       element: LazyLoad(lazy(() => import('@/views/sheet/list'))),
       meta: {
@@ -24,7 +24,7 @@ const SheetRoute: RouteObject = {
       }
     },
     {
-      path: 'edit/:sheetName',
+      path: 'editor/:sheetName',
       name: 'SheetEdit',
       element: LazyLoad(lazy(() => import('@/views/sheet/edit'))),
       meta: {
