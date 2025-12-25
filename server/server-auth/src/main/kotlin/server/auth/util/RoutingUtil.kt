@@ -1,5 +1,6 @@
 package server.auth.util
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 
@@ -19,5 +20,5 @@ suspend fun ApplicationCall.fail(message: String = "操作失败") {
 }
 
 suspend fun ApplicationCall.overdue() {
-    this.respond(Result(599, "身份认证过期"))
+    this.respond(HttpStatusCode.Unauthorized, "身份认证过期")
 }
